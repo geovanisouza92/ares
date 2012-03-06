@@ -8,7 +8,7 @@
 
 #define LANG_AUTHOR_NAME        "Geovani de Souza"
 #define LANG_AUTHOR_EMAIL       "geovanisouza92@gmail.com"
-#define LANG_HOME_PAGE          "http://github.com/geovanisouza92/"
+#define LANG_HOME_PAGE          "http://github.com/geovanisouza92/ares"
 
 #define LANG_BIRTH_YEAR         2011
 #define LANG_BIRTH_MONTH        1
