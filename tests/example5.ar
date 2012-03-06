@@ -1,34 +1,34 @@
 module XNA do
 
    class Entidade do
-    attr X: Float get set;
-    attr Y: Float get set;
+    var X: Float ;
+    var Y: Float ;
   end
 
    class Nave > Entidade do
-    attr Estado: EstadoNave get set ;
-    attr Velocidade: Float get set;
-    attr Direcao: DirecaoNave get set;
+    var Estado: EstadoNave ;
+    var Velocidade: Float ;
+    var Direcao: DirecaoNave ;
   end
   
   class Escudo > Entidade do
-    attr X: Float get set;
-    attr Y: Float get set;
+    var X: Float ;
+    var Y: Float ;
   end
   
   class JogoInvasores do
-    attr Estado: EstadoJogo get set;
+    var Estado: EstadoJogo ;
   end
   
   class CelulaEscudo do
-    attr Energia: Integer get set ;
-    attr Tipo: TipoDeCelula get set;
+    var Energia: Integer ;
+    var Tipo: TipoDeCelula ;
   end
   
   class Tiro do
-    attr X: Float get set;
-    attr Y: Float get set;
-    attr Velocidade: Float get set;
+    var X: Float ;
+    var Y: Float ;
+    var Velocidade: Float ;
   end
   
   class NaveInvasor > Nave do
@@ -36,19 +36,19 @@ module XNA do
   end
   
   class NaveBonus > Nave do
-    attr Contador: Integer get set;
+    var Contador: Integer ;
   end
   
   class NaveJogador > Nave do
-    attr Vidas: Integer get set;
-    attr Pontos: Integer get set;
-    attr PodeAtirar?: Boolean get set;
+    var Vidas: Integer ;
+    var Pontos: Integer ;
+    var PodeAtirar?: Boolean ;
   end
   
   class ControladorDeNaves do
-    attr InverterDirecao?: Boolean get set;
-    attr QuantidadeDeNaves: Integer get set;
-    attr TempoParaAtirar: Float get set;
+    var InverterDirecao?: Boolean ;
+    var QuantidadeDeNaves: Integer ;
+    var TempoParaAtirar: Float ;
   end
   
   # enum EstadoNave

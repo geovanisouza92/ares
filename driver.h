@@ -7,6 +7,7 @@
 #include <time.h>
 
 #include "version.h"
+#include "ast.h"
 #include "console.h"
 #include "scanner.h"
 
@@ -31,19 +32,13 @@ namespace LANG_NAMESPACE {
         DECLARE_ENUM_MEMBER(ErrorsWarningsAndHints)
         DECLARE_ENUM_MEMBER(AllForDebug)
     DECLARE_ENUM_END
-    // DECLARE_ENUM_NAMES_START(VerboseMode)
-    //     DECLARE_ENUM_MEMBER_NAME("Errors only")
-    //     DECLARE_ENUM_MEMBER_NAME("Errors and important warnings")
-    //     DECLARE_ENUM_MEMBER_NAME("Errors, warnings and hints")
-    //     DECLARE_ENUM_MEMBER_NAME("All for debug")
-    // DECLARE_ENUM_NAMES_END(Mode)
 
 class Driver {
 public:
     string origin;
     bool check_only;
-    class Scanner* lexer;
-    vector<string> include_dirs;
+    class AST::Environment * Env;
+    class Scanner * lexer;
     VerboseMode::Mode verbose_mode;
     unsigned lines, total_lines, total_errors, total_warnings, total_hints;
 public:

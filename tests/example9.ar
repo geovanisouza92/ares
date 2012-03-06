@@ -5,8 +5,8 @@ inline doc "
   Accessible by Another.__Description
 ";
   class Banco do
-    attr Nome: String get GetNome;
-    attr Endereco: String get GetEndereco;
+    var Nome: String ;
+    var Endereco: String ;
     
     def AtualizarContas
     do
@@ -42,8 +42,8 @@ inline doc "
   end
 
   class GerenciadorDeTransacoes do
-    attr VetorDeTransacoesEmExecucao: Array(Transacao);
-    attr VetorDeTransacoesEsperando: Array(Transacao);
+    var VetorDeTransacoesEmExecucao: Array(Transacao);
+    var VetorDeTransacoesEsperando: Array(Transacao);
     
     def EfetuarTransacao
     do
@@ -74,7 +74,7 @@ inline doc "
   end
 
   class Calendario do
-    attr DiasUteis: Array(Date);
+    var DiasUteis: Array(Date);
     
     def EhDiaUtil?: Boolean
     do
@@ -95,8 +95,8 @@ inline doc "
   end
 
   class Cliente do
-    attr Nome: String;
-    attr Endereco: String;
+    var Nome: String;
+    var Endereco: String;
     
     def Sacar(DaConta: Conta)
     do
@@ -130,7 +130,7 @@ inline doc "
   end
 
  class Conta do
-    attr Saldo: Float;
+    var Saldo: Float;
      def Atualizar;
   end
   

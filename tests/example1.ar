@@ -6,7 +6,7 @@ module IdeaCloud.Vistem do
             # do getter
         end
     public
-        attr Id: Integer get GetId set SetId; #invariants > 0;
+        var Id: Integer ;
     private
         def SetId(Value: Integer) do # the order doesn't matter...
         # do
@@ -17,8 +17,8 @@ module IdeaCloud.Vistem do
     private
         # general validations here
     public
-        attr Name: String get; # invariants not nil; # read-only, with constance
-        def Update after Save do
+        var Name: String ; # invariants not nil; # read-only, with constance
+        def Update do
         # do
             # update
             if "blue" == Sky.Color then
@@ -31,7 +31,7 @@ module IdeaCloud.Vistem do
             end
         end
         private
-        def Save before Cliente do # visibility for def, only
+        def Save do # visibility for def, only
         # require # pre-conditions here
             Self.Valid?;
         # do # do of significant code

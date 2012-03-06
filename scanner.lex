@@ -1,6 +1,5 @@
 %{
-#include <string>
-
+#include "ast.h"
 #include "scanner.h"
 #include "parser.h"
 #include "version.h"
@@ -43,12 +42,10 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*['?''!']?
 "*="            return token::sMUE;
 "/="            return token::sDIE;
 
-"after"         return token::kAFTER;
+"abstract"      return token::kABSTRACT;
 "and"           return token::kAND;
 "asc"           return token::kASC;
 "async"         return token::kASYNC;
-"attr"          return token::kATTR;
-"before"        return token::kBEFORE;
 "between"       return token::kBETWEEN;
 "break"         return token::kBREAK;
 "by"            return token::kBY;
@@ -62,19 +59,19 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*['?''!']?
 "elif"          return token::kELIF;
 "else"          return token::kELSE;
 "end"           return token::kEND;
-"event"         return token::kEVENT;
+"ensure"        return token::kENSURE;
 "exit"          return token::kEXIT;
 "false"         return token::kFALSE;
 "for"           return token::kFOR;
 "from"          return token::kFROM;
 "full"          return token::kFULL;
-"get"           return token::kGET;
 "group"         return token::kGROUP;
 "if"            return token::kIF;
 "implies"       return token::kIMPLIES;
 "import"        return token::kIMPORT;
 "include"       return token::kINCLUDE;
 "inline"        return token::kINLINE;
+"invariants"    return token::kINVARIANTS;
 "in"            return token::kIN;
 "join"          return token::kJOIN;
 "left"          return token::kLEFT;
@@ -90,18 +87,17 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*['?''!']?
 "protected"     return token::kPROTECTED;
 "public"        return token::kPUBLIC;
 "raise"         return token::kRAISE;
+"require"       return token::kREQUIRE;
 "rescue"        return token::kRESCUE;
 "right"         return token::kRIGHT;
+"sealed"        return token::kSEALED;
 "select"        return token::kSELECT;
 "self"          return token::kSELF;
-"set"           return token::kSET;
-"signal"        return token::kSIGNAL;
 "skip"          return token::kSKIP;
 "step"          return token::kSTEP;
 "take"          return token::kTAKE;
 "then"          return token::kTHEN;
 "true"          return token::kTRUE;
-"undef"         return token::kUNDEF;
 "unless"        return token::kUNLESS;
 "until"         return token::kUNTIL;
 "var"           return token::kVAR;

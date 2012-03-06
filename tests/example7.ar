@@ -2,8 +2,8 @@ module Classes do
 
    class Persistente do
     # Atributos
-    attr ObjectId: Integer get GetObjectId;
-    attr Iter: RandomAccessFile get set;
+    var ObjectId: Integer ;
+    var Iter: RandomAccessFile ;
 
     # Métodos abstratos
      def AtualizarDados;
@@ -18,7 +18,7 @@ module Classes do
     
     def GetObjectId: Integer
     do
-      # Do get;
+      # Do ;
     end
     
     def GetObject: Object
@@ -36,7 +36,7 @@ module Classes do
       # Apagar do disco
     end
     
-    def StartObjectId: Integer after Persistente
+    def StartObjectId: Integer
     do
       # Inicializa a propriedade "ObjectId"
     end
@@ -44,8 +44,8 @@ module Classes do
   
   class Agencia > Persistente do
     # Atributos
-    attr CodAgencia: String get set;
-    attr NomeAgencia: String get set;
+    var CodAgencia: String ;
+    var NomeAgencia: String ;
     
     # Métodos
     def Agencia
@@ -70,11 +70,11 @@ module Classes do
   end
   
   class ContaCorrente > Persistente do
-    attr Cod: String;
-    attr Saldo: Integer;
-    attr AplicPrefix: Array(ObjectId);
-    attr Historico: Array(ObjectId);
-    attr Agencia: ObjectId;
+    var Cod: String;
+    var Saldo: Integer;
+    var AplicPrefix: Array(ObjectId);
+    var Historico: Array(ObjectId);
+    var Agencia: ObjectId;
     
     def Depositar(Quantia: Float)
     do
@@ -133,9 +133,9 @@ module Classes do
   end
 
   class Historico > Persistente do
-    attr Date: Date;
-    attr Operacao: Array(ObjectId);
-    attr Valor: Float;
+    var Date: Date;
+    var Operacao: Array(ObjectId);
+    var Valor: Float;
     
     def Criar
     do
@@ -149,8 +149,8 @@ module Classes do
   end
   
   class Operacao > Persistente do
-    attr CodOperacao: String;
-    attr DescricaoOperacao: String;
+    var CodOperacao: String;
+    var DescricaoOperacao: String;
     
     def Operacao
     do
@@ -174,10 +174,10 @@ module Classes do
   end
   
   class Dependente > Persistente do
-    attr Nome: String; # invariants not nil
-    attr CPF: String;
-    attr Parentesco: String;
-    attr Poupancas: Array(ObjectId);
+    var Nome: String; # invariants not nil
+    var CPF: String;
+    var Parentesco: String;
+    var Poupancas: Array(ObjectId);
     
     def Dependente
     do
@@ -216,7 +216,7 @@ module Classes do
   end
   
   class Poupanca > ContaCorrente do
-    attr DataVencimento: Date;
+    var DataVencimento: Date;
     
     def Poupanca
     do
@@ -225,9 +225,9 @@ module Classes do
   end
   
   class AplicacaoPreFixada > Persistente do
-    attr Valor: Float;
-    attr DataVencimento: Date;
-    attr Taxa: Float;
+    var Valor: Float;
+    var DataVencimento: Date;
+    var Taxa: Float;
     
     def AplicacaoPreFixada
     do
@@ -246,17 +246,17 @@ module Classes do
   end
   
   class Cliente > Persistente do
-    attr Nome: String; # invariants not nil
-    attr CPF: String;
-    attr Rua: String;
-    attr Fone: String;
-    attr Bairro: String;
-    attr Cidade: String;
-    attr CEP: String;
-    attr Estado: String;
-    attr Dependentes: Array(ObjectId);
-    attr ContasCorrente: Array(ObjectId);
-    attr Poupancas: Array(ObjectId);
+    var Nome: String; # invariants not nil
+    var CPF: String;
+    var Rua: String;
+    var Fone: String;
+    var Bairro: String;
+    var Cidade: String;
+    var CEP: String;
+    var Estado: String;
+    var Dependentes: Array(ObjectId);
+    var ContasCorrente: Array(ObjectId);
+    var Poupancas: Array(ObjectId);
     
     def Cliente
     do

@@ -7,25 +7,25 @@ import System.IO;
     do
       # Gerar código automático
     end
-    attr ID: Integer get; # invariants not nil and > 0
+    var ID: Integer ; # invariants not nil and > 0
   end
 
   class RentalAgency > Base do
-    attr Address: String get set;
-    attr PhoneNo: String get set;
-    attr Manager: Pessoa get set;
+    var Address: String ;
+    var PhoneNo: String ;
+    var Manager: Pessoa ;
   end
   
   class Person > Base do
-    attr Name: String get set; # invariants not nil
-    attr Address: String get set;
+    var Name: String ; # invariants not nil
+    var Address: String ;
   end
   
   class CustomerRecord do
-    attr CustomerID: Integer get set;
-    attr RentalHistory: Strings get;
+    var CustomerID: Integer ;
+    var RentalHistory: Strings ;
   private
-    def Initialize after CustomerRecord
+    def Initialize
     do
       # Inicializa Histórico
     end
@@ -52,17 +52,17 @@ import System.IO;
     
     end
 
-    attr Phone: String get set;
-    attr BirthDate: Date get set;
-    attr LicenseNo: String get set; # like \[0-9]+\ # Validado com regex
+    var Phone: String ;
+    var BirthDate: Date ;
+    var LicenseNo: String ; # like \[0-9]+\ # Validado com regex
   end
   
   class Car > Base do
-    attr FleetNo: Integer get set;
-    attr Model: String get set;
-    attr RegNo: String get set;
-    attr Condition: String get set;
-    attr Status: String get set;
+    var FleetNo: Integer ;
+    var Model: String ;
+    var RegNo: String ;
+    var Condition: String ;
+    var Status: String ;
     
     def Reserved?: Boolean
     do
@@ -76,13 +76,13 @@ import System.IO;
   end
   
   class Employee > Person do
-    attr PhoneNo: String get set;
-    attr DateHired: Date get set;
+    var PhoneNo: String ;
+    var DateHired: Date ;
   end
   
   class RentalAgent > Employee do
-    attr CommissionRate: Float get set;
-    attr Target: String get set;
+    var CommissionRate: Float ;
+    var Tar;
     
     def Calculate
     do
@@ -91,20 +91,20 @@ import System.IO;
   end
   
   class Mechanic > Employee do
-    attr Skills: Strings get;
-    attr Qualifications: String get;
+    var Skills: Strings ;
+    var Qualifications: String ;
   private
-    def Initialize after Mechanic
+    def Initialize
     do
       # Initialize Skills & Qualifications
     end
   end
   
   class ServiceLog > Base do
-    attr ServiceHistory: String get set;
-    attr ProgressHistory: Strings get;
+    var ServiceHistory: String ;
+    var ProgressHistory: Strings ;
   private
-    def Initialize after ServiceLog
+    def Initialize
     do
       # Initialize ProgressHistory
     end

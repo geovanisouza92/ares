@@ -23,6 +23,7 @@ Driver::Driver()
       total_errors(0),
       total_warnings(0),
       total_hints(0) {
+    Env = new AST::Environment(NULL);
 }
 
 Driver::~Driver(){
@@ -140,43 +141,20 @@ Driver::resume_messages() {
 
 void
 Driver::make_things_happen(FinallyAction::Action action, ostream& out) {
-//     try {
-//         if (check_only) {
-//             syntax_ok_for(origin);
-//         } else {
-//             // DEBUG_HINT("In 'make_things_happen' with action " << FinallyAction::get_enum_name(action))
-//             // ctx->eval(ctx);
-//             // DEBUG_HINT("Eval complete")
-//             switch(action) {
-//             case FinallyAction::None:
-//                 // Do nothing
-//                 break;
-//             case FinallyAction::PrintResults:
-//                 if (verbose_mode >= VerboseMode::ErrorsAndWarnings && total_errors <= 0) {
-//                     if (verbose_mode >= VerboseMode::AllForDebug)
-//                         ctx->print_in(out, 0);
-// #ifdef EXPERIMENTAL
-//                     // Print result
-// #else
-//                     syntax_ok_for(origin);
-// #endif
-//                     // DEBUG_WARNING("Faz de conta que processou tudo... :P");
-//                 }
-//                 break;
-//             case FinallyAction::GenerateBinaries:
-// #if defined(EXPERIMENTAL) && defined(GENERATE_LLVM)
-//                 // Percorrer nós gerando produções
-//                 // TODO Gerar binários
-// #endif
-//                 break;
-//             default:
-//                 error("Final action unknown");
-//             }
-//         }
-//         ctx->members.clear();
-//     } catch (string m) {
-//         error(m);
-//     }
+    if (check_only)
+        syntax_ok_for(origin);
+    else switch(action) {
+        case FinallyAction::None:
+            break;
+        case FinallyAction::PrintResults:
+            Env->print_tree_using(out);
+            break;    
+        case FinallyAction::GenerateBinaries:
+            // TODO Implementar geração de código
+            break;
+        default:
+            break;
+        }
 }
 
 }

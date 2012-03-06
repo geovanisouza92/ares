@@ -42,6 +42,7 @@ int main(int argc, char** argv) {
 
     po::options_description desc("Usage: " LANG_SHELL_NAME " [Options] files\n\nOptions");
     desc.add_options()
+        ("check-only,c", "Enable check only")
         ("eval,e", po::value<string>(), "Evaluate and compile <arg>")
         ("help,h", "Print this message and exit")
         ("input-file", po::value< vector<string> >(), "[Optional] Use <arg> as input file(s).")
@@ -69,6 +70,10 @@ int main(int argc, char** argv) {
         return 1;
     }
 
+    if (options.count("check-only")) {
+        driver.check_only = true;
+    }
+
     if (options.count("eval")) {
         mode = InteractionMode::LineEval;
         if (!printed) {
@@ -80,10 +85,8 @@ int main(int argc, char** argv) {
             TRAIT_END
             bool parse_result = driver.parse_string(line, "line eval");
             if (parse_result) {
-                if (driver.total_errors > max_errors) {
-                    return 1;
-                }
-                // TODO Generate binary and link
+                if (driver.total_errors > max_errors) return 1;
+                driver.make_things_happen(FinallyAction::None, cout);
             }
             if (driver.verbose_mode >= VerboseMode::ErrorsAndWarnings) {
                 string errors = driver.resume_messages();
@@ -140,6 +143,7 @@ int main(int argc, char** argv) {
             if (parse_ok) {
                 files_processed++;
                 if (driver.total_errors > max_errors) return 1;
+                driver.make_things_happen(FinallyAction::None, cout);
             } else break;
         }
         if (driver.verbose_mode >= VerboseMode::ErrorsAndWarnings) {
@@ -160,10 +164,8 @@ int main(int argc, char** argv) {
                 TRAIT_END
                 bool parse_ok = driver.parse_string(line, LANG_SHELL_NAME);
                 if (parse_ok)
-                    if (driver.total_errors > max_errors)
-                        return 1;
-                    else if (driver.verbose_mode >= VerboseMode::ErrorsAndWarnings)
-                        driver.syntax_ok_for("'" + line + "'");
+                    if (driver.total_errors > max_errors) return 1;
+                    driver.make_things_happen(FinallyAction::None, cout);
                 blanks = 0; line.clear(); guide = ">>> ";
             } else if (++blanks && blanks >= 3) return 0;
     }

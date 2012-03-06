@@ -45,10 +45,10 @@ all: bin
 	@ echo "Compile done"
 
 parser.cpp:
-	@ $(YACC) $(YFLAGS) -o $@ parser.yacc
+	@ $(YACC) $(YFLAGS) -o $@ parser.yacc 2> $@.results
 
 scanner.cpp:
-	@ $(LEX) $(LFLAGS) -o$@ scanner.lex
+	@ $(LEX) $(LFLAGS) -o$@ scanner.lex 2> $@.results
 
 %.o: %.cpp
 	@ echo "Preparing dependency:" $@

@@ -3,7 +3,7 @@ podem ter este informativo embutido";
 module Clientes do
 
   class Base do
-    attr _id: Integer get set;
+    var _id: Integer ;
   end
 
   # interface IPessoa
@@ -15,16 +15,16 @@ module Clientes do
         # Retorna verdadeiro somente se a pessoa for de boa fé...
         Result = not Nome.IsEmpty?;
     end
-    attr Nome: String get set;
+    var Nome: String ;
   end
 
   class PessoaFisica > Pessoa do
-    attr CPF: String get set; # invariants not nil;
+    var CPF: String ;
   end
 
   class PessoaJuridica
       > Pessoa do
-    attr CNPJ: String get set; # invariants not nil;
+    var CNPJ: String ;
   end
 
 inline doc "Lista todos os clientes ativos no sistema";

@@ -1,13 +1,16 @@
 
 TODO
 
-	- Generate AST for productions
 	- Generate semantical rules
 	- Generate LLVM-IR
 	- Generate Standard Library
 	- Generate bundle's
 
 Changelog
+
+[0.2.0]
+	- Generate AST for productions
+	- Print AST
 
 [0.1.0]
 	+ 'Ares' is the language name

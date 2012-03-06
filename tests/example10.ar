@@ -1,12 +1,12 @@
 module Sistema do
 
   class Endereco do
-    attr Tipo: Integer;
-    attr Endereco: String;
-    attr Bairro: String;
-    attr Cep: String;
-    attr Cidade: String;
-    attr Estado: String;
+    var Tipo: Integer;
+    var Endereco: String;
+    var Bairro: String;
+    var Cep: String;
+    var Cidade: String;
+    var Estado: String;
     
     def Endereco do
       # .ctor
@@ -14,9 +14,9 @@ module Sistema do
   end
 
   class Telefone do
-    attr Tipo: Integer;
-    attr CodigoDaCidade: Integer;
-    attr Numero: String; # Adicionar pattern
+    var Tipo: Integer;
+    var CodigoDaCidade: Integer;
+    var Numero: String; # Adicionar pattern
     
     def Telefone do
       # .ctor
@@ -24,8 +24,8 @@ module Sistema do
   end
 
   class Email do
-    attr Tipo: Integer;
-    attr Email: String; # Adicionar pattern
+    var Tipo: Integer;
+    var Email: String; # Adicionar pattern
     
     def Email do
       # .ctor
@@ -33,7 +33,7 @@ module Sistema do
   end
 
    class Pessoa do
-    attr Nome: String; # invariants not nil
+    var Nome: String; # invariants not nil
     
     def Pessoa do
       # .ctor
@@ -41,9 +41,9 @@ module Sistema do
   end
 
   class PessoaFisica > Pessoa do
-    attr Sexo: Integer;
-    attr DataNascimento: Date;
-    attr CPF: String; # Adicionar pattern
+    var Sexo: Integer;
+    var DataNascimento: Date;
+    var CPF: String; # Adicionar pattern
     
     def PessoaFisica do
       # .ctor
@@ -51,8 +51,8 @@ module Sistema do
   end
 
   class PessoaJuridica > Pessoa do
-    attr CNPJ: String; # Adicionar pattern
-    attr NomeFantasia: String;
+    var CNPJ: String; # Adicionar pattern
+    var NomeFantasia: String;
     
     def PessoaJuridica do
       # .ctor
@@ -60,9 +60,9 @@ module Sistema do
   end
 
   class Funcionario > PessoaFisica do
-    attr Matricula: Integer;
-    attr Cargo: String;
-    attr DataAdmissao: Date;
+    var Matricula: Integer;
+    var Cargo: String;
+    var DataAdmissao: Date;
     
     def Funcionario do
       # .ctor
@@ -70,7 +70,7 @@ module Sistema do
   end
 
   class Cliente > PessoaFisica do
-    attr Tipo: Integer;
+    var Tipo: Integer;
     
     def Cliente do
       # .ctor
@@ -78,9 +78,9 @@ module Sistema do
   end
 
   class Prato do
-    attr Nome: String;
-    attr Descricao: String;
-    attr Preco: Float;
+    var Nome: String;
+    var Descricao: String;
+    var Preco: Float;
     
     def Prato do
       # .ctor
@@ -88,7 +88,7 @@ module Sistema do
   end
 
   class ItemDoPedido do
-    attr Quantidade: Float;
+    var Quantidade: Float;
     
     def ItemDoPedido do
       # .ctor
@@ -96,8 +96,8 @@ module Sistema do
   end
 
   class Pedido do
-    attr DataHora: DateTime;
-    attr FormaDePagamento: Integer;
+    var DataHora: DateTime;
+    var FormaDePagamento: Integer;
     
     def Pedido do
       # .ctor

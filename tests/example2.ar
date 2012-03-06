@@ -19,15 +19,15 @@ do
       exit;
     end
     WriteLn("=== ${pair.Key}:up");
-    System.Directory.ChangeToDir(pair.Value);
+    System.Directory.Chan;
     var subRepos = System.Directory.ListDirectories;
     for var subRepo in subRepos
     do
       WriteLn(">>> ${subRepo}");
-      System.Directory.ChangeToDir(subRepo);
+      System.Directory.Chan;
       System(cmd);
       WriteLn("<<< ${subRepo}");
-      System.Directory.ChangeToDir("..");
+      System.Directory.Chan;
       WriteLn;
       dirs.Add("${pair.Value}\\${subRepo}");
     end

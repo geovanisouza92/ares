@@ -11,9 +11,9 @@ module Banco do
       end
     end
   public
-    attr CPF: String get set ;
-    attr Nome: String get set; # invariants not nil
-    attr Telefone: String get set;
+    var CPF: String ;
+    var Nome: String ; # invariants not nil
+    var Telefone: String ;
     def MostrarCPF: Integer
     do
       # Código
@@ -25,8 +25,8 @@ module Banco do
   end
   
    class Conta do
-    attr Agencia: Integer get set;
-    attr NumeroConta: String get set;
+    var Agencia: Integer ;
+    var NumeroConta: String ;
     def Depositar(Valor: Float)
     do
       # Código
@@ -38,7 +38,7 @@ module Banco do
   end
   
   class ContaPoupanca > Conta do
-    attr DiaDeposito: Integer get set;
+    var DiaDeposito: Integer ;
     def VerLucro: Float
     do
       # Código
