@@ -1,0 +1,73 @@
+
+#ifndef ARC_DRIVER_H
+#define ARC_DRIVER_H
+
+#include <string>
+#include <vector>
+#include <time.h>
+
+#include "version.h"
+#include "console.h"
+#include "scanner.h"
+
+using namespace std;
+
+namespace LANG_NAMESPACE {
+
+    DECLARE_ENUM_START(FinallyAction,Action)
+        DECLARE_ENUM_MEMBER(None)
+        DECLARE_ENUM_MEMBER(PrintResults)
+        DECLARE_ENUM_MEMBER(GenerateBinaries)
+    DECLARE_ENUM_END
+    // DECLARE_ENUM_NAMES_START(FinallyAction)
+    //     DECLARE_ENUM_MEMBER_NAME("None")
+    //     DECLARE_ENUM_MEMBER_NAME("Print results")
+    //     DECLARE_ENUM_MEMBER_NAME("Generate binaries")
+    // DECLARE_ENUM_NAMES_END(Action)
+
+    DECLARE_ENUM_START(VerboseMode,Mode)
+        DECLARE_ENUM_MEMBER(ErrorsOnly)
+        DECLARE_ENUM_MEMBER(ErrorsAndWarnings)
+        DECLARE_ENUM_MEMBER(ErrorsWarningsAndHints)
+        DECLARE_ENUM_MEMBER(AllForDebug)
+    DECLARE_ENUM_END
+    // DECLARE_ENUM_NAMES_START(VerboseMode)
+    //     DECLARE_ENUM_MEMBER_NAME("Errors only")
+    //     DECLARE_ENUM_MEMBER_NAME("Errors and important warnings")
+    //     DECLARE_ENUM_MEMBER_NAME("Errors, warnings and hints")
+    //     DECLARE_ENUM_MEMBER_NAME("All for debug")
+    // DECLARE_ENUM_NAMES_END(Mode)
+
+class Driver {
+public:
+    string origin;
+    bool check_only;
+    class Scanner* lexer;
+    vector<string> include_dirs;
+    VerboseMode::Mode verbose_mode;
+    unsigned lines, total_lines, total_errors, total_warnings, total_hints;
+public:
+    Driver();
+    virtual ~Driver();
+    virtual bool parse_stream(istream&, const string& sname = "stream input");
+    virtual bool parse_string(const string&, const string& sname = "string stream");
+    virtual bool parse_file(const string&);
+
+    virtual int error(const class location&, const string&);
+    virtual int error(const string&);
+    virtual void warning(const class location&, const string&);
+    virtual void warning(const string&);
+    virtual void hint(const class location&, const string&);
+    virtual void hint(const string&);
+    virtual string resume_messages();
+
+    virtual inline void syntax_ok_for(const string what) { cout << "=> Syntax OK for " << COLOR_GREEN << what << COLOR_RESET << endl; }
+    virtual inline void reset_lines() { total_lines += lines; lines = 0; }
+    virtual inline void inc_lines(const unsigned count) { lines += count; }
+
+    virtual void make_things_happen(FinallyAction::Action, ostream&);
+};
+
+}
+
+#endif

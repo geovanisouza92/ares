@@ -1,0 +1,70 @@
+module XNA do
+
+   class Entidade do
+    attr X: Float get set;
+    attr Y: Float get set;
+  end
+
+   class Nave > Entidade do
+    attr Estado: EstadoNave get set ;
+    attr Velocidade: Float get set;
+    attr Direcao: DirecaoNave get set;
+  end
+  
+  class Escudo > Entidade do
+    attr X: Float get set;
+    attr Y: Float get set;
+  end
+  
+  class JogoInvasores do
+    attr Estado: EstadoJogo get set;
+  end
+  
+  class CelulaEscudo do
+    attr Energia: Integer get set ;
+    attr Tipo: TipoDeCelula get set;
+  end
+  
+  class Tiro do
+    attr X: Float get set;
+    attr Y: Float get set;
+    attr Velocidade: Float get set;
+  end
+  
+  class NaveInvasor > Nave do
+  
+  end
+  
+  class NaveBonus > Nave do
+    attr Contador: Integer get set;
+  end
+  
+  class NaveJogador > Nave do
+    attr Vidas: Integer get set;
+    attr Pontos: Integer get set;
+    attr PodeAtirar?: Boolean get set;
+  end
+  
+  class ControladorDeNaves do
+    attr InverterDirecao?: Boolean get set;
+    attr QuantidadeDeNaves: Integer get set;
+    attr TempoParaAtirar: Float get set;
+  end
+  
+  # enum EstadoNave
+  #   # Estados da nave
+  # end
+  
+  # enum DirecaoNave
+  #   # Direções da nave
+  # end
+  
+  # enum EstadoJogo
+  #   # Estados do jogo
+  # end
+  
+  # enum TipoDeCelula
+  #   # Tipos de células
+  # end
+  
+end

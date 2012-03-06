@@ -1,0 +1,317 @@
+module Classes do
+
+   class Persistente do
+    # Atributos
+    attr ObjectId: Integer get GetObjectId;
+    attr Iter: RandomAccessFile get set;
+
+    # Métodos abstratos
+     def AtualizarDados;
+     def Gravar;
+     def Ler;
+    
+    # Métodos
+    def Persistente
+    do
+      # Constructor
+    end
+    
+    def GetObjectId: Integer
+    do
+      # Do get;
+    end
+    
+    def GetObject: Object
+    do
+      # Do something
+    end
+    
+    def Armazenar
+    do
+      # Salvar em disco
+    end
+    
+    def Apagar
+    do
+      # Apagar do disco
+    end
+    
+    def StartObjectId: Integer after Persistente
+    do
+      # Inicializa a propriedade "ObjectId"
+    end
+  end
+  
+  class Agencia > Persistente do
+    # Atributos
+    attr CodAgencia: String get set;
+    attr NomeAgencia: String get set;
+    
+    # Métodos
+    def Agencia
+    do
+      # .ctor
+    end
+    
+    def AtualiarDados
+    do
+      # Implementação
+    end
+    
+    def Gravar
+    do
+      # Implementação
+    end
+    
+    def Ler
+    do
+      # Implementação
+    end
+  end
+  
+  class ContaCorrente > Persistente do
+    attr Cod: String;
+    attr Saldo: Integer;
+    attr AplicPrefix: Array(ObjectId);
+    attr Historico: Array(ObjectId);
+    attr Agencia: ObjectId;
+    
+    def Depositar(Quantia: Float)
+    do
+      
+    end
+    
+    def Debitar(Quantia: Float)
+    do
+    
+    end
+    
+    def Transferir(Quantia: Float, ParaConta: ContaCorrente)
+    do
+    
+    end
+    
+    def ObterSaldo: Float
+    do
+    
+    end
+    
+    def AplicarPrefix
+    do
+    
+    end
+    
+    def ContaCorrente
+    do
+    
+    end
+    
+    def TirarExtrato: Strings # = Array<String>
+    do
+    
+    end
+    
+    def RetirarAplicPrefix
+    do
+    
+    end
+    
+    def Localizar
+    do
+    
+    end
+    
+    def Gravar
+    do
+    
+    end
+    
+    def Ler
+    do
+    
+    end
+  end
+
+  class Historico > Persistente do
+    attr Date: Date;
+    attr Operacao: Array(ObjectId);
+    attr Valor: Float;
+    
+    def Criar
+    do
+    
+    end
+    
+    def Destruir
+    do
+    
+    end
+  end
+  
+  class Operacao > Persistente do
+    attr CodOperacao: String;
+    attr DescricaoOperacao: String;
+    
+    def Operacao
+    do
+    
+    end
+    
+    def AtualizarDados
+    do
+    
+    end
+    
+    def Gravar
+    do
+    
+    end
+    
+    def Ler
+    do
+    
+    end
+  end
+  
+  class Dependente > Persistente do
+    attr Nome: String; # invariants not nil
+    attr CPF: String;
+    attr Parentesco: String;
+    attr Poupancas: Array(ObjectId);
+    
+    def Dependente
+    do
+    
+    end
+    
+    def Localizar
+    do
+    
+    end
+    
+    def AbrirPoupanca
+    do
+    
+    end
+    
+    def FecharPoupanca
+    do
+    
+    end
+    
+    def AtualizarDados
+    do
+    
+    end
+    
+    def Gravar
+    do
+    
+    end
+    
+    def Ler
+    do
+    
+    end
+  end
+  
+  class Poupanca > ContaCorrente do
+    attr DataVencimento: Date;
+    
+    def Poupanca
+    do
+    
+    end
+  end
+  
+  class AplicacaoPreFixada > Persistente do
+    attr Valor: Float;
+    attr DataVencimento: Date;
+    attr Taxa: Float;
+    
+    def AplicacaoPreFixada
+    do
+    
+    end
+    
+    def Gravar
+    do
+    
+    end
+    
+    def Ler
+    do
+    
+    end
+  end
+  
+  class Cliente > Persistente do
+    attr Nome: String; # invariants not nil
+    attr CPF: String;
+    attr Rua: String;
+    attr Fone: String;
+    attr Bairro: String;
+    attr Cidade: String;
+    attr CEP: String;
+    attr Estado: String;
+    attr Dependentes: Array(ObjectId);
+    attr ContasCorrente: Array(ObjectId);
+    attr Poupancas: Array(ObjectId);
+    
+    def Cliente
+    do
+    
+    end
+    
+    def Gravar
+    do
+    
+    end
+    
+    def Ler
+    do
+    
+    end
+    
+    def Localizar
+    do
+    
+    end
+    
+    def AbrirContaCorrente
+    do
+    
+    end
+    
+    def RemoverContaCorrente
+    do
+    
+    end
+    
+    def AdicDependente
+    do
+    
+    end
+    
+    def ExcluirDependente
+    do
+    
+    end
+    
+    def AbrirPoupanca
+    do
+    
+    end
+    
+    def FecharPoupanca
+    do
+    
+    end
+    
+    def AtualizarDados
+    do
+    
+    end
+  end
+  
+end

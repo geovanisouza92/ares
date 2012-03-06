@@ -1,0 +1,10 @@
+arc
+__*
+*.o
+*.hh
+*.out*
+*.diff
+*.results
+parser.h
+parser.cpp
+scanner.cpp

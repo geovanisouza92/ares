@@ -1,0 +1,48 @@
+module Banco do
+
+  class Cliente do
+  private
+    def SetCliente(Value: String)
+    do
+      if Value.Pattern(/[0-9]{3}\.{0-9]{3}\.[0-9]{3}\-[0-9]{2}/).Match? then
+        FCPF = Value;
+      else
+        raise "CPF Inválido!";
+      end
+    end
+  public
+    attr CPF: String get set ;
+    attr Nome: String get set; # invariants not nil
+    attr Telefone: String get set;
+    def MostrarCPF: Integer
+    do
+      # Código
+    end
+    def VerSaldo(Conta: Integer)
+    do
+      # Código
+    end
+  end
+  
+   class Conta do
+    attr Agencia: Integer get set;
+    attr NumeroConta: String get set;
+    def Depositar(Valor: Float)
+    do
+      # Código
+    end
+    def Saldo(Conta: Integer): Float
+    do
+      # Código
+    end
+  end
+  
+  class ContaPoupanca > Conta do
+    attr DiaDeposito: Integer get set;
+    def VerLucro: Float
+    do
+      # Código
+    end
+  end
+  
+end

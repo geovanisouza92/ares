@@ -1,0 +1,107 @@
+module Sistema do
+
+  class Endereco do
+    attr Tipo: Integer;
+    attr Endereco: String;
+    attr Bairro: String;
+    attr Cep: String;
+    attr Cidade: String;
+    attr Estado: String;
+    
+    def Endereco do
+      # .ctor
+    end
+  end
+
+  class Telefone do
+    attr Tipo: Integer;
+    attr CodigoDaCidade: Integer;
+    attr Numero: String; # Adicionar pattern
+    
+    def Telefone do
+      # .ctor
+    end
+  end
+
+  class Email do
+    attr Tipo: Integer;
+    attr Email: String; # Adicionar pattern
+    
+    def Email do
+      # .ctor
+    end
+  end
+
+   class Pessoa do
+    attr Nome: String; # invariants not nil
+    
+    def Pessoa do
+      # .ctor
+    end  
+  end
+
+  class PessoaFisica > Pessoa do
+    attr Sexo: Integer;
+    attr DataNascimento: Date;
+    attr CPF: String; # Adicionar pattern
+    
+    def PessoaFisica do
+      # .ctor
+    end
+  end
+
+  class PessoaJuridica > Pessoa do
+    attr CNPJ: String; # Adicionar pattern
+    attr NomeFantasia: String;
+    
+    def PessoaJuridica do
+      # .ctor
+    end
+  end
+
+  class Funcionario > PessoaFisica do
+    attr Matricula: Integer;
+    attr Cargo: String;
+    attr DataAdmissao: Date;
+    
+    def Funcionario do
+      # .ctor
+    end
+  end
+
+  class Cliente > PessoaFisica do
+    attr Tipo: Integer;
+    
+    def Cliente do
+      # .ctor
+    end
+  end
+
+  class Prato do
+    attr Nome: String;
+    attr Descricao: String;
+    attr Preco: Float;
+    
+    def Prato do
+      # .ctor
+    end
+  end
+
+  class ItemDoPedido do
+    attr Quantidade: Float;
+    
+    def ItemDoPedido do
+      # .ctor
+    end
+  end
+
+  class Pedido do
+    attr DataHora: DateTime;
+    attr FormaDePagamento: Integer;
+    
+    def Pedido do
+      # .ctor
+    end
+  end
+
+end

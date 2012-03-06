@@ -1,0 +1,113 @@
+module Garage do
+
+import System.IO;
+
+  class Base do
+    def Base # Construtor
+    do
+      # Gerar código automático
+    end
+    attr ID: Integer get; # invariants not nil and > 0
+  end
+
+  class RentalAgency > Base do
+    attr Address: String get set;
+    attr PhoneNo: String get set;
+    attr Manager: Pessoa get set;
+  end
+  
+  class Person > Base do
+    attr Name: String get set; # invariants not nil
+    attr Address: String get set;
+  end
+  
+  class CustomerRecord do
+    attr CustomerID: Integer get set;
+    attr RentalHistory: Strings get;
+  private
+    def Initialize after CustomerRecord
+    do
+      # Inicializa Histórico
+    end
+  end
+  
+  class Customer > Base, Person do
+    def Reserve
+    do
+    
+    end
+    
+    def PicksUp
+    do
+    
+    end
+    
+    def Pays!
+    do
+    
+    end
+    
+    def Returns
+    do
+    
+    end
+
+    attr Phone: String get set;
+    attr BirthDate: Date get set;
+    attr LicenseNo: String get set; # like \[0-9]+\ # Validado com regex
+  end
+  
+  class Car > Base do
+    attr FleetNo: Integer get set;
+    attr Model: String get set;
+    attr RegNo: String get set;
+    attr Condition: String get set;
+    attr Status: String get set;
+    
+    def Reserved?: Boolean
+    do
+    
+    end
+    
+    def InService?: Boolean
+    do
+    
+    end
+  end
+  
+  class Employee > Person do
+    attr PhoneNo: String get set;
+    attr DateHired: Date get set;
+  end
+  
+  class RentalAgent > Employee do
+    attr CommissionRate: Float get set;
+    attr Target: String get set;
+    
+    def Calculate
+    do
+    
+    end
+  end
+  
+  class Mechanic > Employee do
+    attr Skills: Strings get;
+    attr Qualifications: String get;
+  private
+    def Initialize after Mechanic
+    do
+      # Initialize Skills & Qualifications
+    end
+  end
+  
+  class ServiceLog > Base do
+    attr ServiceHistory: String get set;
+    attr ProgressHistory: Strings get;
+  private
+    def Initialize after ServiceLog
+    do
+      # Initialize ProgressHistory
+    end
+  end
+  
+end

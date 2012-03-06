@@ -1,0 +1,37 @@
+inline doc "Esta é a descrição ou texto de ajuda para este objeto. Todos os objetos
+podem ter este informativo embutido";
+module Clientes do
+
+  class Base do
+    attr _id: Integer get set;
+  end
+
+  # interface IPessoa
+  #   def TemBoaReputacao? : Boolean;
+  # end
+
+  class Pessoa > Base, IPessoa do
+    def TemBoaReputacao? : Boolean do
+        # Retorna verdadeiro somente se a pessoa for de boa fé...
+        Result = not Nome.IsEmpty?;
+    end
+    attr Nome: String get set;
+  end
+
+  class PessoaFisica > Pessoa do
+    attr CPF: String get set; # invariants not nil;
+  end
+
+  class PessoaJuridica
+      > Pessoa do
+    attr CNPJ: String get set; # invariants not nil;
+  end
+
+inline doc "Lista todos os clientes ativos no sistema";
+  def ListarTodosOsClientes: Array(Pessoa)
+  do
+    Result = (from Cliente in DBO.Clientes
+               where Cliente.TemBoaReputacao?);
+  end
+
+end
