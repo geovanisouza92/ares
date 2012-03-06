@@ -1,0 +1,11 @@
+
+Ares Programming Language
+
+Dependencies:
+
+      + Flex >= 2.5
+      + Bison++ >= 2.3
+      + LLVM-Clang >= 3.0 or GCC >= 4.6.1
+      + LLVM >= 3.0
+      + GDB Debugger
+      + GIT >= 1.7.5.4
