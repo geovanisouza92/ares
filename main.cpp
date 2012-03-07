@@ -157,16 +157,16 @@ int main(int argc, char** argv) {
     } else if (mode == InteractionMode::None) mode = InteractionMode::Shell;
 
     if (mode == InteractionMode::Shell) {
-        string guide("(" LANG_SHELL_NAME ") ");
+        string guide(">>> ");
         int blanks = 0; cout << endl;
-        while (cout << COLOR_BGREEN << guide << COLOR_RESET && getline(cin, line))
+        while (cout << COLOR_BGREEN << LANG_SHELL_NAME << COLOR_RESET << guide && getline(cin, line))
             if (!line.empty()) {
                 TRAIT_END
                 bool parse_ok = driver.parse_string(line, LANG_SHELL_NAME);
                 if (parse_ok)
                     if (driver.total_errors > max_errors) return 1;
                     driver.make_things_happen((check_only ? FinallyAction::None : FinallyAction::PrintResults), cout);
-                blanks = 0; line.clear(); guide = "(" LANG_SHELL_NAME ") ";
+                blanks = 0; line.clear(); guide = ">>> ";
             } else if (++blanks && blanks >= 3) return 0;
     }
 

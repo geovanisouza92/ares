@@ -46,6 +46,7 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*['?''!']?
 "asc"           return token::kASC;
 "async"         return token::kASYNC;
 "as"            return token::kAS;
+"begin"         return token::kBEGIN;
 "between"       return token::kBETWEEN;
 "break"         return token::kBREAK;
 "by"            return token::kBY;

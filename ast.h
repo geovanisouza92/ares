@@ -8,6 +8,7 @@
 #include <ostream>
 
 #include "version.h"
+#include "console.h"
 
 using namespace std;
 
@@ -127,33 +128,54 @@ namespace AST {
         virtual void print_using(ostream&, unsigned);
     };
 
-    namespace Operation {
-        enum Operator {
-            None = -1,
-            UnaryNot, // not ..
-            UnaryAdd, // + ..
-            UnarySub, // - ..
-            BinaryMul, // .. * ..
-            BinaryDiv, // .. / ..
-            BinaryMod, // .. mod ..
-            BinaryAdd, // .. + ..
-            BinarySub, // .. - ..
-            BinaryLet, // .. < ..
-            BinaryLee, // .. <= ..
-            BinaryGet, // .. > ..
-            BinaryGee, // .. >= ..
-            BinaryEql, // .. == ..
-            BinaryNeq, // .. != ..
-            BinaryMat, // .. =~ ..
-            BinaryNma, // .. !~ ..
-            BinaryAnd, // .. and ..
-            BinaryOr, // .. or ..
-            BinaryXor, // .. xor ..
-            BinaryImplies, // .. implies ..
-            TernaryBetween, // .. between .. and ..
-            TernaryIif // .. ? .. : ..
-        };
-    }
+DECLARE_ENUM_START(Operation,Operator)
+    DECLARE_ENUM_MEMBER(UnaryNot)
+    DECLARE_ENUM_MEMBER(UnaryAdd)
+    DECLARE_ENUM_MEMBER(UnarySub)
+    DECLARE_ENUM_MEMBER(BinaryMul)
+    DECLARE_ENUM_MEMBER(BinaryDiv)
+    DECLARE_ENUM_MEMBER(BinaryMod)
+    DECLARE_ENUM_MEMBER(BinaryAdd)
+    DECLARE_ENUM_MEMBER(BinarySub)
+    DECLARE_ENUM_MEMBER(BinaryLet)
+    DECLARE_ENUM_MEMBER(BinaryLee)
+    DECLARE_ENUM_MEMBER(BinaryGet)
+    DECLARE_ENUM_MEMBER(BinaryGee)
+    DECLARE_ENUM_MEMBER(BinaryEql)
+    DECLARE_ENUM_MEMBER(BinaryNeq)
+    DECLARE_ENUM_MEMBER(BinaryMat)
+    DECLARE_ENUM_MEMBER(BinaryNma)
+    DECLARE_ENUM_MEMBER(BinaryAnd)
+    DECLARE_ENUM_MEMBER(BinaryOr)
+    DECLARE_ENUM_MEMBER(BinaryXor)
+    DECLARE_ENUM_MEMBER(BinaryImplies)
+    DECLARE_ENUM_MEMBER(TernaryBetween)
+    DECLARE_ENUM_MEMBER(TernaryIif)
+DECLARE_ENUM_END
+DECLARE_ENUM_NAMES_START(Operation)
+    DECLARE_ENUM_MEMBER_NAME("UnaryNot")
+    DECLARE_ENUM_MEMBER_NAME("UnaryAdd")
+    DECLARE_ENUM_MEMBER_NAME("UnarySub")
+    DECLARE_ENUM_MEMBER_NAME("BinaryMul")
+    DECLARE_ENUM_MEMBER_NAME("BinaryDiv")
+    DECLARE_ENUM_MEMBER_NAME("BinaryMod")
+    DECLARE_ENUM_MEMBER_NAME("BinaryAdd")
+    DECLARE_ENUM_MEMBER_NAME("BinarySub")
+    DECLARE_ENUM_MEMBER_NAME("BinaryLet")
+    DECLARE_ENUM_MEMBER_NAME("BinaryLee")
+    DECLARE_ENUM_MEMBER_NAME("BinaryGet")
+    DECLARE_ENUM_MEMBER_NAME("BinaryGee")
+    DECLARE_ENUM_MEMBER_NAME("BinaryEql")
+    DECLARE_ENUM_MEMBER_NAME("BinaryNeq")
+    DECLARE_ENUM_MEMBER_NAME("BinaryMat")
+    DECLARE_ENUM_MEMBER_NAME("BinaryNma")
+    DECLARE_ENUM_MEMBER_NAME("BinaryAnd")
+    DECLARE_ENUM_MEMBER_NAME("BinaryOr")
+    DECLARE_ENUM_MEMBER_NAME("BinaryXor")
+    DECLARE_ENUM_MEMBER_NAME("BinaryImplies")
+    DECLARE_ENUM_MEMBER_NAME("TernaryBetween")
+    DECLARE_ENUM_MEMBER_NAME("TernaryIif")
+DECLARE_ENUM_NAMES_END(Operator)
 
     class UnaryExprNode : public SyntaxNode {
     protected:

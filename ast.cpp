@@ -47,7 +47,7 @@ void
 ArrayNode::print_using(ostream& out, unsigned tab) {
     out << indent(tab) << "Array => [";
     for (VectorNode::iterator item = value->begin(); item < value->end(); item++)
-        (*item)->print_using(out, tab);
+        (*item)->print_using(out, ++tab);
     out << endl << "]";
 }
 
@@ -55,44 +55,42 @@ void
 HashItemNode::print_using(ostream& out, unsigned tab) {
     out << indent(tab) << "HashPair => ";
     key->print_using(out, tab);
-    out << endl << " : ";
-    value->print_using(out, tab);
+    value->print_using(out, ++tab);
 }
 
 void
 HashNode::print_using(ostream& out, unsigned tab) {
     out << indent(tab) << "Hash => {";
     for (VectorNode::iterator item = value->begin(); item < value->end(); item++)
-        (*item)->print_using(out, tab);
+        (*item)->print_using(out, ++tab);
     out << endl << "}";
 }
 
 void
 FunctionCallNode::print_using(ostream& out, unsigned tab) {
     out << indent(tab) << "Function call => ";
-    name->print_using(out, tab);
+    name->print_using(out, ++tab);
 }
 
 void
 UnaryExprNode::print_using(ostream& out, unsigned tab) {
-    out << indent(tab) << "Unary expr. => " << operation;
-    expr->print_using(out, tab);
+    out << indent(tab) << "Unary expr. => " << Operation::get_enum_name(operation) << endl;
+    expr->print_using(out, tab + 1);
 }
 
 void
 BinaryExprNode::print_using(ostream& out, unsigned tab) {
-    out << indent(tab) << "Binary expr. => " << operation;
-    lhs->print_using(out, tab);
-    out << endl << " : ";
-    rhs->print_using(out, tab);
+    out << indent(tab) << "Binary expr. => " << Operation::get_enum_name(operation) << endl;
+    lhs->print_using(out, tab + 1);
+    rhs->print_using(out, tab + 1);
 }
 
 void
 TernaryExprNode::print_using(ostream& out, unsigned tab) {
-    out << indent(tab) << "Ternary expr. => " << operation;
-    alt1->print_using(out, tab);
-    alt2->print_using(out, tab);
-    alt3->print_using(out, tab);
+    out << indent(tab) << "Ternary expr. => " << Operation::get_enum_name(operation) << endl;
+    alt1->print_using(out, tab + 1);
+    alt2->print_using(out, tab + 1);
+    alt3->print_using(out, tab + 1);
 }
 
 SyntaxNode *

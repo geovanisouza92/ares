@@ -54,6 +54,7 @@ using namespace AST;
 %token  kASC        "asc"
 %token  kASYNC      "async"
 %token  kAS         "as"
+%token  kBEGIN      "begin"
 %token  kBETWEEN    "between"
 %token  kBREAK      "break"
 %token  kBY         "by"
@@ -616,10 +617,10 @@ expression
 //         ;
 
 /* Begin of statements */
-if_stmt : if_clause then_clause kEND
-        | if_clause then_clause else_clause kEND
-        | if_clause then_clause repeat_elif_clause kEND
-        | if_clause then_clause repeat_elif_clause else_clause kEND
+if_stmt : if_clause then_clause
+        | if_clause then_clause else_clause
+        | if_clause then_clause repeat_elif_clause
+        | if_clause then_clause repeat_elif_clause else_clause
         ;
 
 if_clause
@@ -629,7 +630,7 @@ if_clause
 
 then_clause
         : kTHEN 
-        | kTHEN statements
+        | kTHEN statement
         ;
 
 repeat_elif_clause
@@ -644,12 +645,12 @@ elif_clause
 
 else_clause
         : kELSE 
-        | kELSE statements
+        | kELSE statement
         ;
 
 unless_stmt
-        : unless_clause then_clause kEND
-        | unless_clause then_clause else_clause kEND
+        : unless_clause then_clause
+        | unless_clause then_clause else_clause
         ;
 
 unless_clause
@@ -672,23 +673,27 @@ repeat_option_item
         ;
 
 option_item
-        : kWHEN expression block_stmt
+        : kWHEN expression kDO
+        | kWHEN expression kDO statement
         ;
 
-for_stmt: for_expr kASC expression block_stmt
-        | for_expr kASC expression step_clause block_stmt
-        | for_expr kDESC expression block_stmt
-        | for_expr kDESC expression step_clause block_stmt
-        | for_expr kIN expression block_stmt
-        ;
-
-for_expr: kFOR expression
-        | kFOR var_stmt
+for_stmt: kFOR expression kASC expression kDO
+        | kFOR expression kASC expression kDO statement
+        | kFOR expression kASC expression step_clause kDO
+        | kFOR expression kASC expression step_clause kDO statement
+        | kFOR expression kDESC expression kDO
+        | kFOR expression kDESC expression kDO statement
+        | kFOR expression kDESC expression step_clause kDO
+        | kFOR expression kDESC expression step_clause kDO statement
+        | kFOR expression kIN expression kDO
+        | kFOR expression kIN expression kDO statement
         ;
 
 loop_stmt
-        : kWHILE expression block_stmt
-        | kUNTIL expression block_stmt
+        : kWHILE expression kDO kEND
+        | kWHILE expression kDO statement kEND
+        | kDO kWHILE expression kEND
+        | kDO statement kWHILE expression kEND
         ;
 
 async_stmt
@@ -713,22 +718,22 @@ control_stmt
         ;
 
 block_stmt
-        : kDO kEND
-        | kDO ensure_clause kEND
-        | kDO rescue_clause kEND
-        | kDO rescue_clause ensure_clause kEND
-        | kDO statements kEND
-        | kDO statements ensure_clause kEND
-        | kDO statements rescue_clause kEND
-        | kDO statements rescue_clause ensure_clause kEND
-        | kDO require_clause kEND
-        | kDO require_clause ensure_clause kEND
-        | kDO require_clause rescue_clause kEND
-        | kDO require_clause rescue_clause ensure_clause kEND
-        | kDO require_clause statements kEND
-        | kDO require_clause statements ensure_clause kEND
-        | kDO require_clause statements rescue_clause kEND
-        | kDO require_clause statements rescue_clause ensure_clause kEND
+        : kBEGIN kEND
+        | kBEGIN ensure_clause kEND
+        | kBEGIN rescue_clause kEND
+        | kBEGIN rescue_clause ensure_clause kEND
+        | kBEGIN statements kEND
+        | kBEGIN statements ensure_clause kEND
+        | kBEGIN statements rescue_clause kEND
+        | kBEGIN statements rescue_clause ensure_clause kEND
+        | kBEGIN require_clause kEND
+        | kBEGIN require_clause ensure_clause kEND
+        | kBEGIN require_clause rescue_clause kEND
+        | kBEGIN require_clause rescue_clause ensure_clause kEND
+        | kBEGIN require_clause statements kEND
+        | kBEGIN require_clause statements ensure_clause kEND
+        | kBEGIN require_clause statements rescue_clause kEND
+        | kBEGIN require_clause statements rescue_clause ensure_clause kEND
         ;
 
 require_clause
@@ -779,22 +784,14 @@ list_variable
         | list_variable ',' variable
         ;
 
-variable: t_id member_type
-        | t_id member_type invariants_clause
-        | t_id member_type initial_value
-        | t_id member_type initial_value invariants_clause
+variable: t_id kAS primitive
+        | t_id kAS primitive invariants_clause
+        | t_id kAS primitive '=' assign_value
+        | t_id kAS primitive '=' assign_value invariants_clause
         ;
 
 invariants_clause
         : kINVARIANTS logic_expr
-        ;
-
-member_type
-        : kAS primitive
-        ;
-
-initial_value
-        : '=' assign_value
         ;
 
 const_stmt
@@ -806,32 +803,32 @@ list_constant
         | list_constant ',' constant
         ;
 
-constant: t_id member_type initial_value
-        | t_id member_type initial_value invariants_clause
+constant: t_id kAS primitive '=' assign_value
+        | t_id kAS primitive '=' assign_value invariants_clause
         ;
 
 def_stmt: kDEF t_id
         | kDEF t_id raise_clause
-        | kDEF t_id member_type
-        | kDEF t_id member_type raise_clause
+        | kDEF t_id kAS primitive
+        | kDEF t_id kAS primitive raise_clause
         | kDEF t_id '(' list_variable ')'
         | kDEF t_id '(' list_variable ')' raise_clause
-        | kDEF t_id '(' list_variable ')' member_type
-        | kDEF t_id '(' list_variable ')' member_type raise_clause
+        | kDEF t_id '(' list_variable ')' kAS primitive
+        | kDEF t_id '(' list_variable ')' kAS primitive raise_clause
         ;
 
 class_stmt
         : kCLASS t_id
-        | kCLASS t_id heritance
+        | kCLASS t_id '>' list_id
         | kABSTRACT kCLASS t_id
-        | kABSTRACT kCLASS t_id heritance
+        | kABSTRACT kCLASS t_id '>' list_id
         | kSEALED kCLASS t_id
-        | kSEALED kCLASS t_id heritance
+        | kSEALED kCLASS t_id '>' list_id
         ;
 
-heritance
-        : '>' list_id
-        ;
+// heritance
+//         : '>' list_id
+//         ;
 
 module_stmt
         : kMODULE t_id block_stmt
