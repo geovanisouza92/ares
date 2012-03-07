@@ -21,7 +21,7 @@ BOOST_FS= \
 
 ifeq ($(USE_CLANG),1)
 CXX=clang
-CXXFLAGS=$(DEFAULT_CXXFLAGS) -xc++ -ferror-limit=2 -Wno-logical-op-parentheses
+CXXFLAGS=$(DEFAULT_CXXFLAGS) -xc++ -ferror-limit=2 -Wno-logical-op-parentheses -Wno-reorder
 LDFLAGS=-lstdc++ $(BOOST_PO) $(BOOST_FS)
 else
 CXX=g++
@@ -48,7 +48,7 @@ parser.cpp:
 	@ $(YACC) $(YFLAGS) -o $@ parser.yacc 2> $@.results
 
 scanner.cpp:
-	@ $(LEX) $(LFLAGS) -o$@ scanner.lex 2> $@.results
+	@ $(LEX) $(LFLAGS) -o$@ scanner.lex
 
 %.o: %.cpp
 	@ echo "Preparing dependency:" $@

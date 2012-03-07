@@ -53,6 +53,7 @@ using namespace AST;
 %token  kAND        "and"
 %token  kASC        "asc"
 %token  kASYNC      "async"
+%token  kAS         "as"
 %token  kBETWEEN    "between"
 %token  kBREAK      "break"
 %token  kBY         "by"
@@ -61,7 +62,6 @@ using namespace AST;
 %token  kCONST      "const"
 %token  kDEF        "def"
 %token  kDESC       "desc"
-%token  kDIV        "div"
 %token  kDO         "do"
 %token  kELIF       "elif"
 %token  kELSE       "else"
@@ -77,7 +77,6 @@ using namespace AST;
 %token  kIMPLIES    "implies"
 %token  kIMPORT     "import"
 %token  kINCLUDE    "include"
-%token  kINLINE     "inline"
 %token  kINVARIANTS "invariants"
 %token  kIN         "in"
 %token  kJOIN       "join"
@@ -85,7 +84,6 @@ using namespace AST;
 %token  kMODULE     "module"
 %token  kMOD        "mod"
 %token  kNEW        "new"
-%token  kNIL        "nil"
 %token  kNOT        "not"
 %token  kON         "on"
 %token  kORDER      "order"
@@ -119,7 +117,6 @@ using namespace AST;
 %token  sGEE        ">="
 %token  sEQL        "=="
 %token  sNEQ        "!="
-%token  sIDE        "==="
 %token  sMAT        "=~"
 %token  sNMA        "!~"
 %token  sADE        "+="
@@ -135,6 +132,7 @@ using namespace AST;
 %left '+' '-' '*' '/' '?' ':' '.' ','
 %right '=' sADE sSUE sMUE sDIE uADD uSUB
 
+
 %type   <v_node>    t_id
 %type   <v_node>    t_float
 %type   <v_node>    t_integer
@@ -146,10 +144,8 @@ using namespace AST;
 %type   <v_node>    hash_item
 %type   <v_node>    literal
 %type   <v_node>    primitive
-
-%type   <v_list>    list_array_item
-%type   <v_list>    list_hash_item
-
+%type   <v_node>    param_value
+%type   <v_node>    array_index
 %type   <v_node>    program
 %type   <v_node>    statement
 %type   <v_node>    signed_expr
@@ -159,7 +155,12 @@ using namespace AST;
 %type   <v_node>    logic_expr
 %type   <v_node>    ternary_expr
 %type   <v_node>    expression
+%type   <v_node>    function_call
+%type   <v_node>    assign_value
 
+%type   <v_list>    list_array_item
+%type   <v_list>    list_hash_item
+%type   <v_list>    list_param_value
 %type   <v_list>    statements
 
 %destructor { delete $$; } list_array_item
@@ -178,11 +179,9 @@ program : /* empty */
 t_id    : kSELF {
             $$ = new IdentifierNode("self");
         }
-        | kSELF '.' t_id
         | tID {
             $$ = new IdentifierNode(*$1);
         }
-        | tID '.' t_id
         ;
 
 t_float : tFLOAT {
@@ -257,10 +256,7 @@ hash_item
         }
         ;
 
-literal : kNIL {
-            $$ = new NilNode();
-        }
-        | t_id {
+literal : t_id {
             $$ = $1;
         }
         | t_float {
@@ -269,13 +265,13 @@ literal : kNIL {
         | t_integer {
             $$ = $1;
         }
+        | t_boolean {
+            $$ = $1;
+        }
         | t_string {
             $$ = $1;
         }
         | t_regex {
-            $$ = $1;
-        }
-        | t_boolean {
             $$ = $1;
         }
         | t_array {
@@ -290,31 +286,43 @@ primitive
         : literal {
             $$ = $1;
         }
-        | function_call
+        | function_call {
+            $$ = $1;
+        }
         | '(' expression ')' {
             $$ = $2;
         }
-        | '(' new_stmt ')'
         | primitive '.' t_id
         | primitive '.' function_call
         | primitive '[' array_info ']'
         ;
 
 function_call
-        : t_id '(' ')'
-        | t_id '(' list_param_value ')'
+        : t_id '(' ')' {
+            $$ = new FunctionCallNode((IdentifierNode *) $1);
+        }
+        | t_id '(' list_param_value ')' {
+            $$ = new FunctionCallNode((IdentifierNode *) $1);
+            ((FunctionCallNode *) $$)->add_args($3);
+        }
         ;
 
 list_param_value
-        : param_value
-        | list_param_value ',' param_value
+        : param_value {
+            $$ = new VectorNode();
+            $$->push_back($1);
+        }
+        | list_param_value ',' param_value {
+            $$->push_back($3);
+        }
         ;
 
 param_value
-        : expression
-        | new_stmt
-        | block_stmt
-        | def_stmt
+        : expression {
+            $$ = $1;
+        }
+        | new_stmt // TODO
+        | block_stmt // TODO
         ;
 
 array_info
@@ -325,10 +333,18 @@ array_info
         ;
 
 array_index
-        : t_id
-        | t_integer
-        | t_string
-        | function_call
+        : t_id {
+            $$ = $1;
+        }
+        | t_integer {
+            $$ = $1;
+        }
+        | t_string {
+            $$ = $1;
+        }
+        | function_call {
+            $$ = $1;
+        }
         ;
 /* End of literals */
 
@@ -337,59 +353,101 @@ signed_expr
         : primitive {
             $$ = $1;
         }
-        | kNOT primitive
-        | '+' primitive %prec uADD
-        | '-' primitive %prec uSUB
+        | kNOT primitive {
+            $$ = new UnaryExprNode(Operation::UnaryNot, $2);
+        }
+        | '+' primitive %prec uADD {
+            $$ = new UnaryExprNode(Operation::UnaryAdd, $2);
+        }
+        | '-' primitive %prec uSUB {
+            $$ = new UnaryExprNode(Operation::UnarySub, $2);
+        }
         ;
 
 mult_expr
         : signed_expr {
             $$ = $1;
         }
-        | mult_expr '*' signed_expr
-        | mult_expr '/' signed_expr
-        | mult_expr kDIV signed_expr
-        | mult_expr kMOD signed_expr
+        | mult_expr '*' signed_expr {
+            $$ = new BinaryExprNode(Operation::BinaryMul, $1, $3);
+        }
+        | mult_expr '/' signed_expr {
+            $$ = new BinaryExprNode(Operation::BinaryDiv, $1, $3);
+        }
+        | mult_expr kMOD signed_expr {
+            $$ = new BinaryExprNode(Operation::BinaryMod, $1, $3);
+        }
         ;
 
 add_expr: mult_expr {
             $$ = $1;
         }
-        | add_expr '+' mult_expr
-        | add_expr '-' mult_expr
+        | add_expr '+' mult_expr {
+            $$ = new BinaryExprNode(Operation::BinaryAdd, $1, $3);
+        }
+        | add_expr '-' mult_expr {
+            $$ = new BinaryExprNode(Operation::BinarySub, $1, $3);
+        }
         ;
 
 relat_expr
         : add_expr {
             $$ = $1;
         }
-        | relat_expr '<' add_expr
-        | relat_expr sLEE add_expr
-        | relat_expr '>' add_expr
-        | relat_expr sGEE add_expr
-        | relat_expr sEQL add_expr
-        | relat_expr sNEQ add_expr
-        | relat_expr sIDE add_expr
-        | relat_expr sMAT add_expr
-        | relat_expr sNMA add_expr
+        | relat_expr '<' add_expr {
+            $$ = new BinaryExprNode(Operation::BinaryLet, $1, $3);
+        }
+        | relat_expr sLEE add_expr {
+            $$ = new BinaryExprNode(Operation::BinaryLee, $1, $3);
+        }
+        | relat_expr '>' add_expr {
+            $$ = new BinaryExprNode(Operation::BinaryGet, $1, $3);
+        }
+        | relat_expr sGEE add_expr {
+            $$ = new BinaryExprNode(Operation::BinaryGee, $1, $3);
+        }
+        | relat_expr sEQL add_expr {
+            $$ = new BinaryExprNode(Operation::BinaryEql, $1, $3);
+        }
+        | relat_expr sNEQ add_expr {
+            $$ = new BinaryExprNode(Operation::BinaryNeq, $1, $3);
+        }
+        | relat_expr sMAT add_expr {
+            $$ = new BinaryExprNode(Operation::BinaryMat, $1, $3);
+        }
+        | relat_expr sNMA add_expr {
+            $$ = new BinaryExprNode(Operation::BinaryNma, $1, $3);
+        }
         ;
 
 logic_expr
         : relat_expr {
             $$ = $1;
         }
-        | logic_expr kAND relat_expr
-        | logic_expr kOR relat_expr
-        | logic_expr kXOR relat_expr
-        | logic_expr kIMPLIES relat_expr
+        | logic_expr kAND relat_expr {
+            $$ = new BinaryExprNode(Operation::BinaryAnd, $1, $3);
+        }
+        | logic_expr kOR relat_expr {
+            $$ = new BinaryExprNode(Operation::BinaryOr, $1, $3);
+        }
+        | logic_expr kXOR relat_expr {
+            $$ = new BinaryExprNode(Operation::BinaryXor, $1, $3);
+        }
+        | logic_expr kIMPLIES relat_expr {
+            $$ = new BinaryExprNode(Operation::BinaryImplies, $1, $3);
+        }
         ;
 
 ternary_expr
         : logic_expr {
             $$ = $1;
         }
-        | expression kBETWEEN relat_expr kAND relat_expr
-        | expression '?' assign_value ':' assign_value
+        | expression kBETWEEN relat_expr kAND relat_expr {
+            $$ = new TernaryExprNode(Operation::TernaryBetween, $1, $3, $5);
+        }
+        | expression '?' assign_value ':' assign_value {
+            $$ = new TernaryExprNode(Operation::TernaryIif, $1, $3, $5);
+        }
         ;
 /* End of common expressions */
 
@@ -513,11 +571,21 @@ take_clause
 
 /* Begin of special expressions */
 assign_expr
-        : t_id '=' assign_value
+        : list_id '=' list_assign_value
+            // Comparar quantidade de membros dos dois lados
         | t_id sADE assign_value
         | t_id sSUE assign_value
         | t_id sMUE assign_value
         | t_id sDIE assign_value
+        ;
+
+list_id : t_id
+        | list_id ',' t_id
+        ;
+
+list_assign_value
+        : assign_value
+        | list_assign_value ',' assign_value
         ;
 
 assign_value
@@ -711,11 +779,7 @@ list_variable
         | list_variable ',' variable
         ;
 
-variable: t_id
-        | t_id invariants_clause
-        | t_id initial_value
-        | t_id initial_value invariants_clause
-        | t_id member_type
+variable: t_id member_type
         | t_id member_type invariants_clause
         | t_id member_type initial_value
         | t_id member_type initial_value invariants_clause
@@ -726,7 +790,7 @@ invariants_clause
         ;
 
 member_type
-        : ':' primitive
+        : kAS primitive
         ;
 
 initial_value
@@ -742,9 +806,7 @@ list_constant
         | list_constant ',' constant
         ;
 
-constant: t_id initial_value
-        | t_id initial_value invariants_clause
-        | t_id member_type initial_value
+constant: t_id member_type initial_value
         | t_id member_type initial_value invariants_clause
         ;
 
@@ -790,7 +852,7 @@ type_decl_stmt
 /* End of type declaration */
 
 delegate_stmt
-        : kINLINE t_id t_string
+        : t_id t_string
         ;
 
 statement

@@ -27,12 +27,11 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*['?''!']?
 %%
 
 %{
-	yylloc->step();
+    yylloc->step();
 %}
 
 "<="            return token::sLEE;
 ">="            return token::sGEE;
-"==="           return token::sIDE;
 "=="            return token::sEQL;
 "!="            return token::sNEQ;
 "=~"            return token::sMAT;
@@ -46,6 +45,7 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*['?''!']?
 "and"           return token::kAND;
 "asc"           return token::kASC;
 "async"         return token::kASYNC;
+"as"            return token::kAS;
 "between"       return token::kBETWEEN;
 "break"         return token::kBREAK;
 "by"            return token::kBY;
@@ -55,7 +55,6 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*['?''!']?
 "def"           return token::kDEF;
 "desc"          return token::kDESC;
 "do"            return token::kDO;
-"div"           return token::kDIV;
 "elif"          return token::kELIF;
 "else"          return token::kELSE;
 "end"           return token::kEND;
@@ -70,7 +69,6 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*['?''!']?
 "implies"       return token::kIMPLIES;
 "import"        return token::kIMPORT;
 "include"       return token::kINCLUDE;
-"inline"        return token::kINLINE;
 "invariants"    return token::kINVARIANTS;
 "in"            return token::kIN;
 "join"          return token::kJOIN;
@@ -78,7 +76,6 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*['?''!']?
 "module"        return token::kMODULE;
 "mod"           return token::kMOD;
 "new"           return token::kNEW;
-"nil"           return token::kNIL;
 "not"           return token::kNOT;
 "on"            return token::kON;
 "order"         return token::kORDER;
@@ -181,7 +178,7 @@ int arcFlexLexer::yylex() {
 }
 
 int arcFlexLexer::yywrap() {
-	return 1;
+    return 1;
 }
 
 int yywrap() {

@@ -32,7 +32,7 @@ DECLARE_ENUM_END
 
 int main(int argc, char** argv) {
     
-    bool printed = false;
+    bool printed = false, check_only = false;
     int max_errors = 0;
     InteractionMode::Mode mode = InteractionMode::None;
     vector<string> files, messages;
@@ -71,7 +71,7 @@ int main(int argc, char** argv) {
     }
 
     if (options.count("check-only")) {
-        driver.check_only = true;
+        check_only = true;
     }
 
     if (options.count("eval")) {
@@ -86,7 +86,7 @@ int main(int argc, char** argv) {
             bool parse_result = driver.parse_string(line, "line eval");
             if (parse_result) {
                 if (driver.total_errors > max_errors) return 1;
-                driver.make_things_happen(FinallyAction::None, cout);
+                driver.make_things_happen((check_only ? FinallyAction::None : FinallyAction::PrintResults), cout);
             }
             if (driver.verbose_mode >= VerboseMode::ErrorsAndWarnings) {
                 string errors = driver.resume_messages();
@@ -143,7 +143,7 @@ int main(int argc, char** argv) {
             if (parse_ok) {
                 files_processed++;
                 if (driver.total_errors > max_errors) return 1;
-                driver.make_things_happen(FinallyAction::None, cout);
+                driver.make_things_happen((check_only ? FinallyAction::None : FinallyAction::PrintResults), cout);
             } else break;
         }
         if (driver.verbose_mode >= VerboseMode::ErrorsAndWarnings) {
@@ -157,16 +157,16 @@ int main(int argc, char** argv) {
     } else if (mode == InteractionMode::None) mode = InteractionMode::Shell;
 
     if (mode == InteractionMode::Shell) {
-        string guide(">>> ");
+        string guide("(" LANG_SHELL_NAME ") ");
         int blanks = 0; cout << endl;
-        while (cout << COLOR_BGREEN << LANG_SHELL_NAME << COLOR_RESET << guide && getline(cin, line))
+        while (cout << COLOR_BGREEN << guide << COLOR_RESET && getline(cin, line))
             if (!line.empty()) {
                 TRAIT_END
                 bool parse_ok = driver.parse_string(line, LANG_SHELL_NAME);
                 if (parse_ok)
                     if (driver.total_errors > max_errors) return 1;
-                    driver.make_things_happen(FinallyAction::None, cout);
-                blanks = 0; line.clear(); guide = ">>> ";
+                    driver.make_things_happen((check_only ? FinallyAction::None : FinallyAction::PrintResults), cout);
+                blanks = 0; line.clear(); guide = "(" LANG_SHELL_NAME ") ";
             } else if (++blanks && blanks >= 3) return 0;
     }
 

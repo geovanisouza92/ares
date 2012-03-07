@@ -36,9 +36,8 @@ namespace LANG_NAMESPACE {
 class Driver {
 public:
     string origin;
-    bool check_only;
-    class AST::Environment * Env;
     class Scanner * lexer;
+    class AST::Environment * Env;
     VerboseMode::Mode verbose_mode;
     unsigned lines, total_lines, total_errors, total_warnings, total_hints;
 public:

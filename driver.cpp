@@ -16,7 +16,6 @@ namespace LANG_NAMESPACE {
 
 Driver::Driver()
     : origin(LANG_SHELL_NAME),
-      check_only(false),
       verbose_mode(VerboseMode::ErrorsAndWarnings),
       lines(0),
       total_lines(0),
@@ -141,20 +140,19 @@ Driver::resume_messages() {
 
 void
 Driver::make_things_happen(FinallyAction::Action action, ostream& out) {
-    if (check_only)
+    switch(action) {
+    case FinallyAction::None:
+        break;
+    case FinallyAction::PrintResults:
         syntax_ok_for(origin);
-    else switch(action) {
-        case FinallyAction::None:
-            break;
-        case FinallyAction::PrintResults:
-            Env->print_tree_using(out);
-            break;    
-        case FinallyAction::GenerateBinaries:
-            // TODO Implementar geração de código
-            break;
-        default:
-            break;
-        }
+        Env->print_tree_using(out);
+        break;    
+    case FinallyAction::GenerateBinaries:
+        // TODO Implementar geração de código
+        break;
+    default:
+        break;
+    }
 }
 
 }
