@@ -98,7 +98,6 @@ namespace AST {
         SyntaxNode * key;
         SyntaxNode * value;
     public:
-        HashItemNode() { }
         HashItemNode(SyntaxNode * k, SyntaxNode * v) : key(k), value(v) { }
         virtual SyntaxNode * get_key() { return key; }
         virtual SyntaxNode * get_value() { return value; }
@@ -201,11 +200,11 @@ DECLARE_ENUM_NAMES_END(Operator)
     class TernaryExprNode : public SyntaxNode {
     protected:
         Operation::Operator operation;
-        SyntaxNode * alt1;
-        SyntaxNode * alt2;
-        SyntaxNode * alt3;
+        SyntaxNode * opt1;
+        SyntaxNode * opt2;
+        SyntaxNode * opt3;
     public:
-        TernaryExprNode(Operation::Operator op, SyntaxNode * a1, SyntaxNode * a2, SyntaxNode * a3) : operation(op), alt1(a1), alt2(a2), alt3(a3) { }
+        TernaryExprNode(Operation::Operator op, SyntaxNode * o1, SyntaxNode * o2, SyntaxNode * o3) : operation(op), opt1(o1), opt2(o2), opt3(o3) { }
     public:
         virtual void print_using(ostream&, unsigned);
     };

@@ -45,8 +45,6 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*['?''!']?
 "and"           return token::kAND;
 "asc"           return token::kASC;
 "async"         return token::kASYNC;
-"as"            return token::kAS;
-"begin"         return token::kBEGIN;
 "between"       return token::kBETWEEN;
 "break"         return token::kBREAK;
 "by"            return token::kBY;
@@ -59,7 +57,6 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*['?''!']?
 "elif"          return token::kELIF;
 "else"          return token::kELSE;
 "end"           return token::kEND;
-"ensure"        return token::kENSURE;
 "exit"          return token::kEXIT;
 "false"         return token::kFALSE;
 "for"           return token::kFOR;
@@ -70,7 +67,6 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*['?''!']?
 "implies"       return token::kIMPLIES;
 "import"        return token::kIMPORT;
 "include"       return token::kINCLUDE;
-"invariants"    return token::kINVARIANTS;
 "in"            return token::kIN;
 "join"          return token::kJOIN;
 "left"          return token::kLEFT;
@@ -85,16 +81,15 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*['?''!']?
 "protected"     return token::kPROTECTED;
 "public"        return token::kPUBLIC;
 "raise"         return token::kRAISE;
-"require"       return token::kREQUIRE;
 "rescue"        return token::kRESCUE;
 "right"         return token::kRIGHT;
 "sealed"        return token::kSEALED;
 "select"        return token::kSELECT;
-"self"          return token::kSELF;
 "skip"          return token::kSKIP;
 "step"          return token::kSTEP;
 "take"          return token::kTAKE;
 "then"          return token::kTHEN;
+"this"          return token::kTHIS;
 "true"          return token::kTRUE;
 "unless"        return token::kUNLESS;
 "until"         return token::kUNTIL;

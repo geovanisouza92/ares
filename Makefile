@@ -21,7 +21,7 @@ BOOST_FS= \
 
 ifeq ($(USE_CLANG),1)
 CXX=clang
-CXXFLAGS=$(DEFAULT_CXXFLAGS) -xc++ -ferror-limit=2 -Wno-logical-op-parentheses -Wno-reorder
+CXXFLAGS=$(DEFAULT_CXXFLAGS) -xc++ -ferror-limit=2 -Wno-logical-op-parentheses -Wno-reorder -Wno-unused-function
 LDFLAGS=-lstdc++ $(BOOST_PO) $(BOOST_FS)
 else
 CXX=g++

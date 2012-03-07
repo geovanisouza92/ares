@@ -53,8 +53,6 @@ using namespace AST;
 %token  kAND        "and"
 %token  kASC        "asc"
 %token  kASYNC      "async"
-%token  kAS         "as"
-%token  kBEGIN      "begin"
 %token  kBETWEEN    "between"
 %token  kBREAK      "break"
 %token  kBY         "by"
@@ -67,7 +65,6 @@ using namespace AST;
 %token  kELIF       "elif"
 %token  kELSE       "else"
 %token  kEND        "end"
-%token  kENSURE     "ensure"
 %token  kEXIT       "exit"
 %token  kFALSE      "false"
 %token  kFOR        "for"
@@ -78,7 +75,6 @@ using namespace AST;
 %token  kIMPLIES    "implies"
 %token  kIMPORT     "import"
 %token  kINCLUDE    "include"
-%token  kINVARIANTS "invariants"
 %token  kIN         "in"
 %token  kJOIN       "join"
 %token  kLEFT       "left"
@@ -93,16 +89,15 @@ using namespace AST;
 %token  kPROTECTED  "protected"
 %token  kPUBLIC     "public"
 %token  kRAISE      "raise"
-%token  kREQUIRE    "require"
 %token  kRESCUE     "rescue"
 %token  kRIGHT      "right"
 %token  kSEALED     "sealed"
 %token  kSELECT     "select"
-%token  kSELF       "self"
 %token  kSKIP       "skip"
 %token  kSTEP       "step"
 %token  kTAKE       "take"
 %token  kTHEN       "then"
+%token  kTHIS       "this"
 %token  kTRUE       "true"
 %token  kUNLESS     "unless"
 %token  kUNTIL      "until"
@@ -127,7 +122,7 @@ using namespace AST;
 
 %nonassoc tID tFLOAT tINTEGER tSTRING tREGEX
 
-%left kAND kOR kXOR kIMPLIES kBY kDIV kMOD kBETWEEN
+%left kAND kOR kXOR kIMPLIES kBY kMOD kBETWEEN
 %right kFULL kLEFT kRIGHT kNOT
 
 %left '+' '-' '*' '/' '?' ':' '.' ','
@@ -170,14 +165,16 @@ using namespace AST;
 
 %%
 
-program : /* empty */
+program : /* empty */ {
+            driver.warning("Nothing to do here.");
+        }
         | statements {
             driver.Env->add_stmts($1);
         }
         ;
 
 /* Begin of literals */
-t_id    : kSELF {
+t_id    : kTHIS {
             $$ = new IdentifierNode("self");
         }
         | tID {
@@ -499,11 +496,7 @@ list_from_item
 
 from_item
         : primitive
-        | primitive from_origin
-        ;
-
-from_origin
-        : kIN primitive
+        | primitive kIN primitive
         ;
 
 repeat_join_clause
@@ -673,27 +666,27 @@ repeat_option_item
         ;
 
 option_item
-        : kWHEN expression kDO
-        | kWHEN expression kDO statement
+        : kWHEN expression kDO statement
+        | kWHEN expression block_stmt
         ;
 
-for_stmt: kFOR expression kASC expression kDO
-        | kFOR expression kASC expression kDO statement
-        | kFOR expression kASC expression step_clause kDO
+for_stmt: kFOR expression kASC expression kDO statement
+        | kFOR expression kASC expression block_stmt
         | kFOR expression kASC expression step_clause kDO statement
-        | kFOR expression kDESC expression kDO
+        | kFOR expression kASC expression step_clause block_stmt
         | kFOR expression kDESC expression kDO statement
-        | kFOR expression kDESC expression step_clause kDO
+        | kFOR expression kDESC expression block_stmt
         | kFOR expression kDESC expression step_clause kDO statement
-        | kFOR expression kIN expression kDO
+        | kFOR expression kDESC expression step_clause block_stmt
         | kFOR expression kIN expression kDO statement
+        | kFOR expression kIN expression block_stmt
         ;
 
 loop_stmt
-        : kWHILE expression kDO kEND
-        | kWHILE expression kDO statement kEND
-        | kDO kWHILE expression kEND
-        | kDO statement kWHILE expression kEND
+        : kWHILE expression kDO statement
+        | kWHILE expression block_stmt
+        | kUNTIL expression kDO statement
+        | kUNTIL expression block_stmt
         ;
 
 async_stmt
@@ -702,7 +695,6 @@ async_stmt
         ;
 
 new_stmt: kNEW function_call
-        | kNEW kCLASS kFROM expression
         ;
 
 raise_clause
@@ -718,37 +710,15 @@ control_stmt
         ;
 
 block_stmt
-        : kBEGIN kEND
-        | kBEGIN ensure_clause kEND
-        | kBEGIN rescue_clause kEND
-        | kBEGIN rescue_clause ensure_clause kEND
-        | kBEGIN statements kEND
-        | kBEGIN statements ensure_clause kEND
-        | kBEGIN statements rescue_clause kEND
-        | kBEGIN statements rescue_clause ensure_clause kEND
-        | kBEGIN require_clause kEND
-        | kBEGIN require_clause ensure_clause kEND
-        | kBEGIN require_clause rescue_clause kEND
-        | kBEGIN require_clause rescue_clause ensure_clause kEND
-        | kBEGIN require_clause statements kEND
-        | kBEGIN require_clause statements ensure_clause kEND
-        | kBEGIN require_clause statements rescue_clause kEND
-        | kBEGIN require_clause statements rescue_clause ensure_clause kEND
-        ;
-
-require_clause
-        : kREQUIRE kEND
-        | kREQUIRE statements kEND
+        : kDO kEND
+        | kDO rescue_clause kEND
+        | kDO statements kEND
+        | kDO statements rescue_clause kEND
         ;
 
 rescue_clause
         : kRESCUE 
         | kRESCUE repeat_option_item
-        ;
-
-ensure_clause
-        : kENSURE kEND
-        | kENSURE statements kEND
         ;
 /* End of statements */
 
@@ -784,14 +754,8 @@ list_variable
         | list_variable ',' variable
         ;
 
-variable: t_id kAS primitive
-        | t_id kAS primitive invariants_clause
-        | t_id kAS primitive '=' assign_value
-        | t_id kAS primitive '=' assign_value invariants_clause
-        ;
-
-invariants_clause
-        : kINVARIANTS logic_expr
+variable: t_id ':' primitive
+        | t_id ':' primitive '=' assign_value
         ;
 
 const_stmt
@@ -803,18 +767,17 @@ list_constant
         | list_constant ',' constant
         ;
 
-constant: t_id kAS primitive '=' assign_value
-        | t_id kAS primitive '=' assign_value invariants_clause
+constant: t_id ':' primitive '=' assign_value
         ;
 
 def_stmt: kDEF t_id
         | kDEF t_id raise_clause
-        | kDEF t_id kAS primitive
-        | kDEF t_id kAS primitive raise_clause
+        | kDEF t_id ':' primitive
+        | kDEF t_id ':' primitive raise_clause
         | kDEF t_id '(' list_variable ')'
         | kDEF t_id '(' list_variable ')' raise_clause
-        | kDEF t_id '(' list_variable ')' kAS primitive
-        | kDEF t_id '(' list_variable ')' kAS primitive raise_clause
+        | kDEF t_id '(' list_variable ')' ':' primitive
+        | kDEF t_id '(' list_variable ')' ':' primitive raise_clause
         ;
 
 class_stmt

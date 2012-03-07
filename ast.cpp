@@ -88,9 +88,9 @@ BinaryExprNode::print_using(ostream& out, unsigned tab) {
 void
 TernaryExprNode::print_using(ostream& out, unsigned tab) {
     out << indent(tab) << "Ternary expr. => " << Operation::get_enum_name(operation) << endl;
-    alt1->print_using(out, tab + 1);
-    alt2->print_using(out, tab + 1);
-    alt3->print_using(out, tab + 1);
+    opt1->print_using(out, tab + 1);
+    opt2->print_using(out, tab + 1);
+    opt3->print_using(out, tab + 1);
 }
 
 SyntaxNode *
