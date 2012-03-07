@@ -1,6 +1,6 @@
 
-#ifndef ARC_CONSOLE_H
-#define ARC_CONSOLE_H
+#ifndef CLD_CONSOLE_H
+#define CLD_CONSOLE_H
 
 #include <string>
 #include <iostream>
@@ -15,12 +15,9 @@ using namespace std;
 // #define EXPERIMENTAL
 // #define GENERATE_LLVM
 
-// #define def_tail COLOR_RESET "=> "
 #define err_tail COLOR_BRED "error" COLOR_RESET ": "
 #define war_tail COLOR_BPURPLE "warning" COLOR_RESET ": "
 #define hin_tail COLOR_BBLUE "hint" COLOR_RESET ": "
-
-// #define uout cout << def_tail
 
 #ifdef DEBUG
 #define DEBUG_OUT(x) uout << x << endl;
@@ -33,8 +30,6 @@ using namespace std;
 #define DEBUG_WARNING(x)
 #define DEBUG_HINT(x)
 #endif
-
-// #define DEBUG_ORIGIN(x) cout << "In " << x << " ";
 
 #define DECLARE_ENUM_START(n,e) \
 namespace n { \

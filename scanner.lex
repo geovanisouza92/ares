@@ -1,5 +1,4 @@
 %{
-#include "ast.h"
 #include "scanner.h"
 #include "parser.h"
 #include "version.h"
@@ -22,7 +21,7 @@ typedef Parser::token_type token_type;
 #define YY_USER_ACTION yylloc->columns(yyleng);
 %}
 
-id  [a-zA-Z_][a-zA-Z_\-0-9]*['?''!']?
+id  [a-zA-Z_][a-zA-Z_\-0-9]*
 
 %%
 
@@ -30,98 +29,41 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*['?''!']?
     yylloc->step();
 %}
 
-"<="            return token::sLEE;
-">="            return token::sGEE;
-"=="            return token::sEQL;
-"!="            return token::sNEQ;
-"=~"            return token::sMAT;
-"!~"            return token::sNMA;
-"+="            return token::sADE;
-"-="            return token::sSUE;
-"*="            return token::sMUE;
-"/="            return token::sDIE;
+".."        return token::DOT2;
+"..."       return token::DOT3;
+"**"        return token::POW;
+"||"        return token::OR;
+"&&"        return token::AND;
+"=="        return token::EQL;
+"!="        return token::NEQ;
+"is"        return token::IS;
+"!is"       return token::NIS;
+"<="        return token::LEE;
+">="        return token::GEE;
+">>"        return token::SHL;
+"<<"        return token::SHR;
 
-"abstract"      return token::kABSTRACT;
-"and"           return token::kAND;
-"asc"           return token::kASC;
-"async"         return token::kASYNC;
-"between"       return token::kBETWEEN;
-"break"         return token::kBREAK;
-"by"            return token::kBY;
-"case"          return token::kCASE;
-"class"         return token::kCLASS;
-"const"         return token::kCONST;
-"def"           return token::kDEF;
-"desc"          return token::kDESC;
-"do"            return token::kDO;
-"elif"          return token::kELIF;
-"else"          return token::kELSE;
-"end"           return token::kEND;
-"exit"          return token::kEXIT;
-"false"         return token::kFALSE;
-"for"           return token::kFOR;
-"from"          return token::kFROM;
-"full"          return token::kFULL;
-"group"         return token::kGROUP;
-"if"            return token::kIF;
-"implies"       return token::kIMPLIES;
-"import"        return token::kIMPORT;
-"include"       return token::kINCLUDE;
-"in"            return token::kIN;
-"join"          return token::kJOIN;
-"left"          return token::kLEFT;
-"module"        return token::kMODULE;
-"mod"           return token::kMOD;
-"new"           return token::kNEW;
-"not"           return token::kNOT;
-"on"            return token::kON;
-"order"         return token::kORDER;
-"or"            return token::kOR;
-"private"       return token::kPRIVATE;
-"protected"     return token::kPROTECTED;
-"public"        return token::kPUBLIC;
-"raise"         return token::kRAISE;
-"rescue"        return token::kRESCUE;
-"right"         return token::kRIGHT;
-"sealed"        return token::kSEALED;
-"select"        return token::kSELECT;
-"skip"          return token::kSKIP;
-"step"          return token::kSTEP;
-"take"          return token::kTAKE;
-"then"          return token::kTHEN;
-"this"          return token::kTHIS;
-"true"          return token::kTRUE;
-"unless"        return token::kUNLESS;
-"until"         return token::kUNTIL;
-"var"           return token::kVAR;
-"when"          return token::kWHEN;
-"where"         return token::kWHERE;
-"while"         return token::kWHILE;
-"xor"           return token::kXOR;
+"false"     return token::FALSE;
+"true"      return token::TRUE;
 
 [0-9]*"."[0-9]+([Ee][\+\-]?[0-9]+)? {
     yylval->v_flt = atof(yytext);
-    return token::tFLOAT;
+    return token::FLOAT;
 }
 
 [0-9]+ {
     yylval->v_int = atoi(yytext);
-    return token::tINTEGER;
+    return token::INTEGER;
 }
 
 {id} {
     yylval->v_str = new std::string(yytext, yyleng);
-    return token::tID;
+    return token::ID;
 }
 
-\"(\\\"|[^\"]*)\" {
+\"[^\"]*\" {
     yylval->v_str = new std::string(yytext, yyleng);
-    return token::tSTRING;
-}
-
-"/"(\\\/|[^\/\n]*)"/" {
-    yylval->v_str = new std::string(yytext, yyleng);
-    return token::tREGEX;
+    return token::STRING;
 }
 
 [ \t\r]+ {

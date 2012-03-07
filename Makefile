@@ -39,7 +39,7 @@ BINARY=arc
 BINFLAGS=--verbose=2
 MODULES=ast.o parser.o scanner.o driver.o main.o
 CLEAN=parser.cpp parser.h scanner.cpp *.hh *.out* *.results *.diff
-TEST_MODULES=tests/*.ar
+TEST_MODULES=tests/*.$(BINARY)
 
 all: bin
 	@ echo "Compile done"

@@ -30,6 +30,7 @@ Driver::~Driver(){
 
 bool
 Driver::parse_stream(istream& in, const string& sname) {
+    Env->clear();
     origin = sname;
     total_errors = total_warnings = total_hints = 0;
     bool result = false;
@@ -145,8 +146,9 @@ Driver::make_things_happen(FinallyAction::Action action, ostream& out) {
         break;
     case FinallyAction::PrintResults:
         syntax_ok_for(origin);
-        Env->print_tree_using(out);
-        break;    
+        if (verbose_mode >= VerboseMode::ErrorsWarningsAndHints)
+            Env->print_tree_using(out);
+        break;
     case FinallyAction::GenerateBinaries:
         // TODO Implementar geração de código
         break;

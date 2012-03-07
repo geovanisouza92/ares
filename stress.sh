@@ -1,11 +1,11 @@
 #! /bin/sh
+EXT=cld
+
 cd tests
 echo "Removing provious temporary test files ..."
-for i in 0 1 2 3 4 5 6 7 8 9; do
-    rm [0-9]*.ar
-done
+rm [0-9]*.$EXT
 echo "Generating temporary test files ..."
-files=*.ar
+files=*.$EXT
 for file in $files; do
     for i1 in 0 1 2 3 4 5 6 7 8 9; do
         for i2 in 0 1 2 3 4 5 6 7 8 9; do
@@ -20,7 +20,5 @@ cd ..
 make test
 cd tests
 echo "Removing temporary test files ..."
-for i in 0 1 2 3 4 5 6 7 8 9; do
-    rm -rf $i*.ar
-done
+rm [0-9]*.$EXT
 cd ..

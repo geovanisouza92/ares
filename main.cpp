@@ -23,12 +23,7 @@ DECLARE_ENUM_START(InteractionMode,Mode)
     DECLARE_ENUM_MEMBER(FileParse)
 DECLARE_ENUM_END
 
-#define TRAIT_END \
-    if (line.length() > 3) { \
-        if (line.substr(line.length() - 3, 3) == "end") {\
-            \
-        } else if (line[line.length() - 1] != ';') line += ';'; \
-    } else if (line[line.length() - 1] != ';') line += ';';
+#define TRAIT_END
 
 int main(int argc, char** argv) {
     
@@ -106,11 +101,12 @@ int main(int argc, char** argv) {
 
     if (options.count("input-file")) {
         vector<string> input_files = options["input-file"].as< vector<string> >();
-        for (vector<string>::iterator file = input_files.begin(); file < input_files.end(); file++) {
-            if (fs::absolute(*file).extension() == string(".ar"))
-                files.push_back(fs::absolute(*file).string());
+        for (vector<string>::iterator f = input_files.begin(); f < input_files.end(); f++) {
+            fs::path file = fs::absolute(*f);
+            if (fs::exists(file) && file.extension() == string("." LANG_SHELL_NAME))
+                files.push_back(file.string());
             else
-                messages.push_back(war_tail "This isn't seems a valid " LANG_NAME " file: " + *file);
+                messages.push_back(war_tail "This isn't seems a valid " LANG_NAME " file: " + *f);
         }
     }
 
@@ -120,7 +116,8 @@ int main(int argc, char** argv) {
 
     if (options.count("version")) {
         cout << lang_version_info() << endl;
-        printed = true;
+        return 0;
+        // printed = true;
     }
 
     if (!printed) {
@@ -166,7 +163,7 @@ int main(int argc, char** argv) {
                 if (parse_ok)
                     if (driver.total_errors > max_errors) return 1;
                     driver.make_things_happen((check_only ? FinallyAction::None : FinallyAction::PrintResults), cout);
-                blanks = 0; line.clear(); guide = ">>> ";
+                blanks = 0; line.clear();
             } else if (++blanks && blanks >= 3) return 0;
     }
 

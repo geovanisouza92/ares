@@ -20,11 +20,6 @@ namespace LANG_NAMESPACE {
         DECLARE_ENUM_MEMBER(PrintResults)
         DECLARE_ENUM_MEMBER(GenerateBinaries)
     DECLARE_ENUM_END
-    // DECLARE_ENUM_NAMES_START(FinallyAction)
-    //     DECLARE_ENUM_MEMBER_NAME("None")
-    //     DECLARE_ENUM_MEMBER_NAME("Print results")
-    //     DECLARE_ENUM_MEMBER_NAME("Generate binaries")
-    // DECLARE_ENUM_NAMES_END(Action)
 
     DECLARE_ENUM_START(VerboseMode,Mode)
         DECLARE_ENUM_MEMBER(ErrorsOnly)
