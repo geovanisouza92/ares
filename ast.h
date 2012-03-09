@@ -18,7 +18,7 @@ namespace AST {
     class SyntaxNode {
     public:
         virtual ~SyntaxNode() { }
-        virtual void print_using(ostream&, unsigned) = 0;
+        virtual void print_using(ostream &, unsigned) = 0;
     };
 
     class VectorNode : public vector<SyntaxNode *> { };
@@ -32,7 +32,13 @@ namespace AST {
         virtual Environment * clear();
         virtual Environment * put_expr(SyntaxNode *);
         virtual Environment * put_exprs(VectorNode *);
-        virtual void print_tree_using(ostream&);
+        virtual void print_tree_using(ostream &);
+    };
+
+    class NilNode : public SyntaxNode {
+    public:
+        NilNode();
+        virtual void print_using(ostream &, unsigned);
     };
 
     class IdentifierNode : public SyntaxNode {
@@ -40,7 +46,7 @@ namespace AST {
         string value;
     public:
         IdentifierNode(string &);
-        virtual void print_using(ostream&, unsigned);
+        virtual void print_using(ostream &, unsigned);
     };
 
     class StringNode : public SyntaxNode {
@@ -49,7 +55,7 @@ namespace AST {
     public:
         StringNode(string &);
         virtual void append(string &);
-        virtual void print_using(ostream&, unsigned);
+        virtual void print_using(ostream &, unsigned);
     };
 
     class RegexNode : public SyntaxNode {
@@ -57,7 +63,7 @@ namespace AST {
         string value;
     public:
         RegexNode(string &);
-        virtual void print_using(ostream&, unsigned);
+        virtual void print_using(ostream &, unsigned);
     };
 
     class FloatNode : public SyntaxNode {
@@ -65,7 +71,7 @@ namespace AST {
         double value;
     public:
         FloatNode(double);
-        virtual void print_using(ostream&, unsigned);        
+        virtual void print_using(ostream &, unsigned);        
     };
 
     class IntegerNode : public SyntaxNode {
@@ -73,7 +79,7 @@ namespace AST {
         int value;
     public:
         IntegerNode(int);
-        virtual void print_using(ostream&, unsigned);
+        virtual void print_using(ostream &, unsigned);
     };
 
     class BooleanNode : public SyntaxNode {
@@ -81,7 +87,7 @@ namespace AST {
         bool value;
     public:
         BooleanNode(bool);
-        virtual void print_using(ostream&, unsigned);
+        virtual void print_using(ostream &, unsigned);
     };
 
     class ArrayNode : public SyntaxNode {
@@ -90,7 +96,7 @@ namespace AST {
     public:
         ArrayNode();
         ArrayNode(VectorNode *);
-        virtual void print_using(ostream&, unsigned);
+        virtual void print_using(ostream &, unsigned);
     };
 
     class HashItemNode : public SyntaxNode {
@@ -99,7 +105,7 @@ namespace AST {
         SyntaxNode * value;
     public:
         HashItemNode(SyntaxNode *, SyntaxNode *);
-        virtual void print_using(ostream&, unsigned);
+        virtual void print_using(ostream &, unsigned);
     };
 
     class HashNode : public SyntaxNode {
@@ -108,10 +114,11 @@ namespace AST {
     public:
         HashNode();
         HashNode(VectorNode *);
-        virtual void print_using(ostream&, unsigned);
+        virtual void print_using(ostream &, unsigned);
     };
 
 DECLARE_ENUM_START(Operation,Operator)
+    DECLARE_ENUM_MEMBER(UnaryNew)
     DECLARE_ENUM_MEMBER(UnaryNot)
     DECLARE_ENUM_MEMBER(UnaryAdd)
     DECLARE_ENUM_MEMBER(UnarySub)
@@ -140,9 +147,15 @@ DECLARE_ENUM_START(Operation,Operator)
     DECLARE_ENUM_MEMBER(BinaryDot2)
     DECLARE_ENUM_MEMBER(BinaryDot3)
     DECLARE_ENUM_MEMBER(BinaryAccess)
+    DECLARE_ENUM_MEMBER(BinaryAssign)
+    DECLARE_ENUM_MEMBER(BinaryAde)
+    DECLARE_ENUM_MEMBER(BinarySue)
+    DECLARE_ENUM_MEMBER(BinaryMue)
+    DECLARE_ENUM_MEMBER(BinaryDie)
     DECLARE_ENUM_MEMBER(TernaryIf)
 DECLARE_ENUM_END
 DECLARE_ENUM_NAMES_START(Operation)
+    DECLARE_ENUM_MEMBER_NAME("UnaryNew")
     DECLARE_ENUM_MEMBER_NAME("UnaryNot")
     DECLARE_ENUM_MEMBER_NAME("UnaryAdd")
     DECLARE_ENUM_MEMBER_NAME("UnarySub")
@@ -171,29 +184,43 @@ DECLARE_ENUM_NAMES_START(Operation)
     DECLARE_ENUM_MEMBER_NAME("BinaryDot2")
     DECLARE_ENUM_MEMBER_NAME("BinaryDot3")
     DECLARE_ENUM_MEMBER_NAME("BinaryAccess")
+    DECLARE_ENUM_MEMBER_NAME("BinaryAssign")
+    DECLARE_ENUM_MEMBER_NAME("BinaryAde")
+    DECLARE_ENUM_MEMBER_NAME("BinarySue")
+    DECLARE_ENUM_MEMBER_NAME("BinaryMue")
+    DECLARE_ENUM_MEMBER_NAME("BinaryDie")
     DECLARE_ENUM_MEMBER_NAME("TernaryIf")
 DECLARE_ENUM_NAMES_END(Operator)
 
-    class UnaryExprNode : public SyntaxNode {
+    class ExpressionNode : public SyntaxNode {
+    public:
+        // virtual ~ExpressionNode();
+        virtual void evaluate() = 0;
+        virtual void print_using(ostream &, unsigned) = 0;
+    };
+
+    class UnaryExprNode : public ExpressionNode {
     protected:
         Operation::Operator operation;
         SyntaxNode * member1;
     public:
         UnaryExprNode(Operation::Operator op, SyntaxNode * m1) : operation(op), member1(m1) { }
-        virtual void print_using(ostream&, unsigned);
+        virtual void evaluate();
+        virtual void print_using(ostream &, unsigned);
     };
 
-    class BinaryExprNode : public SyntaxNode {
+    class BinaryExprNode : public ExpressionNode {
     protected:
         Operation::Operator operation;
         SyntaxNode * member1;
         SyntaxNode * member2;
     public:
         BinaryExprNode(Operation::Operator op, SyntaxNode * m1, SyntaxNode * m2) : operation(op), member1(m1), member2(m2) {}
-        virtual void print_using(ostream&, unsigned);
+        virtual void evaluate();
+        virtual void print_using(ostream &, unsigned);
     };
 
-    class TernaryExprNode : public SyntaxNode {
+    class TernaryExprNode : public ExpressionNode {
     protected:
         Operation::Operator operation;
         SyntaxNode * member1;
@@ -201,7 +228,8 @@ DECLARE_ENUM_NAMES_END(Operator)
         SyntaxNode * member3;
     public:
         TernaryExprNode(Operation::Operator op, SyntaxNode * m1, SyntaxNode * m2, SyntaxNode * m3) : operation(op), member1(m1), member2(m2), member3(m3) { }
-        virtual void print_using(ostream&, unsigned);
+        virtual void evaluate();
+        virtual void print_using(ostream &, unsigned);
     };
 
     class FunctionCallNode : public SyntaxNode {
@@ -211,7 +239,7 @@ DECLARE_ENUM_NAMES_END(Operator)
     public:
         FunctionCallNode(SyntaxNode *);
         FunctionCallNode(SyntaxNode *, VectorNode *);
-        virtual void print_using(ostream&, unsigned);
+        virtual void print_using(ostream &, unsigned);
     };
 
 } // AST

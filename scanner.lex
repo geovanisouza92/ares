@@ -31,6 +31,10 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*
 
 ".."        return token::DOT2;
 "..."       return token::DOT3;
+"+="        return token::ADE;
+"-="        return token::SUE;
+"*="        return token::MUE;
+"/="        return token::DIE;
 "**"        return token::POW;
 "||"        return token::OR;
 "&&"        return token::AND;
@@ -43,8 +47,26 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*
 ">>"        return token::SHL;
 "<<"        return token::SHR;
 
-"false"     return token::FALSE;
-"true"      return token::TRUE;
+"asc"       return token::kASC;
+"by"        return token::kBY;
+"desc"      return token::kDESC;
+"false"     return token::kFALSE;
+"from"      return token::kFROM;
+"group"     return token::kGROUP;
+"in"        return token::kIN;
+"join"      return token::kJOIN;
+"left"      return token::kLEFT;
+"new"       return token::kNEW;
+"nil"       return token::kNIL;
+"on"        return token::kON;
+"order"     return token::kORDER;
+"right"     return token::kRIGHT;
+"select"    return token::kSELECT;
+"skip"      return token::kSKIP;
+"step"      return token::kSTEP;
+"take"      return token::kTAKE;
+"true"      return token::kTRUE;
+"where"     return token::kWHERE;
 
 [0-9]*"."[0-9]+([Ee][\+\-]?[0-9]+)? {
     yylval->v_flt = atof(yytext);

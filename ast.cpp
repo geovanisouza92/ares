@@ -29,15 +29,22 @@ Environment::put_exprs(VectorNode * v) {
 }
 
 void
-Environment::print_tree_using(ostream& out) {
+Environment::print_tree_using(ostream & out) {
     for (VectorNode::iterator expr = exprs->begin(); expr < exprs->end(); expr++)
         (*expr)->print_using(out, 0);
+}
+
+NilNode::NilNode() { }
+
+void
+NilNode::print_using(ostream & out, unsigned d) {
+    out << string(d * 2, ' ') << "Nil" << endl;
 }
 
 IdentifierNode::IdentifierNode(string & v) : value(v) { }
 
 void
-IdentifierNode::print_using(ostream& out, unsigned d) {
+IdentifierNode::print_using(ostream & out, unsigned d) {
     out << string(d * 2, ' ') << "Identifier => " << value << endl;
 }
 
@@ -49,35 +56,35 @@ StringNode::append(string & v) {
 }
 
 void
-StringNode::print_using(ostream& out, unsigned d) {
+StringNode::print_using(ostream & out, unsigned d) {
     out << string(d * 2, ' ') << "String => " << value << endl;
 }
 
 RegexNode::RegexNode(string & v) : value(v) { }
 
 void
-RegexNode::print_using(ostream& out, unsigned d) {
+RegexNode::print_using(ostream & out, unsigned d) {
     out << string(d * 2, ' ') << "Regex => " << value << endl;
 }
 
 FloatNode::FloatNode(double v) : value(v) { }
 
 void
-FloatNode::print_using(ostream& out, unsigned d) {
+FloatNode::print_using(ostream & out, unsigned d) {
     out << string(d * 2, ' ') << "Float => " << value << endl;
 }
 
 IntegerNode::IntegerNode(int v) : value(v) { }
 
 void
-IntegerNode::print_using(ostream& out, unsigned d) {
+IntegerNode::print_using(ostream & out, unsigned d) {
     out << string(d * 2, ' ') << "Integer => " << value << endl;
 }
 
 BooleanNode::BooleanNode(bool v) : value(v) { }
 
 void
-BooleanNode::print_using(ostream& out, unsigned d) {
+BooleanNode::print_using(ostream & out, unsigned d) {
     out << string(d * 2, ' ') << "Boolean => " << ( value ? "True" : "False" ) << endl;
 }
 
@@ -86,7 +93,7 @@ ArrayNode::ArrayNode() : value(new VectorNode()) { }
 ArrayNode::ArrayNode(VectorNode * v) : value(v) { }
 
 void
-ArrayNode::print_using(ostream& out, unsigned d) {
+ArrayNode::print_using(ostream & out, unsigned d) {
     out << string(d * 2, ' ') << "Array => [" << endl;
     for (VectorNode::iterator item = value->begin(); item < value->end(); item++) {
         (*item)->print_using(out, d + 1);
@@ -98,7 +105,7 @@ ArrayNode::print_using(ostream& out, unsigned d) {
 HashItemNode::HashItemNode(SyntaxNode * k, SyntaxNode * v) : key(k), value(v) { }
 
 void
-HashItemNode::print_using(ostream& out, unsigned d) {
+HashItemNode::print_using(ostream & out, unsigned d) {
     key->print_using(out, d + 1);
     value->print_using(out, d + 1);
 }
@@ -108,7 +115,7 @@ HashNode::HashNode() : value(new VectorNode()) { }
 HashNode::HashNode(VectorNode * v) : value(v) { }
 
 void
-HashNode::print_using(ostream& out, unsigned d) {
+HashNode::print_using(ostream & out, unsigned d) {
     out << string(d * 2, ' ') << "Hash => {" << endl;
     for (VectorNode::iterator item = value->begin(); item < value->end(); item++) {
         (*item)->print_using(out, d + 1);
@@ -118,20 +125,35 @@ HashNode::print_using(ostream& out, unsigned d) {
 }
 
 void
-UnaryExprNode::print_using(ostream& out, unsigned tab) {
+UnaryExprNode::evaluate() {
+    // TODO
+}
+
+void
+UnaryExprNode::print_using(ostream & out, unsigned tab) {
     out << string(tab * 2, ' ') << "Unary expr. => " << Operation::get_enum_name(operation) << endl;
     member1->print_using(out, tab + 1);
 }
 
 void
-BinaryExprNode::print_using(ostream& out, unsigned tab) {
+BinaryExprNode::evaluate() {
+    // TODO
+}
+
+void
+BinaryExprNode::print_using(ostream & out, unsigned tab) {
     out << string(tab * 2, ' ') << "Binary expr. => " << Operation::get_enum_name(operation) << endl;
     member1->print_using(out, tab + 1);
     member2->print_using(out, tab + 1);
 }
 
 void
-TernaryExprNode::print_using(ostream& out, unsigned tab) {
+TernaryExprNode::evaluate() {
+    // TODO
+}
+
+void
+TernaryExprNode::print_using(ostream & out, unsigned tab) {
     out << string(tab * 2, ' ') << "Ternary expr. => " << Operation::get_enum_name(operation) << endl;
     member1->print_using(out, tab + 1);
     member2->print_using(out, tab + 1);
@@ -143,7 +165,7 @@ FunctionCallNode::FunctionCallNode(SyntaxNode * n) : name(n), args(new VectorNod
 FunctionCallNode::FunctionCallNode(SyntaxNode * n, VectorNode * a) : name(n), args(a) { }
 
 void
-FunctionCallNode::print_using(ostream& out, unsigned d) {
+FunctionCallNode::print_using(ostream & out, unsigned d) {
     out << string(d * 2, ' ') << "Function call => ";
     name->print_using(out, 0);
     for (VectorNode::iterator arg = args->begin(); arg < args->end(); arg++)

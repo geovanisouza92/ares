@@ -5,6 +5,7 @@
 using namespace std;
 
 #include "ast.h"
+#include "astoql.h"
 #include "driver.h"
 
 using namespace AST;
@@ -49,13 +50,35 @@ using namespace AST;
 %token  <v_str> STRING     "string"
 %token  <v_str> REGEX      "regex"
 
-%token  FALSE   "false"
-%token  TRUE    "true"
+%token  kASC        "asc"
+%token  kBY         "by"
+%token  kDESC       "desc"
+%token  kFALSE      "false"
+%token  kFROM       "from"
+%token  kGROUP      "group"
+%token  kIN         "in"
+%token  kJOIN       "join"
+%token  kLEFT       "left"
+%token  kNEW        "new"
+%token  kNIL        "nil"
+%token  kON         "on"
+%token  kORDER      "order"
+%token  kRIGHT      "right"
+%token  kSELECT     "select"
+%token  kSKIP       "skip"
+%token  kSTEP       "step"
+%token  kTAKE       "take"
+%token  kTRUE       "true"
+%token  kWHERE      "where"
+
+%token  '='     "="
+%token  ADE     "+="
+%token  SUE     "-="
+%token  MUE     "*="
+%token  DIE     "/="
 
 %token  '?'     "?"
 %token  ':'     ":"
-%token  DOT2    ".."
-%token  DOT3    "..."
 %token  IMPLIES "=>"
 %token  OR      "||"
 %token  AND     "&&"
@@ -77,6 +100,8 @@ using namespace AST;
 %token  '*'     "*"
 %token  '/'     "/"
 %token  '%'     "%"
+%token  DOT2    ".."
+%token  DOT3    "..."
 %token  '!'     "!"
 %token  UNARY
 %token  POW     "**"
@@ -91,18 +116,14 @@ using namespace AST;
 %token  ';'     ";"
 %token  '.'     "."
 
-%left   '?' ':'
-%left   DOT2 DOT3
-%left   '^' OR AND IMPLIES
-%left   EQL NEQ MAT NMA IS NIS
-%left   '>' '<' LEE GEE
-%left   SHL SHR
-%left   '+' '-'
-%left   '*' '/' '%'
-%right  UNARY
-%left   POW
+%nonassoc ID FLOAT INTEGER STRING REGEX kTRUE kFALSE
+
+%left   '?' ':' '^' OR AND IMPLIES EQL NEQ MAT NMA IS NIS '>' '<' LEE GEE SHL 
+%left   SHR '+' '-' '*' '/' '%' POW
+%right  UNARY '=' ADE SUE MUE DIE ','
 
 %type   <v_node>    Identifier
+%type   <v_node>    QualifiedId
 %type   <v_node>    String
 %type   <v_node>    Literal
 %type   <v_node>    Array
@@ -110,22 +131,31 @@ using namespace AST;
 %type   <v_node>    Value
 %type   <v_node>    FunctionCall
 %type   <v_node>    NamedExpr
-%type   <v_node>    PowerExpr
 %type   <v_node>    SuffixExpr
 %type   <v_node>    PrefixExpr
+%type   <v_node>    RangeExpr
 %type   <v_node>    MultExpr
 %type   <v_node>    AddExpr
 %type   <v_node>    ShiftExpr
-%type   <v_node>    LowCompExpr
-%type   <v_node>    HighCompExpr
+%type   <v_node>    RelatExpr
 %type   <v_node>    LogicExpr
-%type   <v_node>    RangeExpr
 %type   <v_node>    TernaryExpr
-%type   <v_node>    Expression
+%type   <v_node>    AssignExpr
+%type   <v_node>    AssignValue
 
-%type   <v_list>    ExprList
+%type   <v_node>    QueryExpr
+%type   <v_node>    FromItem
+%type   <v_node>    JoinClause
+%type   <v_node>    SelectClause
+
+%type   <v_node>    Expression
 %type   <v_list>    NamedExprList
+%type   <v_list>    ExpressionList
 %type   <v_list>    Expressions
+%type   <v_list>    FromItemList
+%type   <v_list>    RepeatJoinClause
+%type   <v_list>    IdentifierList
+// %type   <v_list>    AssignValueList
 
 %%
 
@@ -140,6 +170,18 @@ Program : /* empty */ {
 Identifier
         : ID {
             $$ = new IdentifierNode(*$1);
+        }
+        ;
+
+QualifiedId
+        : Identifier {
+            $$ = $1;
+        }
+        | QualifiedId '.' Identifier {
+            $$ = new BinaryExprNode(Operation::BinaryAccess, $1, $3);
+        }
+        | QualifiedId '[' Expression ']' {
+            $$ = new BinaryExprNode(Operation::BinaryAccess, $1, $3);
         }
         ;
 
@@ -163,11 +205,11 @@ Literal : String {
         | INTEGER {
             $$ = new IntegerNode($1);
         }
-        | TRUE {
-            $$ = new BooleanNode(true);
-        }
-        | FALSE {
+        | kFALSE {
             $$ = new BooleanNode(false);
+        }
+        | kTRUE {
+            $$ = new BooleanNode(true);
         }
         | Array {
             $$ = $1;
@@ -177,22 +219,14 @@ Literal : String {
         }
         ;
 
-Array   : '[' ExprList ']' {
+Array   : '[' ExpressionList ']' {
             $$ = new ArrayNode($2);
         }
         | '[' ']' {
             $$ = new ArrayNode();
         }
-        ;
-
-ExprList
-        : Expression {
-            $$ = new VectorNode();
-            $$->push_back($1);
-        }
-        | ExprList ',' Expression {
-            $$->push_back($3);
-        }
+        // | QualifiedId '[' ExprList ']'
+        // | QualifiedId '[' ']'
         ;
 
 Hash    : '{' NamedExprList '}' {
@@ -214,7 +248,7 @@ NamedExprList
         ;
 
 NamedExpr
-        : Identifier ':' Expression {
+        : QualifiedId ':' Expression {
             $$ = new HashItemNode($1, $3);
         }
         | String ':' Expression {
@@ -223,15 +257,18 @@ NamedExpr
         ;
 
 FunctionCall
-        : Identifier '(' ExprList ')' {
+        : QualifiedId '(' ExpressionList ')' {
             $$ = new FunctionCallNode($1, $3);
         }
-        | Identifier '(' ')' {
+        | QualifiedId '(' ')' {
             $$ = new FunctionCallNode($1);
         }
         ;
 
-Value   : Identifier {
+Value   : kNIL {
+            $$ = new NilNode();
+        }
+        | QualifiedId {
             $$ = $1;
         }
         | Literal {
@@ -245,20 +282,11 @@ Value   : Identifier {
         }
         ;
 
-PowerExpr
+SuffixExpr
         : Value {
             $$ = $1;
         }
-        | PowerExpr POW Value {
-            $$ = new BinaryExprNode(Operation::BinaryPow, $1, $3);
-        }
-        ;
-
-SuffixExpr
-        : PowerExpr {
-            $$ = $1;
-        }
-        | SuffixExpr '.' Identifier {
+        | SuffixExpr '.' QualifiedId {
             $$ = new BinaryExprNode(Operation::BinaryAccess, $1, $3);
         }
         | SuffixExpr '.' FunctionCall {
@@ -282,18 +310,36 @@ PrefixExpr
         | '-' PrefixExpr %prec UNARY {
             $$ = new UnaryExprNode(Operation::UnarySub, $2);
         }
+        | kNEW PrefixExpr %prec UNARY {
+            $$ = new UnaryExprNode(Operation::UnaryNew, $2);
+        }
         ;
 
-MultExpr: PrefixExpr {
+RangeExpr
+        : PrefixExpr {
             $$ = $1;
         }
-        | MultExpr '*' PrefixExpr {
+        | RangeExpr DOT2 PrefixExpr {
+            $$ = new BinaryExprNode(Operation::BinaryDot2, $1, $3);
+        }
+        | RangeExpr DOT3 PrefixExpr {
+            $$ = new BinaryExprNode(Operation::BinaryDot2, $1, $3);
+        }
+        ;
+
+MultExpr: RangeExpr {
+            $$ = $1;
+        }
+        | MultExpr POW RangeExpr {
+            $$ = new BinaryExprNode(Operation::BinaryPow, $1, $3);
+        }
+        | MultExpr '*' RangeExpr {
             $$ = new BinaryExprNode(Operation::BinaryMul, $1, $3);
         }
-        | MultExpr '/' PrefixExpr {
+        | MultExpr '/' RangeExpr {
             $$ = new BinaryExprNode(Operation::BinaryDiv, $1, $3);
         }
-        | MultExpr '%' PrefixExpr {
+        | MultExpr '%' RangeExpr {
             $$ = new BinaryExprNode(Operation::BinaryMod, $1, $3);
         }
         ;
@@ -321,92 +367,215 @@ ShiftExpr
         }
         ;
 
-LowCompExpr
+RelatExpr
         : ShiftExpr {
             $$ = $1;
         }
-        | LowCompExpr '<' ShiftExpr {
+        | RelatExpr '<' ShiftExpr {
             $$ = new BinaryExprNode(Operation::BinaryLet, $1, $3);
         }
-        | LowCompExpr LEE ShiftExpr {
+        | RelatExpr LEE ShiftExpr {
             $$ = new BinaryExprNode(Operation::BinaryLee, $1, $3);
         }
-        | LowCompExpr '>' ShiftExpr {
+        | RelatExpr '>' ShiftExpr {
             $$ = new BinaryExprNode(Operation::BinaryGet, $1, $3);
         }
-        | LowCompExpr GEE ShiftExpr {
+        | RelatExpr GEE ShiftExpr {
             $$ = new BinaryExprNode(Operation::BinaryGee, $1, $3);
         }
-        ;
-
-HighCompExpr
-        : LowCompExpr {
-            $$ = $1;
-        }
-        | HighCompExpr EQL LowCompExpr {
+        | RelatExpr EQL RelatExpr {
             $$ = new BinaryExprNode(Operation::BinaryEql, $1, $3);
         }
-        | HighCompExpr NEQ LowCompExpr {
+        | RelatExpr NEQ RelatExpr {
             $$ = new BinaryExprNode(Operation::BinaryNeq, $1, $3);
         }
-        | HighCompExpr IS LowCompExpr {
+        | RelatExpr IS RelatExpr {
             $$ = new BinaryExprNode(Operation::BinaryIs, $1, $3);
         }
-        | HighCompExpr NIS LowCompExpr {
+        | RelatExpr NIS RelatExpr {
             $$ = new BinaryExprNode(Operation::BinaryNis, $1, $3);
         }
-        | HighCompExpr MAT LowCompExpr {
+        | RelatExpr MAT RelatExpr {
             $$ = new BinaryExprNode(Operation::BinaryMat, $1, $3);
         }
-        | HighCompExpr NMA LowCompExpr {
+        | RelatExpr NMA RelatExpr {
             $$ = new BinaryExprNode(Operation::BinaryNma, $1, $3);
         }
         ;
 
 LogicExpr
-        : HighCompExpr {
+        : RelatExpr {
             $$ = $1;
         }
-        | LogicExpr AND HighCompExpr {
+        | LogicExpr AND RelatExpr {
             $$ = new BinaryExprNode(Operation::BinaryAnd, $1, $3);
         }
-        | LogicExpr OR HighCompExpr {
+        | LogicExpr OR RelatExpr {
             $$ = new BinaryExprNode(Operation::BinaryOr, $1, $3);
         }
-        | LogicExpr '^' HighCompExpr {
+        | LogicExpr '^' RelatExpr {
             $$ = new BinaryExprNode(Operation::BinaryXor, $1, $3);
         }
-        | LogicExpr IMPLIES HighCompExpr {
+        | LogicExpr IMPLIES RelatExpr {
             $$ = new BinaryExprNode(Operation::BinaryImplies, $1, $3);
         }
         ;
 
-RangeExpr
+TernaryExpr
         : LogicExpr {
             $$ = $1;
         }
-        | RangeExpr DOT2 LogicExpr {
-            $$ = new BinaryExprNode(Operation::BinaryDot2, $1, $3);
-        }
-        | RangeExpr DOT3 LogicExpr {
-            $$ = new BinaryExprNode(Operation::BinaryDot3, $1, $3);
-        }
-        ;
-
-TernaryExpr
-        : RangeExpr {
-            $$ = $1;
-        }
-        | RangeExpr '?' Expression ':' Expression {
+        | LogicExpr '?' Expression ':' Expression {
             $$ = new TernaryExprNode(Operation::TernaryIf, $1, $3, $5);
         }
         ;
 
-// Assignment
+AssignExpr
+        : QualifiedId '=' AssignValue {
+            $$ = new BinaryExprNode(Operation::BinaryAssign, $1, $3);
+        }
+        | QualifiedId ADE AssignValue {
+            $$ = new BinaryExprNode(Operation::BinaryAde, $1, $3);
+        }
+        | QualifiedId SUE AssignValue {
+            $$ = new BinaryExprNode(Operation::BinarySue, $1, $3);
+        }
+        | QualifiedId MUE AssignValue {
+            $$ = new BinaryExprNode(Operation::BinaryMue, $1, $3);
+        }
+        | QualifiedId DIE AssignValue {
+            $$ = new BinaryExprNode(Operation::BinaryDie, $1, $3);
+        }
+        ;
+
+AssignValue
+        : Expression {
+            $$ = $1;
+        }
+        ;
+
+QueryExpr
+        : kFROM FromItemList {
+            if ($2->size() > 1)
+                driver.error(@2, "Use an where clause to merge origin list");
+        }
+        | kFROM FromItemList SelectClause
+        | kFROM FromItemList kORDER kBY IdentifierList
+        | kFROM FromItemList kORDER kBY IdentifierList SelectClause
+        | kFROM FromItemList kGROUP kBY IdentifierList
+        | kFROM FromItemList kGROUP kBY IdentifierList SelectClause
+        | kFROM FromItemList kGROUP kBY IdentifierList kORDER kBY IdentifierList
+        | kFROM FromItemList kGROUP kBY IdentifierList kORDER kBY IdentifierList SelectClause
+        | kFROM FromItemList kWHERE TernaryExpr
+        | kFROM FromItemList kWHERE TernaryExpr SelectClause
+        | kFROM FromItemList kWHERE TernaryExpr kORDER kBY IdentifierList
+        | kFROM FromItemList kWHERE TernaryExpr kORDER kBY IdentifierList SelectClause
+        | kFROM FromItemList kWHERE TernaryExpr kGROUP kBY IdentifierList
+        | kFROM FromItemList kWHERE TernaryExpr kGROUP kBY IdentifierList SelectClause
+        | kFROM FromItemList kWHERE TernaryExpr kGROUP kBY IdentifierList kORDER kBY IdentifierList
+        | kFROM FromItemList kWHERE TernaryExpr kGROUP kBY IdentifierList kORDER kBY IdentifierList SelectClause
+        | kFROM FromItemList RepeatJoinClause
+        | kFROM FromItemList RepeatJoinClause SelectClause
+        | kFROM FromItemList RepeatJoinClause kORDER kBY IdentifierList
+        | kFROM FromItemList RepeatJoinClause kORDER kBY IdentifierList SelectClause
+        | kFROM FromItemList RepeatJoinClause kGROUP kBY IdentifierList
+        | kFROM FromItemList RepeatJoinClause kGROUP kBY IdentifierList SelectClause
+        | kFROM FromItemList RepeatJoinClause kGROUP kBY IdentifierList kORDER kBY IdentifierList
+        | kFROM FromItemList RepeatJoinClause kGROUP kBY IdentifierList kORDER kBY IdentifierList SelectClause
+        | kFROM FromItemList RepeatJoinClause kWHERE TernaryExpr
+        | kFROM FromItemList RepeatJoinClause kWHERE TernaryExpr SelectClause
+        | kFROM FromItemList RepeatJoinClause kWHERE TernaryExpr kORDER kBY IdentifierList
+        | kFROM FromItemList RepeatJoinClause kWHERE TernaryExpr kORDER kBY IdentifierList SelectClause
+        | kFROM FromItemList RepeatJoinClause kWHERE TernaryExpr kGROUP kBY IdentifierList
+        | kFROM FromItemList RepeatJoinClause kWHERE TernaryExpr kGROUP kBY IdentifierList SelectClause
+        | kFROM FromItemList RepeatJoinClause kWHERE TernaryExpr kGROUP kBY IdentifierList kORDER kBY IdentifierList
+        | kFROM FromItemList RepeatJoinClause kWHERE TernaryExpr kGROUP kBY IdentifierList kORDER kBY IdentifierList SelectClause
+        ;
+
+FromItemList
+        : FromItem {
+            $$ = new VectorNode();
+            $$->push_back($1);
+        }
+        | FromItemList ',' FromItem {
+            $$->push_back($3);
+        }
+        ;
+
+FromItem: Value
+        | Value kIN Value
+        ;
+
+RepeatJoinClause
+        : JoinClause
+        | RepeatJoinClause JoinClause
+        ;
+
+JoinClause
+        : kJOIN FromItem kON LogicExpr
+        | kLEFT kJOIN FromItem kON LogicExpr
+        | kRIGHT kJOIN FromItem kON LogicExpr
+        ;
+
+SelectClause
+        : kSELECT '*'
+        | kSELECT IdentifierList
+        | kSELECT kTAKE Value IdentifierList
+        | kSELECT kSTEP Value IdentifierList
+        | kSELECT kSTEP Value kTAKE Value IdentifierList
+        | kSELECT kSKIP Value IdentifierList
+        | kSELECT kSKIP Value kTAKE Value IdentifierList
+        | kSELECT kSKIP Value kSTEP Value IdentifierList
+        | kSELECT kSKIP Value kSTEP Value kTAKE Value IdentifierList
+        | kSELECT kASC IdentifierList
+        | kSELECT kASC kTAKE Value IdentifierList
+        | kSELECT kASC kSTEP Value IdentifierList
+        | kSELECT kASC kSTEP Value kTAKE Value IdentifierList
+        | kSELECT kASC kSKIP Value IdentifierList
+        | kSELECT kASC kSKIP Value kTAKE Value IdentifierList
+        | kSELECT kASC kSKIP Value kSTEP Value IdentifierList
+        | kSELECT kASC kSKIP Value kSTEP Value kTAKE Value IdentifierList
+        | kSELECT kDESC IdentifierList
+        | kSELECT kDESC kTAKE Value IdentifierList
+        | kSELECT kDESC kSTEP Value IdentifierList
+        | kSELECT kDESC kSTEP Value kTAKE Value IdentifierList
+        | kSELECT kDESC kSKIP Value IdentifierList
+        | kSELECT kDESC kSKIP Value kTAKE Value IdentifierList
+        | kSELECT kDESC kSKIP Value kSTEP Value IdentifierList
+        | kSELECT kDESC kSKIP Value kSTEP Value kTAKE Value IdentifierList
+        ;
+
+IdentifierList
+        : QualifiedId {
+            $$ = new VectorNode();
+            $$->push_back($1);
+        }
+        | IdentifierList ',' QualifiedId {
+            $$->push_back($3);
+        }
+        ;
 
 Expression
-        : TernaryExpr {
+        : AssignExpr {
             $$ = $1;
+        }
+        | TernaryExpr {
+            $$ = $1;
+        }
+        | QueryExpr {
+            // $1->eval()
+            // Assign the result[]
+            $$ = $1;
+        }
+        ;
+
+ExpressionList
+        : Expression {
+            $$ = new VectorNode();
+            $$->push_back($1);
+        }
+        | ExpressionList ',' Expression {
+            $$->push_back($3);
         }
         ;
 

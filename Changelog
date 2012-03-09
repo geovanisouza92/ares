@@ -5,6 +5,8 @@ TODO
 	- Generate LLVM-IR
 	- Generate Standard Library
 	- Generate bundle's
+	- Enable parallel assignment's like "a, b = b, c"
+	- Create context messages for errors from input
 
 Changelog
 

@@ -28,7 +28,7 @@ DECLARE_ENUM_END
 int main(int argc, char** argv) {
     
     bool printed = false, check_only = false;
-    int max_errors = 0;
+    int max_errors = 3;
     InteractionMode::Mode mode = InteractionMode::None;
     vector<string> files, messages;
     string output_filename(LANG_SHELL_NAME ".out"), line;

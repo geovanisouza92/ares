@@ -145,9 +145,11 @@ Driver::make_things_happen(FinallyAction::Action action, ostream& out) {
     case FinallyAction::None:
         break;
     case FinallyAction::PrintResults:
-        syntax_ok_for(origin);
-        if (verbose_mode >= VerboseMode::ErrorsWarningsAndHints)
-            Env->print_tree_using(out);
+        if (total_errors == 0) {
+            syntax_ok_for(origin);
+            if (verbose_mode >= VerboseMode::ErrorsWarningsAndHints)
+                Env->print_tree_using(out);
+        }
         break;
     case FinallyAction::GenerateBinaries:
         // TODO Implementar geração de código
