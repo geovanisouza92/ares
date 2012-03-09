@@ -6,14 +6,13 @@
 #include <iostream>
 #include <sstream>
 #include <time.h>
-#include "colorcon.h"
-#include "version.h"
 
 using namespace std;
 
+#include "colorcon.h"
+#include "version.h"
+
 #define DEBUG
-// #define EXPERIMENTAL
-// #define GENERATE_LLVM
 
 #define err_tail COLOR_BRED "error" COLOR_RESET ": "
 #define war_tail COLOR_BPURPLE "warning" COLOR_RESET ": "
@@ -56,6 +55,7 @@ namespace n { \
 }
 
 namespace LANG_NAMESPACE {
+namespace Util {
 
 const clock_t start(clock());
 
@@ -105,6 +105,7 @@ resume_statistics(unsigned total_files, unsigned total_lines) {
     return s.str();
 }
 
+} // Util
 } // LANG_NAMESPACE
 
 #endif

@@ -1,9 +1,11 @@
 %{
+
+using namespace std;
+
 #include "scanner.h"
 #include "parser.h"
 #include "version.h"
 
-using namespace std;
 using namespace LANG_NAMESPACE;
 
 typedef Parser::token token;
@@ -21,7 +23,7 @@ typedef Parser::token_type token_type;
 #define YY_USER_ACTION yylloc->columns(yyleng);
 %}
 
-id  [a-zA-Z_][a-zA-Z_\-0-9]*
+id  [a-zA-Z_][a-zA-Z_0-9]*[?]?
 
 %%
 
@@ -40,20 +42,23 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*
 "&&"        return token::AND;
 "=="        return token::EQL;
 "!="        return token::NEQ;
-"is"        return token::IS;
-"!is"       return token::NIS;
 "<="        return token::LEE;
 ">="        return token::GEE;
 ">>"        return token::SHL;
 "<<"        return token::SHR;
+"=~"        return token::MAT;
+"!~"        return token::NMA;
 
 "asc"       return token::kASC;
 "by"        return token::kBY;
 "desc"      return token::kDESC;
+"distinct"  return token::kDISTINCT;
 "false"     return token::kFALSE;
 "from"      return token::kFROM;
 "group"     return token::kGROUP;
 "in"        return token::kIN;
+"is"        return token::kIS;
+"!is"       return token::kNIS;
 "join"      return token::kJOIN;
 "left"      return token::kLEFT;
 "new"       return token::kNEW;
@@ -86,6 +91,11 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*
 \"[^\"]*\" {
     yylval->v_str = new std::string(yytext, yyleng);
     return token::STRING;
+}
+
+\/[^\/]*\/ {
+    yylval->v_str = new std::string(yytext, yyleng);
+    return token::REGEX;
 }
 
 [ \t\r]+ {

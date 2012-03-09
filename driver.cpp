@@ -2,15 +2,15 @@
 #include <fstream>
 #include <sstream>
 
+using namespace std;
+
 #define BOOST_FILESYSTEM_VERSION 3
 #include "../boost_1_48_0/boost/filesystem.hpp"
 
+namespace fs = boost::filesystem3;
+
 #include "driver.h"
 #include "console.h"
-
-using namespace std;
-
-namespace fs = boost::filesystem3;
 
 namespace LANG_NAMESPACE {
 
@@ -22,7 +22,7 @@ Driver::Driver()
       total_errors(0),
       total_warnings(0),
       total_hints(0) {
-    Env = new AST::Environment(NULL);
+    Env = new SyntaxTree::Environment(NULL);
 }
 
 Driver::~Driver(){
@@ -62,12 +62,17 @@ Driver::parse_string(const string& input, const string& sname) {
 
 bool
 Driver::parse_file(const string& filename) {
-    ifstream in(filename.c_str());
-    if (!in.good()) {
-        error("Could not open file: " + filename);
-        return false;
-    }
-    return parse_stream(in, fs::absolute(filename).filename().string());
+    fs::path file = fs::absolute(filename);
+    if (fs::exists(file) && file.extension() == string("." LANG_SHELL_NAME)) {
+        ifstream in(filename.c_str());
+        if (!in.good()) {
+            error("Could not open file: " + filename);
+            return false;
+        }
+        return parse_stream(in, fs::absolute(filename).filename().string());
+    } else
+        warning(war_tail "This isn't seems a valid " LANG_NAME " file: " + filename);
+    return false;
 }
 
 int
@@ -150,6 +155,9 @@ Driver::make_things_happen(FinallyAction::Action action, ostream& out) {
             if (verbose_mode >= VerboseMode::ErrorsWarningsAndHints)
                 Env->print_tree_using(out);
         }
+        break;
+    case FinallyAction::Execute:
+        // TODO Implementar ambiente de execução
         break;
     case FinallyAction::GenerateBinaries:
         // TODO Implementar geração de código

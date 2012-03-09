@@ -4,11 +4,11 @@
 
 using namespace std;
 
-#include "ast.h"
-#include "astoql.h"
+#include "st.h"
+#include "stoql.h"
 #include "driver.h"
 
-using namespace AST;
+using namespace SyntaxTree;
 %}
 
 %debug
@@ -28,11 +28,11 @@ using namespace AST;
 }
 
 %union {
-    int                         v_int;
-    double                      v_flt;
-    string *                    v_str;
-    class AST::SyntaxNode *     v_node;
-    class AST::VectorNode *     v_list;
+    int                             v_int;
+    double                          v_flt;
+    string *                        v_str;
+    class SyntaxTree::SyntaxNode *  v_node;
+    class SyntaxTree::VectorNode *  v_list;
 }
 
 %{
@@ -53,10 +53,13 @@ using namespace AST;
 %token  kASC        "asc"
 %token  kBY         "by"
 %token  kDESC       "desc"
+%token  kDISTINCT   "distinct"
 %token  kFALSE      "false"
 %token  kFROM       "from"
 %token  kGROUP      "group"
 %token  kIN         "in"
+%token  kIS         "is"
+%token  kNIS        "!is"
 %token  kJOIN       "join"
 %token  kLEFT       "left"
 %token  kNEW        "new"
@@ -79,6 +82,8 @@ using namespace AST;
 
 %token  '?'     "?"
 %token  ':'     ":"
+%token  DOT2    ".."
+%token  DOT3    "..."
 %token  IMPLIES "=>"
 %token  OR      "||"
 %token  AND     "&&"
@@ -87,8 +92,6 @@ using namespace AST;
 %token  NEQ     "!="
 %token  MAT     "=~"
 %token  NMA     "!~"
-%token  IS      "is"
-%token  NIS     "!is"
 %token  '<'     "<"
 %token  LEE     "<="
 %token  '>'     ">"
@@ -100,11 +103,9 @@ using namespace AST;
 %token  '*'     "*"
 %token  '/'     "/"
 %token  '%'     "%"
-%token  DOT2    ".."
-%token  DOT3    "..."
+%token  POW     "**"
 %token  '!'     "!"
 %token  UNARY
-%token  POW     "**"
 
 %token  '('     "("
 %token  ')'     ")"
@@ -118,9 +119,9 @@ using namespace AST;
 
 %nonassoc ID FLOAT INTEGER STRING REGEX kTRUE kFALSE
 
-%left   '?' ':' '^' OR AND IMPLIES EQL NEQ MAT NMA IS NIS '>' '<' LEE GEE SHL 
-%left   SHR '+' '-' '*' '/' '%' POW
-%right  UNARY '=' ADE SUE MUE DIE ','
+%left   '?' ':' '^' OR AND IMPLIES EQL NEQ MAT NMA '>' '<' LEE GEE SHL SHR
+%left   '+' '-' '*' '/' '%' POW DOT2 DOT3 kIN kIS kNIS '.' '['
+%right  UNARY '=' ADE SUE MUE DIE ']'
 
 %type   <v_node>    Identifier
 %type   <v_node>    QualifiedId
@@ -131,31 +132,24 @@ using namespace AST;
 %type   <v_node>    Value
 %type   <v_node>    FunctionCall
 %type   <v_node>    NamedExpr
+%type   <v_node>    PowerExpr
 %type   <v_node>    SuffixExpr
 %type   <v_node>    PrefixExpr
-%type   <v_node>    RangeExpr
 %type   <v_node>    MultExpr
 %type   <v_node>    AddExpr
 %type   <v_node>    ShiftExpr
 %type   <v_node>    RelatExpr
 %type   <v_node>    LogicExpr
+%type   <v_node>    RangeExpr
 %type   <v_node>    TernaryExpr
 %type   <v_node>    AssignExpr
 %type   <v_node>    AssignValue
 
-%type   <v_node>    QueryExpr
-%type   <v_node>    FromItem
-%type   <v_node>    JoinClause
-%type   <v_node>    SelectClause
-
 %type   <v_node>    Expression
+
 %type   <v_list>    NamedExprList
 %type   <v_list>    ExpressionList
 %type   <v_list>    Expressions
-%type   <v_list>    FromItemList
-%type   <v_list>    RepeatJoinClause
-%type   <v_list>    IdentifierList
-// %type   <v_list>    AssignValueList
 
 %%
 
@@ -185,7 +179,8 @@ QualifiedId
         }
         ;
 
-String  : STRING {
+String
+        : STRING {
             $$ = new StringNode(*$1);
         }
         | String STRING {
@@ -193,7 +188,8 @@ String  : STRING {
         }
         ;
 
-Literal : String {
+Literal
+        : String {
             $$ = $1;
         }
         | REGEX {
@@ -219,17 +215,17 @@ Literal : String {
         }
         ;
 
-Array   : '[' ExpressionList ']' {
+Array
+        : '[' ExpressionList ']' {
             $$ = new ArrayNode($2);
         }
         | '[' ']' {
             $$ = new ArrayNode();
         }
-        // | QualifiedId '[' ExprList ']'
-        // | QualifiedId '[' ']'
         ;
 
-Hash    : '{' NamedExprList '}' {
+Hash
+        : '{' NamedExprList '}' {
             $$ = new HashNode($2);
         }
         | '{' '}' {
@@ -265,7 +261,8 @@ FunctionCall
         }
         ;
 
-Value   : kNIL {
+Value
+        : kNIL {
             $$ = new NilNode();
         }
         | QualifiedId {
@@ -315,36 +312,32 @@ PrefixExpr
         }
         ;
 
-RangeExpr
+PowerExpr
         : PrefixExpr {
             $$ = $1;
         }
-        | RangeExpr DOT2 PrefixExpr {
-            $$ = new BinaryExprNode(Operation::BinaryDot2, $1, $3);
-        }
-        | RangeExpr DOT3 PrefixExpr {
-            $$ = new BinaryExprNode(Operation::BinaryDot2, $1, $3);
+        | PowerExpr POW PrefixExpr {
+            $$ = new BinaryExprNode(Operation::BinaryPow, $1, $3);
         }
         ;
 
-MultExpr: RangeExpr {
+MultExpr
+        : PowerExpr {
             $$ = $1;
         }
-        | MultExpr POW RangeExpr {
-            $$ = new BinaryExprNode(Operation::BinaryPow, $1, $3);
-        }
-        | MultExpr '*' RangeExpr {
+        | MultExpr '*' PowerExpr {
             $$ = new BinaryExprNode(Operation::BinaryMul, $1, $3);
         }
-        | MultExpr '/' RangeExpr {
+        | MultExpr '/' PowerExpr {
             $$ = new BinaryExprNode(Operation::BinaryDiv, $1, $3);
         }
-        | MultExpr '%' RangeExpr {
+        | MultExpr '%' PowerExpr {
             $$ = new BinaryExprNode(Operation::BinaryMod, $1, $3);
         }
         ;
 
-AddExpr : MultExpr {
+AddExpr
+        : MultExpr {
             $$ = $1;
         }
         | AddExpr '+' MultExpr {
@@ -389,11 +382,14 @@ RelatExpr
         | RelatExpr NEQ RelatExpr {
             $$ = new BinaryExprNode(Operation::BinaryNeq, $1, $3);
         }
-        | RelatExpr IS RelatExpr {
+        | RelatExpr kIS RelatExpr {
             $$ = new BinaryExprNode(Operation::BinaryIs, $1, $3);
         }
-        | RelatExpr NIS RelatExpr {
+        | RelatExpr kNIS RelatExpr {
             $$ = new BinaryExprNode(Operation::BinaryNis, $1, $3);
+        }
+        | RelatExpr kIN RelatExpr {
+            $$ = new BinaryExprNode(Operation::BinaryIn, $1, $3);
         }
         | RelatExpr MAT RelatExpr {
             $$ = new BinaryExprNode(Operation::BinaryMat, $1, $3);
@@ -421,11 +417,23 @@ LogicExpr
         }
         ;
 
-TernaryExpr
+RangeExpr
         : LogicExpr {
             $$ = $1;
         }
-        | LogicExpr '?' Expression ':' Expression {
+        | RangeExpr DOT2 LogicExpr {
+            $$ = new BinaryExprNode(Operation::BinaryDot2, $1, $3);
+        }
+        | RangeExpr DOT3 LogicExpr {
+            $$ = new BinaryExprNode(Operation::BinaryDot3, $1, $3);
+        }
+        ;
+
+TernaryExpr
+        : RangeExpr {
+            $$ = $1;
+        }
+        | RangeExpr '?' Expression ':' Expression {
             $$ = new TernaryExprNode(Operation::TernaryIf, $1, $3, $5);
         }
         ;
@@ -455,104 +463,62 @@ AssignValue
         ;
 
 QueryExpr
-        : kFROM FromItemList {
-            if ($2->size() > 1)
-                driver.error(@2, "Use an where clause to merge origin list");
-        }
-        | kFROM FromItemList SelectClause
-        | kFROM FromItemList kORDER kBY IdentifierList
-        | kFROM FromItemList kORDER kBY IdentifierList SelectClause
-        | kFROM FromItemList kGROUP kBY IdentifierList
-        | kFROM FromItemList kGROUP kBY IdentifierList SelectClause
-        | kFROM FromItemList kGROUP kBY IdentifierList kORDER kBY IdentifierList
-        | kFROM FromItemList kGROUP kBY IdentifierList kORDER kBY IdentifierList SelectClause
-        | kFROM FromItemList kWHERE TernaryExpr
-        | kFROM FromItemList kWHERE TernaryExpr SelectClause
-        | kFROM FromItemList kWHERE TernaryExpr kORDER kBY IdentifierList
-        | kFROM FromItemList kWHERE TernaryExpr kORDER kBY IdentifierList SelectClause
-        | kFROM FromItemList kWHERE TernaryExpr kGROUP kBY IdentifierList
-        | kFROM FromItemList kWHERE TernaryExpr kGROUP kBY IdentifierList SelectClause
-        | kFROM FromItemList kWHERE TernaryExpr kGROUP kBY IdentifierList kORDER kBY IdentifierList
-        | kFROM FromItemList kWHERE TernaryExpr kGROUP kBY IdentifierList kORDER kBY IdentifierList SelectClause
-        | kFROM FromItemList RepeatJoinClause
-        | kFROM FromItemList RepeatJoinClause SelectClause
-        | kFROM FromItemList RepeatJoinClause kORDER kBY IdentifierList
-        | kFROM FromItemList RepeatJoinClause kORDER kBY IdentifierList SelectClause
-        | kFROM FromItemList RepeatJoinClause kGROUP kBY IdentifierList
-        | kFROM FromItemList RepeatJoinClause kGROUP kBY IdentifierList SelectClause
-        | kFROM FromItemList RepeatJoinClause kGROUP kBY IdentifierList kORDER kBY IdentifierList
-        | kFROM FromItemList RepeatJoinClause kGROUP kBY IdentifierList kORDER kBY IdentifierList SelectClause
-        | kFROM FromItemList RepeatJoinClause kWHERE TernaryExpr
-        | kFROM FromItemList RepeatJoinClause kWHERE TernaryExpr SelectClause
-        | kFROM FromItemList RepeatJoinClause kWHERE TernaryExpr kORDER kBY IdentifierList
-        | kFROM FromItemList RepeatJoinClause kWHERE TernaryExpr kORDER kBY IdentifierList SelectClause
-        | kFROM FromItemList RepeatJoinClause kWHERE TernaryExpr kGROUP kBY IdentifierList
-        | kFROM FromItemList RepeatJoinClause kWHERE TernaryExpr kGROUP kBY IdentifierList SelectClause
-        | kFROM FromItemList RepeatJoinClause kWHERE TernaryExpr kGROUP kBY IdentifierList kORDER kBY IdentifierList
-        | kFROM FromItemList RepeatJoinClause kWHERE TernaryExpr kGROUP kBY IdentifierList kORDER kBY IdentifierList SelectClause
+        : kFROM QueryOrigin QueryBody
         ;
 
-FromItemList
-        : FromItem {
-            $$ = new VectorNode();
-            $$->push_back($1);
-        }
-        | FromItemList ',' FromItem {
-            $$->push_back($3);
-        }
+QueryOrigin
+        : Identifier kIN Expression
         ;
 
-FromItem: Value
-        | Value kIN Value
+QueryBody
+        : QueryBodyClauses
+        | SelectOrGroupClause
         ;
 
-RepeatJoinClause
-        : JoinClause
-        | RepeatJoinClause JoinClause
+QueryBodyClauses
+        : QueryBodyClause
+        | QueryBodyClauses QueryBodyClause
+        ;
+
+QueryBodyClause
+        : WhereClause
+        | JoinClause
+        | OrderByClause
+        ;
+
+WhereClause
+        : kWHERE LogicExpr
         ;
 
 JoinClause
-        : kJOIN FromItem kON LogicExpr
-        | kLEFT kJOIN FromItem kON LogicExpr
-        | kRIGHT kJOIN FromItem kON LogicExpr
+        : kJOIN QueryOrigin kON LogicExpr
+        ;
+
+OrderByClause
+        : kORDER kBY Orderings
+        ;
+
+Orderings
+        : Ordering
+        | Orderings ',' Ordering
+        ;
+
+Ordering: Expression
+        | Expression kASC
+        | Expression kDESC
+        ;
+
+SelectOrGroupClause
+        : GroupByClause
+        | SelectClause
+        ;
+
+GroupByClause
+        : kGROUP kBY Expression
         ;
 
 SelectClause
-        : kSELECT '*'
-        | kSELECT IdentifierList
-        | kSELECT kTAKE Value IdentifierList
-        | kSELECT kSTEP Value IdentifierList
-        | kSELECT kSTEP Value kTAKE Value IdentifierList
-        | kSELECT kSKIP Value IdentifierList
-        | kSELECT kSKIP Value kTAKE Value IdentifierList
-        | kSELECT kSKIP Value kSTEP Value IdentifierList
-        | kSELECT kSKIP Value kSTEP Value kTAKE Value IdentifierList
-        | kSELECT kASC IdentifierList
-        | kSELECT kASC kTAKE Value IdentifierList
-        | kSELECT kASC kSTEP Value IdentifierList
-        | kSELECT kASC kSTEP Value kTAKE Value IdentifierList
-        | kSELECT kASC kSKIP Value IdentifierList
-        | kSELECT kASC kSKIP Value kTAKE Value IdentifierList
-        | kSELECT kASC kSKIP Value kSTEP Value IdentifierList
-        | kSELECT kASC kSKIP Value kSTEP Value kTAKE Value IdentifierList
-        | kSELECT kDESC IdentifierList
-        | kSELECT kDESC kTAKE Value IdentifierList
-        | kSELECT kDESC kSTEP Value IdentifierList
-        | kSELECT kDESC kSTEP Value kTAKE Value IdentifierList
-        | kSELECT kDESC kSKIP Value IdentifierList
-        | kSELECT kDESC kSKIP Value kTAKE Value IdentifierList
-        | kSELECT kDESC kSKIP Value kSTEP Value IdentifierList
-        | kSELECT kDESC kSKIP Value kSTEP Value kTAKE Value IdentifierList
-        ;
-
-IdentifierList
-        : QualifiedId {
-            $$ = new VectorNode();
-            $$->push_back($1);
-        }
-        | IdentifierList ',' QualifiedId {
-            $$->push_back($3);
-        }
+        : kSELECT ExpressionList
         ;
 
 Expression
@@ -562,11 +528,7 @@ Expression
         | TernaryExpr {
             $$ = $1;
         }
-        | QueryExpr {
-            // $1->eval()
-            // Assign the result[]
-            $$ = $1;
-        }
+        | QueryExpr
         ;
 
 ExpressionList

@@ -6,18 +6,24 @@
 #include <vector>
 #include <time.h>
 
+using namespace std;
+
+#define BOOST_FILESYSTEM_VERSION 3
+#include "../boost_1_48_0/boost/filesystem.hpp"
+
+namespace fs = boost::filesystem3;
+
 #include "version.h"
-#include "ast.h"
+#include "st.h"
 #include "console.h"
 #include "scanner.h"
-
-using namespace std;
 
 namespace LANG_NAMESPACE {
 
     DECLARE_ENUM_START(FinallyAction,Action)
         DECLARE_ENUM_MEMBER(None)
         DECLARE_ENUM_MEMBER(PrintResults)
+        DECLARE_ENUM_MEMBER(Execute)
         DECLARE_ENUM_MEMBER(GenerateBinaries)
     DECLARE_ENUM_END
 
@@ -32,7 +38,7 @@ class Driver {
 public:
     string origin;
     class Scanner * lexer;
-    class AST::Environment * Env;
+    class SyntaxTree::Environment * Env;
     VerboseMode::Mode verbose_mode;
     unsigned lines, total_lines, total_errors, total_warnings, total_hints;
 public:

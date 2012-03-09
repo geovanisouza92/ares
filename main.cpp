@@ -2,19 +2,17 @@
 #include <string>
 #include <vector>
 
+using namespace std;
+
 #include "../boost_1_48_0/boost/program_options.hpp"
-#define BOOST_FILESYSTEM_VERSION 3
-#include "../boost_1_48_0/boost/filesystem.hpp"
+
+namespace po = boost::program_options;
 
 #include "console.h"
 #include "driver.h"
 #include "version.h"
 
-using namespace std;
 using namespace LANG_NAMESPACE;
-
-namespace po = boost::program_options;
-namespace fs = boost::filesystem3;
 
 DECLARE_ENUM_START(InteractionMode,Mode)
     DECLARE_ENUM_MEMBER(None)
@@ -88,7 +86,7 @@ int main(int argc, char** argv) {
                 if (!errors.empty()) {
                     cout << "=> " << errors;
                 } else {
-                    cout << resume_statistics(1, driver.total_lines);
+                    cout << Util::resume_statistics(1, driver.total_lines);
                 }
             }
         }
@@ -101,12 +99,8 @@ int main(int argc, char** argv) {
 
     if (options.count("input-file")) {
         vector<string> input_files = options["input-file"].as< vector<string> >();
-        for (vector<string>::iterator f = input_files.begin(); f < input_files.end(); f++) {
-            fs::path file = fs::absolute(*f);
-            if (fs::exists(file) && file.extension() == string("." LANG_SHELL_NAME))
-                files.push_back(file.string());
-            else
-                messages.push_back(war_tail "This isn't seems a valid " LANG_NAME " file: " + *f);
+        for (vector<string>::iterator file = input_files.begin(); file < input_files.end(); file++) {
+            files.push_back(*file);
         }
     }
 
@@ -148,7 +142,7 @@ int main(int argc, char** argv) {
             if (!errors.empty()) {
                 cout << "=> " << errors;
             } else {
-                cout << resume_statistics(files_processed, driver.total_lines);
+                cout << Util::resume_statistics(files_processed, driver.total_lines);
             }
         }
     } else if (mode == InteractionMode::None) mode = InteractionMode::Shell;

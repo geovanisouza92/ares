@@ -2,11 +2,14 @@
 #ifndef ARC_SCANNER_H
 #define ARC_SCANNER_H
 
+#include <iostream>
+
+using namespace std;
+
 #include "version.h"
 #include "driver.h"
 #include "parser.h"
 
-using namespace std;
 using namespace LANG_NAMESPACE;
 
 #ifndef YY_DECL
