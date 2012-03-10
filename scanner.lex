@@ -52,7 +52,6 @@ id  [a-zA-Z_][a-zA-Z_0-9]*[?]?
 "asc"       return token::kASC;
 "by"        return token::kBY;
 "desc"      return token::kDESC;
-"distinct"  return token::kDISTINCT;
 "false"     return token::kFALSE;
 "from"      return token::kFROM;
 "group"     return token::kGROUP;

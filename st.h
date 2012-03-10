@@ -15,9 +15,27 @@ using namespace std;
 namespace LANG_NAMESPACE {
 namespace SyntaxTree {
 
+DECLARE_ENUM_START(NodeType,Type)
+    DECLARE_ENUM_MEMBER(Nil)
+    DECLARE_ENUM_MEMBER(Identifier)
+    DECLARE_ENUM_MEMBER(String)
+    DECLARE_ENUM_MEMBER(Regex)
+    DECLARE_ENUM_MEMBER(Float)
+    DECLARE_ENUM_MEMBER(Integer)
+    DECLARE_ENUM_MEMBER(Boolean)
+    DECLARE_ENUM_MEMBER(Array)
+    DECLARE_ENUM_MEMBER(HashPair)
+    DECLARE_ENUM_MEMBER(Hash)
+    DECLARE_ENUM_MEMBER(Expression)
+DECLARE_ENUM_END
+
     class SyntaxNode {
+    protected:
+        NodeType::Type type;
     public:
         virtual ~SyntaxNode() { }
+        virtual NodeType::Type get_type() { return type; }
+        virtual void set_type(NodeType::Type t) { type = t; }
         virtual void print_using(ostream &, unsigned, bool nl = true) = 0;
     };
 
@@ -99,12 +117,12 @@ namespace SyntaxTree {
         virtual void print_using(ostream &, unsigned, bool);
     };
 
-    class HashItemNode : public SyntaxNode {
+    class HashPairNode : public SyntaxNode {
     protected:
         SyntaxNode * key;
         SyntaxNode * value;
     public:
-        HashItemNode(SyntaxNode *, SyntaxNode *);
+        HashPairNode(SyntaxNode *, SyntaxNode *);
         virtual void print_using(ostream &, unsigned, bool);
     };
 
@@ -206,7 +224,7 @@ DECLARE_ENUM_NAMES_END(Operator)
         Operation::Operator operation;
         SyntaxNode * member1;
     public:
-        UnaryExprNode(Operation::Operator op, SyntaxNode * m1) : operation(op), member1(m1) { }
+        UnaryExprNode(Operation::Operator op, SyntaxNode * m1) : operation(op), member1(m1) { set_type(NodeType::Nil); }
         virtual void evaluate();
         virtual void print_using(ostream &, unsigned, bool);
     };
@@ -217,7 +235,7 @@ DECLARE_ENUM_NAMES_END(Operator)
         SyntaxNode * member1;
         SyntaxNode * member2;
     public:
-        BinaryExprNode(Operation::Operator op, SyntaxNode * m1, SyntaxNode * m2) : operation(op), member1(m1), member2(m2) {}
+        BinaryExprNode(Operation::Operator op, SyntaxNode * m1, SyntaxNode * m2) : operation(op), member1(m1), member2(m2) { set_type(NodeType::Nil); }
         virtual void evaluate();
         virtual void print_using(ostream &, unsigned, bool);
     };
@@ -229,7 +247,7 @@ DECLARE_ENUM_NAMES_END(Operator)
         SyntaxNode * member2;
         SyntaxNode * member3;
     public:
-        TernaryExprNode(Operation::Operator op, SyntaxNode * m1, SyntaxNode * m2, SyntaxNode * m3) : operation(op), member1(m1), member2(m2), member3(m3) { }
+        TernaryExprNode(Operation::Operator op, SyntaxNode * m1, SyntaxNode * m2, SyntaxNode * m3) : operation(op), member1(m1), member2(m2), member3(m3) { set_type(NodeType::Nil); }
         virtual void evaluate();
         virtual void print_using(ostream &, unsigned, bool);
     };

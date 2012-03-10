@@ -33,21 +33,21 @@ Environment::print_tree_using(ostream & out) {
         (*expr)->print_using(out, 0, true);
 }
 
-NilNode::NilNode() { }
+NilNode::NilNode() { set_type(NodeType::Nil); }
 
 void
 NilNode::print_using(ostream & out, unsigned d, bool nl) {
     out << string(d * 2, ' ') << "Nil" << ( nl ? "\n" : "" );
 }
 
-IdentifierNode::IdentifierNode(string & v) : value(v) { }
+IdentifierNode::IdentifierNode(string & v) : value(v) { set_type(NodeType::Identifier); }
 
 void
 IdentifierNode::print_using(ostream & out, unsigned d, bool nl) {
     out << string(d * 2, ' ') << "Identifier => " << value << ( nl ? "\n" : "" );
 }
 
-StringNode::StringNode(string & v) : value(v) { }
+StringNode::StringNode(string & v) : value(v) { set_type(NodeType::String); }
 
 void
 StringNode::append(string & v) {
@@ -59,37 +59,37 @@ StringNode::print_using(ostream & out, unsigned d, bool nl) {
     out << string(d * 2, ' ') << "String => " << value << ( nl ? "\n" : "" );
 }
 
-RegexNode::RegexNode(string & v) : value(v) { }
+RegexNode::RegexNode(string & v) : value(v) { set_type(NodeType::Regex); }
 
 void
 RegexNode::print_using(ostream & out, unsigned d, bool nl) {
     out << string(d * 2, ' ') << "Regex => " << value << ( nl ? "\n" : "" );
 }
 
-FloatNode::FloatNode(double v) : value(v) { }
+FloatNode::FloatNode(double v) : value(v) { set_type(NodeType::Float); }
 
 void
 FloatNode::print_using(ostream & out, unsigned d, bool nl) {
     out << string(d * 2, ' ') << "Float => " << value << ( nl ? "\n" : "" );
 }
 
-IntegerNode::IntegerNode(int v) : value(v) { }
+IntegerNode::IntegerNode(int v) : value(v) { set_type(NodeType::Integer); }
 
 void
 IntegerNode::print_using(ostream & out, unsigned d, bool nl) {
     out << string(d * 2, ' ') << "Integer => " << value << ( nl ? "\n" : "" );
 }
 
-BooleanNode::BooleanNode(bool v) : value(v) { }
+BooleanNode::BooleanNode(bool v) : value(v) { set_type(NodeType::Boolean); }
 
 void
 BooleanNode::print_using(ostream & out, unsigned d, bool nl) {
     out << string(d * 2, ' ') << "Boolean => " << ( value ? "True" : "False" ) << ( nl ? "\n" : "" );
 }
 
-ArrayNode::ArrayNode() : value(new VectorNode()) { }
+ArrayNode::ArrayNode() : value(new VectorNode()) { set_type(NodeType::Array); }
 
-ArrayNode::ArrayNode(VectorNode * v) : value(v) { }
+ArrayNode::ArrayNode(VectorNode * v) : value(v) { set_type(NodeType::Array); }
 
 void
 ArrayNode::print_using(ostream & out, unsigned d, bool nl) {
@@ -102,18 +102,18 @@ ArrayNode::print_using(ostream & out, unsigned d, bool nl) {
     out << "]" << endl;
 }
 
-HashItemNode::HashItemNode(SyntaxNode * k, SyntaxNode * v) : key(k), value(v) { }
+HashPairNode::HashPairNode(SyntaxNode * k, SyntaxNode * v) : key(k), value(v) { set_type(NodeType::HashPair); }
 
 void
-HashItemNode::print_using(ostream & out, unsigned d, bool nl) {
+HashPairNode::print_using(ostream & out, unsigned d, bool nl) {
     key->print_using(out, 0, false);
     out << " : ";
     value->print_using(out, 0, false);
 }
 
-HashNode::HashNode() : value(new VectorNode()) { }
+HashNode::HashNode() : value(new VectorNode()) { set_type(NodeType::Hash); }
 
-HashNode::HashNode(VectorNode * v) : value(v) { }
+HashNode::HashNode(VectorNode * v) : value(v) { set_type(NodeType::Hash); }
 
 void
 HashNode::print_using(ostream & out, unsigned d, bool nl) {
@@ -164,9 +164,9 @@ TernaryExprNode::print_using(ostream & out, unsigned tab, bool nl) {
     out << " ]" << ( nl ? "\n" : "" );
 }
 
-FunctionCallNode::FunctionCallNode(SyntaxNode * n) : name(n), args(new VectorNode) { }
+FunctionCallNode::FunctionCallNode(SyntaxNode * n) : name(n), args(new VectorNode) { set_type(NodeType::Nil); }
 
-FunctionCallNode::FunctionCallNode(SyntaxNode * n, VectorNode * a) : name(n), args(a) { }
+FunctionCallNode::FunctionCallNode(SyntaxNode * n, VectorNode * a) : name(n), args(a) { set_type(NodeType::Nil); }
 
 void
 FunctionCallNode::print_using(ostream & out, unsigned d, bool nl) {

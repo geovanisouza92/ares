@@ -53,7 +53,6 @@ using namespace SyntaxTree;
 %token  kASC        "asc"
 %token  kBY         "by"
 %token  kDESC       "desc"
-%token  kDISTINCT   "distinct"
 %token  kFALSE      "false"
 %token  kFROM       "from"
 %token  kGROUP      "group"
@@ -144,12 +143,27 @@ using namespace SyntaxTree;
 %type   <v_node>    TernaryExpr
 %type   <v_node>    AssignExpr
 %type   <v_node>    AssignValue
-
 %type   <v_node>    Expression
 
 %type   <v_list>    NamedExprList
 %type   <v_list>    ExpressionList
 %type   <v_list>    Expressions
+
+%type   <v_node>    QueryExpr
+%type   <v_node>    QueryOrigin
+%type   <v_node>    QueryBody
+%type   <v_node>    QueryBodyClause
+%type   <v_node>    WhereClause
+%type   <v_node>    JoinClause
+%type   <v_node>    OrderByClause
+%type   <v_node>    OrderingNode
+%type   <v_node>    SelectOrGroupClause
+%type   <v_node>    GroupByClause
+%type   <v_node>    SelectClause
+%type   <v_node>    SelectRangeClause
+
+%type   <v_list>    QueryBodyClauses
+%type   <v_list>    OrderingNodes
 
 %%
 
@@ -245,10 +259,10 @@ NamedExprList
 
 NamedExpr
         : QualifiedId ':' Expression {
-            $$ = new HashItemNode($1, $3);
+            $$ = new HashPairNode($1, $3);
         }
         | String ':' Expression {
-            $$ = new HashItemNode($1, $3);
+            $$ = new HashPairNode($1, $3);
         }
         ;
 
@@ -463,62 +477,160 @@ AssignValue
         ;
 
 QueryExpr
-        : kFROM QueryOrigin QueryBody
+        : kFROM QueryOrigin QueryBody {
+            $$ = new QueryNode($2, $3);
+        }
         ;
 
 QueryOrigin
-        : Identifier kIN Expression
+        : Identifier kIN Expression {
+            $$ = new QueryOriginNode($1, $3);
+        }
         ;
 
 QueryBody
-        : QueryBodyClauses
-        | SelectOrGroupClause
+        : QueryBodyClauses SelectOrGroupClause {
+            $$ = new QueryBodyNode($2);
+            ((QueryBodyNode *) $$)->set_body($1);
+        }
+        | SelectOrGroupClause {
+            $$ = new QueryBodyNode($1);
+        }
         ;
 
 QueryBodyClauses
-        : QueryBodyClause
-        | QueryBodyClauses QueryBodyClause
+        : QueryBodyClause {
+            $$ = new VectorNode();
+            $$->push_back($1);
+        }
+        | QueryBodyClauses QueryBodyClause {
+            $$->push_back($2);
+        }
         ;
 
 QueryBodyClause
-        : WhereClause
-        | JoinClause
-        | OrderByClause
+        : WhereClause {
+            $$ = $1;
+        }
+        | JoinClause {
+            $$ = $1;
+        }
+        | OrderByClause {
+            $$ = $1;
+        }
         ;
 
 WhereClause
-        : kWHERE LogicExpr
+        : kWHERE LogicExpr {
+            $$ = new WhereNode($2);
+        }
         ;
 
 JoinClause
-        : kJOIN QueryOrigin kON LogicExpr
+        : kJOIN QueryOrigin kON LogicExpr {
+            $$ = new JoinNode($2, $4, JoinDirection::None);
+        }
+        | kLEFT kJOIN QueryOrigin kON LogicExpr {
+            $$ = new JoinNode($3, $5, JoinDirection::Left);
+        }
+        | kRIGHT kJOIN QueryOrigin kON LogicExpr {
+            $$ = new JoinNode($3, $5, JoinDirection::Right);
+        }
         ;
 
 OrderByClause
-        : kORDER kBY Orderings
+        : kORDER kBY OrderingNodes {
+            $$ = new OrderByNode($3);
+        }
         ;
 
-Orderings
-        : Ordering
-        | Orderings ',' Ordering
+OrderingNodes
+        : OrderingNode {
+            $$ = new VectorNode();
+            $$->push_back($1);
+        }
+        | OrderingNodes ',' OrderingNode {
+            $$->push_back($3);
+        }
         ;
 
-Ordering: Expression
-        | Expression kASC
-        | Expression kDESC
+OrderingNode
+        : Expression {
+            $$ = new OrderingNode($1, OrderDirection::None);
+        }
+        | Expression kASC {
+            $$ = new OrderingNode($1, OrderDirection::Asc);
+        }
+        | Expression kDESC {
+            $$ = new OrderingNode($1, OrderDirection::Desc);
+        }
         ;
 
 SelectOrGroupClause
-        : GroupByClause
-        | SelectClause
+        : GroupByClause {
+            $$ = $1;
+        }
+        | SelectClause {
+            $$ = $1;
+        }
         ;
 
 GroupByClause
-        : kGROUP kBY Expression
+        : kGROUP kBY Expression {
+            $$ = new GroupByNode($3);
+        }
         ;
 
 SelectClause
-        : kSELECT ExpressionList
+        : kSELECT ExpressionList {
+            $$ = new SelectNode($2, NULL);
+        }
+        | kSELECT ExpressionList SelectRangeClause {
+            $$ = new SelectNode($2, $3);
+        }
+        ;
+
+SelectRangeClause
+        : kSKIP Expression {
+            $$ = new RangeNode();
+            ((RangeNode *) $$)
+              ->set_skip($2);
+        }
+        | kSKIP Expression kSTEP Expression {
+            $$ = new RangeNode();
+            ((RangeNode *) $$)
+              ->set_skip($2)
+              ->set_step($4);
+        }
+        | kSKIP Expression kTAKE Expression {
+            $$ = new RangeNode();
+            ((RangeNode *) $$)
+              ->set_skip($2)
+              ->set_take($4);
+        }
+        | kSKIP Expression kSTEP Expression kTAKE Expression {
+            $$ = new RangeNode();
+            ((RangeNode *) $$)
+              ->set_skip($2)
+              ->set_step($4)
+              ->set_take($6);
+        }
+        | kSTEP Expression {
+            $$ = new RangeNode();
+            ((RangeNode *) $$)
+              ->set_step($2);
+        }
+        | kSTEP Expression kTAKE Expression {
+            $$ = new RangeNode();
+            ((RangeNode *) $$)
+              ->set_step($2)
+              ->set_take($4);
+        }
+        | kTAKE Expression {
+            $$ = new RangeNode();
+            ((RangeNode *) $$)
+              ->set_take($2);
+        }
         ;
 
 Expression
