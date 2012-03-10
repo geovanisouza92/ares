@@ -1,7 +1,7 @@
 module IdeaCloud.Vistem do
     class Base do
     private # change visibility for section
-        def GetId : Integer do
+        def GetId(): Integer do
         # do
             # do getter
         end
@@ -18,7 +18,7 @@ module IdeaCloud.Vistem do
         # general validations here
     public
         var Name: String ; # invariants not nil; # read-only, with constance
-        def Update do
+        def Update() do
         # do
             # update
             if "blue" == Sky.Color then
@@ -31,9 +31,9 @@ module IdeaCloud.Vistem do
             end
         end
         private
-        def Save do # visibility for def, only
+        def Save() do # visibility for def, only
         # require # pre-conditions here
-            Self.Valid?;
+            print(Self.Valid?);
         # do # do of significant code
             # do something
             # bellow a "query expression", that take an collection (one def,
@@ -47,7 +47,7 @@ module IdeaCloud.Vistem do
         # finally
             # execute at finalization of def
         # ensure # post-conditions here
-            Self.Valid?;
+            # Self.Valid?;
         end
     end
 end

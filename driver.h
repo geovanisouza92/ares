@@ -20,19 +20,19 @@ namespace fs = boost::filesystem3;
 
 namespace LANG_NAMESPACE {
 
-    DECLARE_ENUM_START(FinallyAction,Action)
-        DECLARE_ENUM_MEMBER(None)
-        DECLARE_ENUM_MEMBER(PrintResults)
-        DECLARE_ENUM_MEMBER(Execute)
-        DECLARE_ENUM_MEMBER(GenerateBinaries)
-    DECLARE_ENUM_END
+DECLARE_ENUM_START(FinallyAction,Action)
+    DECLARE_ENUM_MEMBER(None)
+    DECLARE_ENUM_MEMBER(PrintResults)
+    DECLARE_ENUM_MEMBER(Execute)
+    DECLARE_ENUM_MEMBER(GenerateBinaries)
+DECLARE_ENUM_END
 
-    DECLARE_ENUM_START(VerboseMode,Mode)
-        DECLARE_ENUM_MEMBER(ErrorsOnly)
-        DECLARE_ENUM_MEMBER(ErrorsAndWarnings)
-        DECLARE_ENUM_MEMBER(ErrorsWarningsAndHints)
-        DECLARE_ENUM_MEMBER(AllForDebug)
-    DECLARE_ENUM_END
+DECLARE_ENUM_START(VerboseMode,Mode)
+    DECLARE_ENUM_MEMBER(ErrorsOnly)
+    DECLARE_ENUM_MEMBER(ErrorsAndWarnings)
+    DECLARE_ENUM_MEMBER(ErrorsWarningsAndHints)
+    DECLARE_ENUM_MEMBER(AllForDebug)
+DECLARE_ENUM_END
 
 class Driver {
 public:
@@ -59,7 +59,8 @@ public:
 
     virtual inline void syntax_ok_for(const string what) { cout << "=> Syntax OK for " << COLOR_GREEN << what << COLOR_RESET << endl; }
     virtual inline void reset_lines() { total_lines += lines; lines = 0; }
-    virtual inline void inc_lines(const unsigned count) { lines += count; }
+    virtual inline void inc_lines() { ++lines; }
+    virtual inline void dec_lines() { --lines; }
 
     virtual void make_things_happen(FinallyAction::Action, ostream&);
 };

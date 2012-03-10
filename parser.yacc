@@ -24,7 +24,7 @@ using namespace SyntaxTree;
 %error-verbose
 %initial-action {
     @$.begin.filename = @$.end.filename = &driver.origin;
-    driver.inc_lines(1);
+    driver.inc_lines();
 }
 
 %union {
@@ -52,11 +52,13 @@ using namespace SyntaxTree;
 
 %token  kABSTRACT   "abstract"
 %token  kAFTER      "after"
+%token  kAND        "and"
 %token  kASYNC      "async"
 %token  kASC        "asc"
 %token  kAS         "as"
 %token  kATTR       "attr"
 %token  kBEFORE     "before"
+%token  kBETWEEN    "between"
 %token  kBREAK      "break"
 %token  kBY         "by"
 %token  kCASE       "case"
@@ -64,34 +66,42 @@ using namespace SyntaxTree;
 %token  kCONST      "const"
 %token  kDEF        "def"
 %token  kDESC       "desc"
+%token  kDIV        "div"
 %token  kDO         "do"
 %token  kELIF       "elif"
 %token  kELSE       "else"
 %token  kEND        "end"
+%token  kENSURE     "ensure"
 %token  kEVENT      "event"
 %token  kEXIT       "exit"
 %token  kFALSE      "false"
+%token  kFINALLY    "finally"
 %token  kFOR        "for"
 %token  kFROM       "from"
 %token  kGET        "get"
 %token  kGROUP      "group"
 %token  kHAS        "has"
 %token  kIF         "if"
+%token  kIMPLIES    "implies"
 %token  kIMPORT     "import"
 %token  kINCLUDE    "include"
+%token  kINVARIANTS "invariants"
 %token  kIN         "in"
 %token  kIS         "is"
 %token  kJOIN       "join"
 %token  kLEFT       "left"
 %token  kMODULE     "module"
+%token  kMOD        "mod"
 %token  kNEW        "new"
 %token  kNIL        "nil"
 %token  kON         "on"
 %token  kORDER      "order"
+%token  kOR         "or"
 %token  kPRIVATE    "private"
 %token  kPROTECTED  "protected"
 %token  kPUBLIC     "public"
 %token  kRAISE      "raise"
+%token  kREQUIRE    "require"
 %token  kRESCUE     "rescue"
 %token  kRIGHT      "right"
 %token  kSEALED     "sealed"
@@ -110,6 +120,7 @@ using namespace SyntaxTree;
 %token  kWHEN       "when"
 %token  kWHERE      "where"
 %token  kWHILE      "while"
+%token  kXOR        "xor"
 %token  kYIELD      "yield"
 
 %token  '='     "="
@@ -120,13 +131,8 @@ using namespace SyntaxTree;
 
 %token  '?'     "?"
 %token  ':'     ":"
-%token  sBETWEEN"<=>"
 %token  sDOT2   ".."
 %token  sDOT3   "..."
-%token  sAND    "&&"
-%token  sOR     "||"
-%token  '^'     "^"
-%token  sIMPLIES"=>"
 %token  sEQL    "=="
 %token  sNEQ    "!="
 %token  sMAT    "=~"
@@ -141,8 +147,6 @@ using namespace SyntaxTree;
 %token  '-'     "-"
 %token  '*'     "*"
 %token  '/'     "/"
-%token  '%'     "%"
-%token  '\\'    "\\"
 %token  '!'     "!"
 %token  sPOW    "**"
 %token  UNARY
@@ -159,8 +163,8 @@ using namespace SyntaxTree;
 
 %nonassoc ID FLOAT INTEGER STRING REGEX kTRUE kFALSE
 
-%left   '?' ':' sOR sAND ssIMPLIES sEQL sNEQ sMAT sNMA '>' '<' sLEE sGEE sSHL sSHR
-%left   '+' '-' '*' '/' '%' POW sDOT2 sDOT3 kIN kIS '.' '['
+%left   '?' ':' kOR kAND kIMPLIES sEQL sNEQ sMAT sNMA '>' '<' sLEE sGEE sSHL sSHR
+%left   '+' '-' '*' '/' kMOD kDIV sPOW sDOT2 sDOT3 kIN kIS '.' '['
 %right  UNARY '=' sADE  sSUE  sMUE  sDIE  ']'
 
 %type   <v_node>    Identifier
@@ -182,7 +186,7 @@ using namespace SyntaxTree;
 %type   <v_node>    ShiftExpr
 %type   <v_node>    RelatExpr
 %type   <v_node>    LogicExpr
-%type   <v_node>    RansGEExpr
+%type   <v_node>    RangeExpr
 %type   <v_node>    TernaryExpr
 %type   <v_node>    AssignExpr
 %type   <v_node>    AssignValue
@@ -201,6 +205,7 @@ using namespace SyntaxTree;
 %type   <v_node>    Expression
 %type   <v_node>    Statement
 
+%type   <v_list>    RealParams
 %type   <v_list>    NamedExprList
 %type   <v_list>    QueryBodyClauses
 %type   <v_list>    OrderingNodes
@@ -211,6 +216,7 @@ using namespace SyntaxTree;
 
 Program
         : /* empty */ {
+            driver.dec_lines();
             driver.warning("Nothing to do here.");
         }
         | Statements {
@@ -314,11 +320,20 @@ NamedExpr
         ;
 
 FunctionCall
-        : QualifiedId '(' ExpressionList ')' {
-            $$ = new FunctionCallNode($1, $3);
+        : QualifiedId RealParams {
+            $$ = new FunctionCallNode($1, $2);
         }
-        | QualifiedId '(' ')' {
+        | QualifiedId {
             $$ = new FunctionCallNode($1);
+        }
+        ;
+
+RealParams
+        : '(' ')' {
+            $$ = new VectorNode();
+        }
+        | '(' ExpressionList ')' {
+            $$ = $2;
         }
         ;
 
@@ -420,10 +435,10 @@ MultExpr
         | MultExpr '/' PowerExpr {
             $$ = new BinaryExprNode(Operation::BinaryDiv, $1, $3);
         }
-        | MultExpr '%' PowerExpr {
+        | MultExpr kMOD PowerExpr {
             $$ = new BinaryExprNode(Operation::BinaryMod, $1, $3);
         }
-        | MultExpr '\\' PowerExpr {
+        | MultExpr kDIV PowerExpr {
             $$ = new BinaryExprNode(Operation::BinaryDiv, $1, $3);
         }
         ;
@@ -477,9 +492,6 @@ RelatExpr
         | RelatExpr kIS ShiftExpr {
             $$ = new BinaryExprNode(Operation::BinaryIs, $1, $3);
         }
-        | RelatExpr '!' kIS ShiftExpr {
-            $$ = new BinaryExprNode(Operation::BinaryNis, $1, $4);
-        }
         | RelatExpr kIN ShiftExpr {
             $$ = new BinaryExprNode(Operation::BinaryIn, $1, $3);
         }
@@ -498,40 +510,40 @@ LogicExpr
         : RelatExpr {
             $$ = $1;
         }
-        | LogicExpr sAND RelatExpr {
+        | LogicExpr kAND RelatExpr {
             $$ = new BinaryExprNode(Operation::BinaryAnd, $1, $3);
         }
-        | LogicExpr sOR RelatExpr {
+        | LogicExpr kOR RelatExpr {
             $$ = new BinaryExprNode(Operation::BinaryOr, $1, $3);
         }
-        | LogicExpr '^' RelatExpr {
+        | LogicExpr kXOR RelatExpr {
             $$ = new BinaryExprNode(Operation::BinaryXor, $1, $3);
         }
-        | LogicExpr sIMPLIES RelatExpr {
+        | LogicExpr kIMPLIES RelatExpr {
             $$ = new BinaryExprNode(Operation::BinaryImplies, $1, $3);
         }
         ;
 
-RansGEExpr
+RangeExpr
         : LogicExpr {
             $$ = $1;
         }
-        | RansGEExpr sDOT2 LogicExpr {
+        | RangeExpr sDOT2 LogicExpr {
             $$ = new BinaryExprNode(Operation::BinaryDot2, $1, $3);
         }
-        | RansGEExpr sDOT3 LogicExpr {
+        | RangeExpr sDOT3 LogicExpr {
             $$ = new BinaryExprNode(Operation::BinaryDot3, $1, $3);
         }
         ;
 
 TernaryExpr
-        : RansGEExpr {
+        : RangeExpr {
             $$ = $1;
         }
-        | RansGEExpr '?' Expression ':' Expression {
+        | RangeExpr '?' Expression ':' Expression {
             $$ = new TernaryExprNode(Operation::TernaryIf, $1, $3, $5);
         }
-        | RansGEExpr sBETWEEN RelatExpr sAND RelatExpr {
+        | RangeExpr kBETWEEN RelatExpr kAND RelatExpr {
             $$ = new TernaryExprNode(Operation::TernaryBetween, $1, $3, $5);
         }
         ;
@@ -558,7 +570,9 @@ AssignValue
         : Expression {
             $$ = $1;
         }
-        | AsyncStmt
+        | BlockStmt
+        | kASYNC Expression
+        | kASYNC BlockStmt
         ;
 
 QueryExpr
@@ -784,9 +798,11 @@ WhenClause
         : kWHEN Expression BlockStmt
         ;
 
-FsORStmt
+ForStmt
         : kFOR Expression kASC Expression BlockStmt
+        | kFOR Expression kASC Expression kSTEP Expression BlockStmt
         | kFOR Expression kDESC Expression BlockStmt
+        | kFOR Expression kDESC Expression kSTEP Expression BlockStmt
         | kFOR VarStmt kIN Expression BlockStmt
         | kFOR Identifier kIN Expression BlockStmt
         ;
@@ -799,8 +815,7 @@ LoopStmt
         ;
 
 AsyncStmt
-        : kASYNC Expression
-        // | kASYNC Statement
+        : kASYNC Statement
         ;
 
 RaiseStmt
@@ -812,15 +827,39 @@ RaiseStmt
 ControlStmt
         : kBREAK
         | kEXIT
-        | kEXIT Expression
+        | kEXIT AssignValue
         | kYIELD
-        | kYIELD Expression
+        | kYIELD AssignValue
         ;
 
 BlockStmt
         : kDO kEND
         | kDO Statements kEND
         | kDO Statements RescueClause kEND
+        | RequireClause kDO Statements kEND
+        | RequireClause kDO Statements RescueClause kEND
+        | kDO Statements EnsureClause kEND
+        | kDO Statements RescueClause EnsureClause kEND
+        | RequireClause kDO Statements EnsureClause kEND
+        | RequireClause kDO Statements RescueClause EnsureClause kEND
+        ;
+
+RequireClause
+        : kREQUIRE Conditions
+        ;
+
+Conditions
+        : Condition
+        | Conditions Condition
+        ;
+
+Condition
+        : LogicExpr ';'
+        | LogicExpr ':' String ';'
+        ;
+
+EnsureClause
+        : kENSURE Statements
         ;
 
 RescueClause
@@ -864,9 +903,13 @@ ListVariable
 
 Variable
         : Identifier
+        | Identifier InvariantsClause
         | Identifier InitialValue
+        | Identifier InitialValue InvariantsClause
         | Identifier MemberType
+        | Identifier MemberType InvariantsClause
         | Identifier MemberType InitialValue
+        | Identifier MemberType InitialValue InvariantsClause
         ;
 
 MemberType
@@ -886,6 +929,11 @@ ArrayTail
 
 InitialValue
         : '=' AssignValue
+        ;
+
+InvariantsClause
+        : kINVARIANTS LogicExpr
+        | kINVARIANTS LogicExpr ':' String
         ;
 
 ConstStmt
@@ -912,7 +960,14 @@ EventList
         ;
 
 Event
-        : Identifier InterceptClause InitialValue
+        : Identifier
+        | Identifier InitialValue
+        | Identifier InterceptClause
+        | Identifier InterceptClause InitialValue
+        | Identifier MemberType
+        | Identifier MemberType InitialValue
+        | Identifier MemberType InterceptClause
+        | Identifier MemberType InterceptClause InitialValue
         ;
 
 InterceptClause
@@ -937,8 +992,11 @@ AttributeList
 
 Attribute
         : Identifier MemberType
+        | Identifier MemberType InvariantsClause
         | Identifier MemberType Getter
+        | Identifier MemberType Getter InvariantsClause
         | Identifier MemberType Getter Setter
+        | Identifier MemberType Getter Setter InvariantsClause
         ;
 
 Getter
@@ -953,29 +1011,29 @@ Setter
 
 FunctionStmt
         : kDEF Identifier
-        | kDEF Identifier FormalParams
         | kDEF Identifier InterceptClause
-        | kDEF Identifier FormalParams InterceptClause
         | kDEF Identifier MemberType
-        | kDEF Identifier FormalParams MemberType
         | kDEF Identifier MemberType InterceptClause
+        | kDEF Identifier FormalParams
+        | kDEF Identifier FormalParams InterceptClause
+        | kDEF Identifier FormalParams MemberType
         | kDEF Identifier FormalParams MemberType InterceptClause
         ;
 
 FormalParams
-        : '(' ListVariable ')'
+        : '(' ')'
+        | '(' ListVariable ')'
         ;
 
 ClassStmt
         : kCLASS Identifier
+        | kABSTRACT kCLASS Identifier
+        | kSEALED kCLASS Identifier
+        | kABSTRACT kSEALED kCLASS Identifier
         | kCLASS Identifier Heritance
-        | ClassModifier kCLASS Identifier
-        | ClassModifier kCLASS Identifier Heritance
-        ;
-
-ClassModifier
-        : kABSTRACT
-        | kSEALED
+        | kABSTRACT kCLASS Identifier Heritance
+        | kSEALED kCLASS Identifier Heritance
+        | kABSTRACT kSEALED kCLASS Identifier Heritance
         ;
 
 Heritance
@@ -996,22 +1054,28 @@ TypeStmt
         | AttrStmt ';'
         | FunctionStmt ';'
         | FunctionStmt BlockStmt
-        | ClassStmt ';'
         | ClassStmt BlockStmt
         | ModuleStmt
+        ;
+
+AnnotationStmt
+        : '@' QualifiedId
+        | '@' QualifiedId RealParams
         ;
 
 Statement
         : IfStmt
         | UnlessStmt
         | CaseStmt
-        | FsORStmt
+        | ForStmt
         | LoopStmt
         | BlockStmt
-        | AsyncStmt ';'
+        | AsyncStmt
         | RaiseStmt ';'
         | ControlStmt ';'
-        | Expression ';'
+        | AssignExpr ';'
+        | SuffixExpr ';'
+        | AnnotationStmt
         | TypeStmt
         ;
 

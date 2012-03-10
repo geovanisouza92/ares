@@ -46,18 +46,16 @@ id  [a-zA-Z_][a-zA-Z_0-9]*[?]?
 "<<"    return token::sSHR;
 "=~"    return token::sMAT;
 "!~"    return token::sNMA;
-"||"    return token::sOR;
-"&&"    return token::sAND;
-"=>"    return token::sIMPLIES;
-"<=>"   return token::sBETWEEN;
 
 "abstract"  return token::kABSTRACT;
 "after"     return token::kAFTER;
+"and"       return token::kAND;
 "async"     return token::kASYNC;
 "asc"       return token::kASC;
 "as"        return token::kAS;
 "attr"      return token::kATTR;
 "before"    return token::kBEFORE;
+"between"   return token::kBETWEEN;
 "break"     return token::kBREAK;
 "by"        return token::kBY;
 "case"      return token::kCASE;
@@ -65,34 +63,42 @@ id  [a-zA-Z_][a-zA-Z_0-9]*[?]?
 "const"     return token::kCONST;
 "def"       return token::kDEF;
 "desc"      return token::kDESC;
+"div"       return token::kDIV;
 "do"        return token::kDO;
 "elif"      return token::kELIF;
 "else"      return token::kELSE;
 "end"       return token::kEND;
+"ensure"    return token::kENSURE;
 "event"     return token::kEVENT;
 "exit"      return token::kEXIT;
 "false"     return token::kFALSE;
+"finally"   return token::kFINALLY;
 "for"       return token::kFOR;
 "from"      return token::kFROM;
 "get"       return token::kGET;
 "group"     return token::kGROUP;
 "has"       return token::kHAS;
 "if"        return token::kIF;
+"implies"   return token::kIMPLIES;
 "import"    return token::kIMPORT;
 "include"   return token::kINCLUDE;
+"invariants" return token::kINVARIANTS;
 "in"        return token::kIN;
 "is"        return token::kIS;
 "join"      return token::kJOIN;
 "left"      return token::kLEFT;
 "module"    return token::kMODULE;
+"mod"       return token::kMOD;
 "new"       return token::kNEW;
 "nil"       return token::kNIL;
 "on"        return token::kON;
 "order"     return token::kORDER;
+"or"        return token::kOR;
 "private"   return token::kPRIVATE;
 "protected" return token::kPROTECTED;
 "public"    return token::kPUBLIC;
 "raise"     return token::kRAISE;
+"require"   return token::kREQUIRE;
 "rescue"    return token::kRESCUE;
 "right"     return token::kRIGHT;
 "sealed"    return token::kSEALED;
@@ -111,6 +117,7 @@ id  [a-zA-Z_][a-zA-Z_0-9]*[?]?
 "when"      return token::kWHEN;
 "where"     return token::kWHERE;
 "while"     return token::kWHILE;
+"xor"       return token::kXOR;
 "yield"     return token::kYIELD;
 
 [0-9]*"."[0-9]+([Ee][\+\-]?[0-9]+)? {
@@ -147,13 +154,13 @@ id  [a-zA-Z_][a-zA-Z_0-9]*[?]?
     // Comments
     yylloc->lines();
     yylloc->step();
-    driver.inc_lines(1);
+    driver.inc_lines();
 }
 
 \n {
     yylloc->lines(yyleng);
     yylloc->step();
-    driver.inc_lines(1);
+    driver.inc_lines();
     //return token::sEOL;
 }
 
