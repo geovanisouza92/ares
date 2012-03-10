@@ -50,28 +50,42 @@ using namespace SyntaxTree;
 %token  <v_str> STRING     "string"
 %token  <v_str> REGEX      "regex"
 
+%token  kASYNC      "async"
 %token  kASC        "asc"
+%token  kAS         "as"
 %token  kBY         "by"
+%token  kCASE       "case"
 %token  kDESC       "desc"
+%token  kDO         "do"
+%token  kELIF       "elif"
+%token  kELSE       "else"
+%token  kEND        "end"
 %token  kFALSE      "false"
+%token  kFOR        "for"
 %token  kFROM       "from"
 %token  kGROUP      "group"
+%token  kIF         "if"
 %token  kIN         "in"
 %token  kIS         "is"
-%token  kNIS        "!is"
 %token  kJOIN       "join"
 %token  kLEFT       "left"
 %token  kNEW        "new"
 %token  kNIL        "nil"
 %token  kON         "on"
 %token  kORDER      "order"
+%token  kRAISE      "raise"
 %token  kRIGHT      "right"
 %token  kSELECT     "select"
 %token  kSKIP       "skip"
 %token  kSTEP       "step"
 %token  kTAKE       "take"
+%token  kTHEN       "then"
 %token  kTRUE       "true"
+%token  kUNLESS     "unless"
+%token  kUNTIL      "until"
+%token  kWHEN       "when"
 %token  kWHERE      "where"
+%token  kWHILE      "while"
 
 %token  '='     "="
 %token  ADE     "+="
@@ -119,7 +133,7 @@ using namespace SyntaxTree;
 %nonassoc ID FLOAT INTEGER STRING REGEX kTRUE kFALSE
 
 %left   '?' ':' '^' OR AND IMPLIES EQL NEQ MAT NMA '>' '<' LEE GEE SHL SHR
-%left   '+' '-' '*' '/' '%' POW DOT2 DOT3 kIN kIS kNIS '.' '['
+%left   '+' '-' '*' '/' '%' POW DOT2 DOT3 kIN kIS '.' '['
 %right  UNARY '=' ADE SUE MUE DIE ']'
 
 %type   <v_node>    Identifier
@@ -131,6 +145,7 @@ using namespace SyntaxTree;
 %type   <v_node>    Value
 %type   <v_node>    FunctionCall
 %type   <v_node>    NamedExpr
+%type   <v_node>    CastExpr
 %type   <v_node>    PowerExpr
 %type   <v_node>    SuffixExpr
 %type   <v_node>    PrefixExpr
@@ -143,12 +158,6 @@ using namespace SyntaxTree;
 %type   <v_node>    TernaryExpr
 %type   <v_node>    AssignExpr
 %type   <v_node>    AssignValue
-%type   <v_node>    Expression
-
-%type   <v_list>    NamedExprList
-%type   <v_list>    ExpressionList
-%type   <v_list>    Expressions
-
 %type   <v_node>    QueryExpr
 %type   <v_node>    QueryOrigin
 %type   <v_node>    QueryBody
@@ -161,17 +170,23 @@ using namespace SyntaxTree;
 %type   <v_node>    GroupByClause
 %type   <v_node>    SelectClause
 %type   <v_node>    SelectRangeClause
+%type   <v_node>    Expression
+%type   <v_node>    Statement
 
+%type   <v_list>    NamedExprList
 %type   <v_list>    QueryBodyClauses
 %type   <v_list>    OrderingNodes
+%type   <v_list>    ExpressionList
+%type   <v_list>    Statements
 
 %%
 
-Program : /* empty */ {
+Program
+        : /* empty */ {
             driver.warning("Nothing to do here.");
         }
-        | Expressions {
-            driver.Env->put_exprs($1);
+        | Statements {
+            driver.Env->put_cmds($1);
         }
         ;
 
@@ -326,11 +341,20 @@ PrefixExpr
         }
         ;
 
-PowerExpr
+CastExpr
         : PrefixExpr {
             $$ = $1;
         }
-        | PowerExpr POW PrefixExpr {
+        | CastExpr kAS QualifiedId {
+            $$ = new BinaryExprNode(Operation::BinaryCast, $1, $3);
+        }
+        ;
+
+PowerExpr
+        : CastExpr {
+            $$ = $1;
+        }
+        | PowerExpr POW CastExpr {
             $$ = new BinaryExprNode(Operation::BinaryPow, $1, $3);
         }
         ;
@@ -398,9 +422,6 @@ RelatExpr
         }
         | RelatExpr kIS RelatExpr {
             $$ = new BinaryExprNode(Operation::BinaryIs, $1, $3);
-        }
-        | RelatExpr kNIS RelatExpr {
-            $$ = new BinaryExprNode(Operation::BinaryNis, $1, $3);
         }
         | RelatExpr kIN RelatExpr {
             $$ = new BinaryExprNode(Operation::BinaryIn, $1, $3);
@@ -474,11 +495,15 @@ AssignValue
         : Expression {
             $$ = $1;
         }
+        | AsyncStmt
         ;
 
 QueryExpr
         : kFROM QueryOrigin QueryBody {
             $$ = new QueryNode($2, $3);
+        }
+        | kFROM QueryOrigin {
+            $$ = new QueryNode($2, NULL);
         }
         ;
 
@@ -640,7 +665,9 @@ Expression
         | TernaryExpr {
             $$ = $1;
         }
-        | QueryExpr
+        | QueryExpr {
+            $$ = $1;
+        }
         ;
 
 ExpressionList
@@ -653,14 +680,103 @@ ExpressionList
         }
         ;
 
-Expressions
-        : Expression {
-            $$ = new VectorNode();
-            $$->push_back($1);
-        }
-        | Expressions ';' Expression {
-            $$->push_back($3);
-        }
+IfStmt
+        : IfClause ThenClause kEND
+        | IfClause ThenClause RepeatElifClause kEND
+        | IfClause ThenClause ElseClause kEND
+        | IfClause ThenClause RepeatElifClause ElseClause kEND
+        ;
+
+IfClause
+        : kIF Expression
+        ;
+
+ThenClause
+        : kTHEN
+        | kTHEN Statements
+        ;
+
+RepeatElifClause
+        : ElifClause
+        | RepeatElifClause ElifClause
+        ;
+
+ElifClause
+        : kELIF Expression ThenClause
+        ;
+
+ElseClause
+        : kELSE
+        | kELSE Statements
+        ;
+
+UnlessStmt
+        : UnlessClause ThenClause kEND
+        | UnlessClause ThenClause ElseClause kEND
+        ;
+
+UnlessClause
+        : kUNLESS Expression
+        ;
+
+CaseStmt
+        : CaseExpr kEND
+        | CaseExpr RepeatWhenClause kEND
+        ;
+
+CaseExpr
+        : kCASE Expression
+        ;
+
+RepeatWhenClause
+        : WhenClause
+        | RepeatWhenClause WhenClause
+        ;
+
+WhenClause
+        : kWHEN Expression BlockStmt
+        ;
+
+ForStmt
+        : kFOR Expression kASC Expression BlockStmt
+        | kFOR Expression kDESC Expression BlockStmt
+        | kFOR Identifier kIN Expression BlockStmt
+        ;
+
+LoopStmt
+        : kWHILE Expression BlockStmt
+        | kUNTIL Expression BlockStmt
+        ;
+
+AsyncStmt
+        : kASYNC Statement
+        ;
+
+RaiseStmt
+        : kRAISE
+        | kRAISE String
+        | kRAISE kNEW PrefixExpr
+        ;
+
+BlockStmt
+        : kDO Statements kEND
+        ;
+
+Statement
+        : IfStmt
+        | UnlessStmt
+        | CaseStmt
+        | ForStmt
+        | LoopStmt
+        | BlockStmt
+        | AsyncStmt
+        | RaiseStmt
+        | Expression ';'
+        ;
+
+Statements
+        : Statement
+        | Statements Statement
         ;
 
 %%

@@ -49,28 +49,42 @@ id  [a-zA-Z_][a-zA-Z_0-9]*[?]?
 "=~"        return token::MAT;
 "!~"        return token::NMA;
 
+"async"     return token::kASYNC;
 "asc"       return token::kASC;
+"as"        return token::kAS;
 "by"        return token::kBY;
+"case"      return token::kCASE;
 "desc"      return token::kDESC;
+"do"        return token::kDO;
+"elif"      return token::kELIF;
+"else"      return token::kELSE;
+"end"       return token::kEND;
 "false"     return token::kFALSE;
+"for"       return token::kFOR;
 "from"      return token::kFROM;
 "group"     return token::kGROUP;
+"if"        return token::kIF;
 "in"        return token::kIN;
 "is"        return token::kIS;
-"!is"       return token::kNIS;
 "join"      return token::kJOIN;
 "left"      return token::kLEFT;
 "new"       return token::kNEW;
 "nil"       return token::kNIL;
 "on"        return token::kON;
 "order"     return token::kORDER;
+"raise"     return token::kRAISE;
 "right"     return token::kRIGHT;
 "select"    return token::kSELECT;
 "skip"      return token::kSKIP;
 "step"      return token::kSTEP;
 "take"      return token::kTAKE;
+"then"      return token::kTHEN;
 "true"      return token::kTRUE;
+"unless"    return token::kUNLESS;
+"until"     return token::kUNTIL;
+"when"      return token::kWHEN;
 "where"     return token::kWHERE;
+"while"     return token::kUNTIL;
 
 [0-9]*"."[0-9]+([Ee][\+\-]?[0-9]+)? {
     yylval->v_flt = atof(yytext);

@@ -78,7 +78,7 @@ DECLARE_ENUM_END
 
     class OrderByNode : public SyntaxNode {
     protected:
-        VectorNode * OrderingNodes;
+        VectorNode * orders;
     public:
         OrderByNode(VectorNode *);
         virtual void print_using(ostream &, unsigned, bool nl = true);
@@ -99,6 +99,9 @@ DECLARE_ENUM_END
         SyntaxNode * take;
     public:
         RangeNode();
+        // virtual SyntaxNode * get_skip();
+        // virtual SyntaxNode * get_step();
+        // virtual SyntaxNode * get_take();
         virtual RangeNode * set_skip(SyntaxNode *);
         virtual RangeNode * set_step(SyntaxNode *);
         virtual RangeNode * set_take(SyntaxNode *);

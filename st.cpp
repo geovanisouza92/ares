@@ -6,31 +6,31 @@
 namespace LANG_NAMESPACE {
 namespace SyntaxTree {
 
-Environment::Environment(Environment * p) : prev(p), exprs(new VectorNode()) { }
+Environment::Environment(Environment * p) : prev(p), cmds(new VectorNode()) { }
 
 Environment *
 Environment::clear() {
-    exprs->clear();
+    cmds->clear();
     return this;
 }
 
 Environment *
-Environment::put_expr(SyntaxNode * v) {
-    exprs->push_back(v);
+Environment::put_cmd(SyntaxNode * v) {
+    cmds->push_back(v);
     return this;
 }
 
 Environment *
-Environment::put_exprs(VectorNode * v) {
-    for (VectorNode::iterator expr = v->begin(); expr < v->end(); expr++)
-        exprs->push_back(*expr);
+Environment::put_cmds(VectorNode * v) {
+    for (VectorNode::iterator cmd = v->begin(); cmd < v->end(); cmd++)
+        put_cmd(*cmd);
     return this;
 }
 
 void
 Environment::print_tree_using(ostream & out) {
-    for (VectorNode::iterator expr = exprs->begin(); expr < exprs->end(); expr++)
-        (*expr)->print_using(out, 0, true);
+    for (VectorNode::iterator cmd = cmds->begin(); cmd < cmds->end(); cmd++)
+        (*cmd)->print_using(out, 0, true);
 }
 
 NilNode::NilNode() { set_type(NodeType::Nil); }

@@ -16,7 +16,7 @@
 
 #define LANG_RELEASE_YEAR       2012
 #define LANG_RELEASE_MONTH      3
-#define LANG_RELEASE_DAY        6
+#define LANG_RELEASE_DAY        9
 
 #define LANG_VERSION_MAJOR      0
 #define LANG_VERSION_MINOR      2

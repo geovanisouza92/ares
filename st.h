@@ -44,12 +44,12 @@ DECLARE_ENUM_END
     class Environment {
     protected:
         Environment * prev;
-        VectorNode * exprs;
+        VectorNode * cmds;
     public:
         Environment(Environment *);
         virtual Environment * clear();
-        virtual Environment * put_expr(SyntaxNode *);
-        virtual Environment * put_exprs(VectorNode *);
+        virtual Environment * put_cmd(SyntaxNode *);
+        virtual Environment * put_cmds(VectorNode *);
         virtual void print_tree_using(ostream &);
     };
 
@@ -140,6 +140,7 @@ DECLARE_ENUM_START(Operation,Operator)
     DECLARE_ENUM_MEMBER(UnaryNot)
     DECLARE_ENUM_MEMBER(UnaryAdd)
     DECLARE_ENUM_MEMBER(UnarySub)
+    DECLARE_ENUM_MEMBER(BinaryCast)
     DECLARE_ENUM_MEMBER(BinaryMul)
     DECLARE_ENUM_MEMBER(BinaryDiv)
     DECLARE_ENUM_MEMBER(BinaryMod)
@@ -155,7 +156,6 @@ DECLARE_ENUM_START(Operation,Operator)
     DECLARE_ENUM_MEMBER(BinaryEql)
     DECLARE_ENUM_MEMBER(BinaryNeq)
     DECLARE_ENUM_MEMBER(BinaryIs)
-    DECLARE_ENUM_MEMBER(BinaryNis)
     DECLARE_ENUM_MEMBER(BinaryIn)
     DECLARE_ENUM_MEMBER(BinaryMat)
     DECLARE_ENUM_MEMBER(BinaryNma)
@@ -178,6 +178,7 @@ DECLARE_ENUM_NAMES_START(Operation)
     DECLARE_ENUM_MEMBER_NAME("UnaryNot")
     DECLARE_ENUM_MEMBER_NAME("UnaryAdd")
     DECLARE_ENUM_MEMBER_NAME("UnarySub")
+    DECLARE_ENUM_MEMBER_NAME("BinaryCast")
     DECLARE_ENUM_MEMBER_NAME("BinaryMul")
     DECLARE_ENUM_MEMBER_NAME("BinaryDiv")
     DECLARE_ENUM_MEMBER_NAME("BinaryMod")
@@ -193,7 +194,6 @@ DECLARE_ENUM_NAMES_START(Operation)
     DECLARE_ENUM_MEMBER_NAME("BinaryEql")
     DECLARE_ENUM_MEMBER_NAME("BinaryNeq")
     DECLARE_ENUM_MEMBER_NAME("BinaryIs")
-    DECLARE_ENUM_MEMBER_NAME("BinaryNis")
     DECLARE_ENUM_MEMBER_NAME("BinaryIn")
     DECLARE_ENUM_MEMBER_NAME("BinaryMat")
     DECLARE_ENUM_MEMBER_NAME("BinaryNma")
