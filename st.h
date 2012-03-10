@@ -63,7 +63,7 @@ DECLARE_ENUM_END
     protected:
         string value;
     public:
-        IdentifierNode(string &);
+        IdentifierNode(string);
         virtual void print_using(ostream &, unsigned, bool);
     };
 
@@ -71,8 +71,8 @@ DECLARE_ENUM_END
     protected:
         string value;
     public:
-        StringNode(string &);
-        virtual void append(string &);
+        StringNode(string);
+        virtual void append(string);
         virtual void print_using(ostream &, unsigned, bool);
     };
 
@@ -80,7 +80,7 @@ DECLARE_ENUM_END
     protected:
         string value;
     public:
-        RegexNode(string &);
+        RegexNode(string);
         virtual void print_using(ostream &, unsigned, bool);
     };
 
@@ -105,6 +105,17 @@ DECLARE_ENUM_END
         bool value;
     public:
         BooleanNode(bool);
+        virtual void print_using(ostream &, unsigned, bool);
+    };
+
+    class ArrayAccessNode : public SyntaxNode {
+    protected:
+        SyntaxNode * single;
+        SyntaxNode * start;
+        SyntaxNode * end;
+    public:
+        ArrayAccessNode(SyntaxNode *);
+        ArrayAccessNode(SyntaxNode *, SyntaxNode *);
         virtual void print_using(ostream &, unsigned, bool);
     };
 
@@ -156,7 +167,9 @@ DECLARE_ENUM_START(Operation,Operator)
     DECLARE_ENUM_MEMBER(BinaryEql)
     DECLARE_ENUM_MEMBER(BinaryNeq)
     DECLARE_ENUM_MEMBER(BinaryIs)
+    DECLARE_ENUM_MEMBER(BinaryNis)
     DECLARE_ENUM_MEMBER(BinaryIn)
+    DECLARE_ENUM_MEMBER(BinaryHas)
     DECLARE_ENUM_MEMBER(BinaryMat)
     DECLARE_ENUM_MEMBER(BinaryNma)
     DECLARE_ENUM_MEMBER(BinaryAnd)
@@ -172,6 +185,7 @@ DECLARE_ENUM_START(Operation,Operator)
     DECLARE_ENUM_MEMBER(BinaryMue)
     DECLARE_ENUM_MEMBER(BinaryDie)
     DECLARE_ENUM_MEMBER(TernaryIf)
+    DECLARE_ENUM_MEMBER(TernaryBetween)
 DECLARE_ENUM_END
 DECLARE_ENUM_NAMES_START(Operation)
     DECLARE_ENUM_MEMBER_NAME("UnaryNew")
@@ -194,7 +208,9 @@ DECLARE_ENUM_NAMES_START(Operation)
     DECLARE_ENUM_MEMBER_NAME("BinaryEql")
     DECLARE_ENUM_MEMBER_NAME("BinaryNeq")
     DECLARE_ENUM_MEMBER_NAME("BinaryIs")
+    DECLARE_ENUM_MEMBER_NAME("BinaryNis")
     DECLARE_ENUM_MEMBER_NAME("BinaryIn")
+    DECLARE_ENUM_MEMBER_NAME("BinaryHas")
     DECLARE_ENUM_MEMBER_NAME("BinaryMat")
     DECLARE_ENUM_MEMBER_NAME("BinaryNma")
     DECLARE_ENUM_MEMBER_NAME("BinaryAnd")
@@ -210,6 +226,7 @@ DECLARE_ENUM_NAMES_START(Operation)
     DECLARE_ENUM_MEMBER_NAME("BinaryMue")
     DECLARE_ENUM_MEMBER_NAME("BinaryDie")
     DECLARE_ENUM_MEMBER_NAME("TernaryIf")
+    DECLARE_ENUM_MEMBER_NAME("TernaryBetween")
 DECLARE_ENUM_NAMES_END(Operator)
 
     class ExpressionNode : public SyntaxNode {

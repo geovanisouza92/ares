@@ -7,18 +7,18 @@ import System.IO;
     do
       # Gerar código automático
     end
-    var ID: Integer ; # invariants not nil and > 0
+    var ID: Integer; # invariants not nil and > 0
   end
 
   class RentalAgency > Base do
-    var Address: String ;
-    var PhoneNo: String ;
-    var Manager: Pessoa ;
+    var Address: String;
+    var PhoneNo: String;
+    var Manager: Pessoa;
   end
   
   class Person > Base do
-    var Name: String ; # invariants not nil
-    var Address: String ;
+    var Name: String; # invariants not nil
+    var Address: String;
   end
   
   class CustomerRecord do
@@ -42,7 +42,7 @@ import System.IO;
     
     end
     
-    def Pays!
+    def Pays
     do
     
     end

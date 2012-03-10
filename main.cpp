@@ -21,8 +21,6 @@ DECLARE_ENUM_START(InteractionMode,Mode)
     DECLARE_ENUM_MEMBER(FileParse)
 DECLARE_ENUM_END
 
-#define TRAIT_END
-
 int main(int argc, char** argv) {
     
     bool printed = false, check_only = false;
@@ -75,19 +73,17 @@ int main(int argc, char** argv) {
         }
         line = options["eval"].as<string>();
         if (!line.empty()) {
-            TRAIT_END
             bool parse_result = driver.parse_string(line, "line eval");
             if (parse_result) {
-                if (driver.total_errors > max_errors) return 1;
+                if (driver.errors > max_errors) return 1;
                 driver.make_things_happen((check_only ? FinallyAction::None : FinallyAction::PrintResults), cout);
             }
             if (driver.verbose_mode >= VerboseMode::ErrorsAndWarnings) {
                 string errors = driver.resume_messages();
                 if (!errors.empty()) {
                     cout << "=> " << errors;
-                } else {
-                    cout << Util::resume_statistics(1, driver.total_lines);
                 }
+                cout << Util::resume_statistics(1, driver.total_lines);
             }
         }
     }
@@ -133,7 +129,7 @@ int main(int argc, char** argv) {
             bool parse_ok = driver.parse_file(*file);
             if (parse_ok) {
                 files_processed++;
-                if (driver.total_errors > max_errors) return 1;
+                if (driver.errors > max_errors) return 1;
                 driver.make_things_happen((check_only ? FinallyAction::None : FinallyAction::PrintResults), cout);
             } else break;
         }
@@ -141,9 +137,8 @@ int main(int argc, char** argv) {
             string errors = driver.resume_messages();
             if (!errors.empty()) {
                 cout << "=> " << errors;
-            } else {
-                cout << Util::resume_statistics(files_processed, driver.total_lines);
             }
+            cout << Util::resume_statistics(files_processed, driver.total_lines);
         }
     } else if (mode == InteractionMode::None) mode = InteractionMode::Shell;
 
@@ -152,10 +147,9 @@ int main(int argc, char** argv) {
         int blanks = 0; cout << endl;
         while (cout << COLOR_BGREEN << LANG_SHELL_NAME << COLOR_RESET << guide && getline(cin, line))
             if (!line.empty()) {
-                TRAIT_END
                 bool parse_ok = driver.parse_string(line, LANG_SHELL_NAME);
                 if (parse_ok)
-                    if (driver.total_errors > max_errors) return 1;
+                    if (driver.errors > max_errors) return 1;
                     driver.make_things_happen((check_only ? FinallyAction::None : FinallyAction::PrintResults), cout);
                 blanks = 0; line.clear();
             } else if (++blanks && blanks >= 3) return 0;

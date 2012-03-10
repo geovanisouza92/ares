@@ -1,7 +1,7 @@
 module IdeaCloud.Vistem do
     class Base do
     private # change visibility for section
-        def GetId: Integer do
+        def GetId : Integer do
         # do
             # do getter
         end

@@ -9,7 +9,7 @@ for var tweet in tweets do
   WriteLn(tweet);
 end
 # "async" é aconselhado para execução assíncrona, melhorando desempenho
-var another_tweets = async from tweet in twitter.mentions
-where (tweet.timestamp between Date.Now - 7 and Date.Now - 1)
+var another_tweets = async from tweet in twitter.mentions()
+where (tweet.timestamp <=> Date.Now - 7 && Date.Now - 1)
 select tweet;
 # variável "another_tweets" não é usada e será removida ;)

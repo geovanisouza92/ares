@@ -30,12 +30,19 @@ QueryOriginNode::print_using(ostream & out, unsigned d, bool nl) {
     out << ( nl ? "\n" : "" );
 }
 
-QueryBodyNode::QueryBodyNode(SyntaxNode * f) : finally(f), body(new VectorNode()) { set_type(NodeType::Nil); }
+QueryBodyNode::QueryBodyNode() : body(new VectorNode()) { set_type(NodeType::Nil); }
 
-void
+QueryBodyNode *
 QueryBodyNode::set_body(VectorNode * b) {
     for (VectorNode::iterator item = b->begin(); item < b->end(); item++)
         body->push_back(*item);
+    return this;
+}
+
+QueryBodyNode *
+QueryBodyNode::set_finally(SyntaxNode * f) {
+    finally = f;
+    return this;
 }
 
 void
@@ -116,69 +123,34 @@ GroupByNode::print_using(ostream & out, unsigned d, bool nl) {
     out << ( nl ? "\n" : "" );
 }
 
-RangeNode::RangeNode() { set_type(NodeType::Nil); }
-
-// SyntaxNode *
-// RangeNode::get_skip() {
-//     return skip;
-// }
-
-// SyntaxNode *
-// RangeNode::get_step() {
-//     return step;
-// }
-
-// SyntaxNode *
-// RangeNode::get_take() {
-//     return take;
-// }
-
-RangeNode *
-RangeNode::set_skip(SyntaxNode * sk) {
-    skip = sk;
-    return this;
-}
-
-RangeNode *
-RangeNode::set_step(SyntaxNode * st) {
-    step = st;
-    return this;
-}
-
-RangeNode *
-RangeNode::set_take(SyntaxNode * ta) {
-    take = ta;
-    return this;
-}
+RangeNode::RangeNode(RangeType::Type t, SyntaxNode * r) : rtype(t), range(r) { set_type(NodeType::Nil); }
 
 void
 RangeNode::print_using(ostream & out, unsigned d, bool nl) {
-    if (skip) {
+    switch(rtype) {
+    case RangeType::Skip:
         out << " Skip => ";
-        skip->print_using(out, 0, false);
-        out << " ";
-    }
-    if (step) {
+        break;
+    case RangeType::Step:
         out << " Step => ";
-        step->print_using(out, 0, false);
-        out << " ";
-    }
-    if (take) {
+        break;
+    case RangeType::Take:
         out << " Take => ";
-        take->print_using(out, 0, false);
-        out << " ";
+        break;
+    default:
+        break;
     }
+    range->print_using(out, 0, false);
+    out << " ";
 }
 
-SelectNode::SelectNode(VectorNode * s, SyntaxNode * r) : selection(s), range(r) { set_type(NodeType::Nil); }
+SelectNode::SelectNode(VectorNode * s) : selection(s) { set_type(NodeType::Nil); }
 
 void
 SelectNode::print_using(ostream & out, unsigned d, bool nl) {
     out << " Select => ";
     for (VectorNode::iterator select = selection->begin(); select < selection->end(); select++)
         (*select)->print_using(out, 0, false);
-    if (range)
-        range->print_using(out, 0, false);
     out << ( nl ? "\n" : "" );
 }
 

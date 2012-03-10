@@ -7,6 +7,8 @@ TODO
     - Generate bundle's
     - Enable parallel assignment's like "a, b = b, c"
     - Create context messages for errors from input
+    - Add operator overloading
+    - Add Unicode support
 
 Changelog
 

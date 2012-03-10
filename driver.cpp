@@ -19,9 +19,9 @@ Driver::Driver()
       verbose_mode(VerboseMode::ErrorsAndWarnings),
       lines(0),
       total_lines(0),
-      total_errors(0),
-      total_warnings(0),
-      total_hints(0) {
+      errors(0),
+      warnings(0),
+      hints(0) {
     Env = new SyntaxTree::Environment(NULL);
 }
 
@@ -32,7 +32,7 @@ bool
 Driver::parse_stream(istream& in, const string& sname) {
     Env->clear();
     origin = sname;
-    total_errors = total_warnings = total_hints = 0;
+    // total_errors = total_warnings = total_hints = 0;
     bool result = false;
     try {
         Scanner scanner(&in);
@@ -79,7 +79,7 @@ int
 Driver::error(const class location& l, const string& m) {
     if (verbose_mode >= VerboseMode::ErrorsOnly) {
         cout << "[" << l << "]: " << err_tail << m << endl;
-        total_errors++;
+        errors++;
     }
     return 1;
 }
@@ -89,7 +89,7 @@ Driver::error(const string& m) {
     if (verbose_mode >= VerboseMode::ErrorsOnly) {
         cout << "[" << origin << "] ";
         cout << err_tail << m << endl;
-        total_errors++;
+        errors++;
     }
     return 1;
 }
@@ -98,7 +98,7 @@ void
 Driver::warning(const class location& l, const string& m) {
     if (verbose_mode >= VerboseMode::ErrorsAndWarnings) {
         cout << "[" << l << "]: " << war_tail << m << endl;
-        total_warnings++;
+        warnings++;
     }
 }
 
@@ -107,7 +107,7 @@ Driver::warning(const string& m) {
     if (verbose_mode >= VerboseMode::ErrorsAndWarnings) {
         cout << "[" << origin << "] ";
         cout << war_tail << m << endl;
-        total_warnings++;
+        warnings++;
     }
 }
 
@@ -115,7 +115,7 @@ void
 Driver::hint(const class location& l, const string& m) {
     if (verbose_mode >= VerboseMode::ErrorsWarningsAndHints) {
         cout << "[" << l << "]: " << hin_tail << m << endl;
-        total_hints++;
+        hints++;
     }
 }
 
@@ -124,21 +124,21 @@ Driver::hint(const string& m) {
     if (verbose_mode >= VerboseMode::ErrorsWarningsAndHints) {
         cout << "[" << origin << "] ";
         cout << hin_tail << m << endl;
-        total_hints++;
+        hints++;
     }
 }
 
 string
 Driver::resume_messages() {
     stringstream result;
-    if (total_errors > 0 || total_warnings > 0 || total_hints > 0) {
+    if (errors > 0 || warnings > 0 || hints > 0) {
         result << "Messages: ";
-        if (verbose_mode >= VerboseMode::ErrorsOnly && total_errors > 0)
-            result << COLOR_BRED << total_errors << COLOR_RESET << ( total_errors > 1 ? " errors " : " error " );
-        if (verbose_mode >= VerboseMode::ErrorsAndWarnings && total_warnings > 0)
-            result << COLOR_BPURPLE << total_warnings << COLOR_RESET << ( total_warnings > 1 ? " warnings " : " warning " );
-        if (verbose_mode >= VerboseMode::ErrorsWarningsAndHints && total_hints > 0)
-            result << COLOR_BBLUE << total_hints << COLOR_RESET << ( total_hints > 1 ? " hints " : " hint " );
+        if (verbose_mode >= VerboseMode::ErrorsOnly && errors > 0)
+            result << COLOR_BRED << errors << COLOR_RESET << ( errors > 1 ? " errors " : " error " );
+        if (verbose_mode >= VerboseMode::ErrorsAndWarnings && warnings > 0)
+            result << COLOR_BPURPLE << warnings << COLOR_RESET << ( warnings > 1 ? " warnings " : " warning " );
+        if (verbose_mode >= VerboseMode::ErrorsWarningsAndHints && hints > 0)
+            result << COLOR_BBLUE << hints << COLOR_RESET << ( hints > 1 ? " hints " : " hint " );
         result << endl;
     }
     return result.str();
@@ -150,7 +150,7 @@ Driver::make_things_happen(FinallyAction::Action action, ostream& out) {
     case FinallyAction::None:
         break;
     case FinallyAction::PrintResults:
-        if (total_errors == 0) {
+        if (errors == 0) {
             syntax_ok_for(origin);
             if (verbose_mode >= VerboseMode::ErrorsWarningsAndHints)
                 Env->print_tree_using(out);

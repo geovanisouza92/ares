@@ -40,7 +40,8 @@ public:
     class Scanner * lexer;
     class SyntaxTree::Environment * Env;
     VerboseMode::Mode verbose_mode;
-    unsigned lines, total_lines, total_errors, total_warnings, total_hints;
+    unsigned lines, total_lines;
+    unsigned errors, warnings, hints;
 public:
     Driver();
     virtual ~Driver();

@@ -72,8 +72,8 @@ module Classes do
   class ContaCorrente > Persistente do
     var Cod: String;
     var Saldo: Integer;
-    var AplicPrefix: Array(ObjectId);
-    var Historico: Array(ObjectId);
+    var AplicPrefix: ObjectId[];
+    var Historico: ObjectId[];
     var Agencia: ObjectId;
     
     def Depositar(Quantia: Float)
@@ -134,7 +134,7 @@ module Classes do
 
   class Historico > Persistente do
     var Date: Date;
-    var Operacao: Array(ObjectId);
+    var Operacao: ObjectId[];
     var Valor: Float;
     
     def Criar
@@ -177,7 +177,7 @@ module Classes do
     var Nome: String; # invariants not nil
     var CPF: String;
     var Parentesco: String;
-    var Poupancas: Array(ObjectId);
+    var Poupancas: ObjectId[];
     
     def Dependente
     do
@@ -254,9 +254,9 @@ module Classes do
     var Cidade: String;
     var CEP: String;
     var Estado: String;
-    var Dependentes: Array(ObjectId);
-    var ContasCorrente: Array(ObjectId);
-    var Poupancas: Array(ObjectId);
+    var Dependentes: ObjectId[];
+    var ContasCorrente: ObjectId[];
+    var Poupancas: ObjectId[];
     
     def Cliente
     do

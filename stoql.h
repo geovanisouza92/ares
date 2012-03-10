@@ -29,11 +29,12 @@ namespace SyntaxTree {
 
     class QueryBodyNode : public SyntaxNode {
     protected:
-        SyntaxNode * finally;
         VectorNode * body;
+        SyntaxNode * finally;
     public:
-        QueryBodyNode(SyntaxNode *);
-        virtual void set_body(VectorNode *);
+        QueryBodyNode();
+        virtual QueryBodyNode * set_body(VectorNode *);
+        virtual QueryBodyNode * set_finally(SyntaxNode *);
         virtual void print_using(ostream &, unsigned, bool nl = true);
     };
 
@@ -92,28 +93,26 @@ DECLARE_ENUM_END
         virtual void print_using(ostream &, unsigned, bool nl = true);
     };
 
+DECLARE_ENUM_START(RangeType,Type)
+    DECLARE_ENUM_MEMBER(Skip)
+    DECLARE_ENUM_MEMBER(Step)
+    DECLARE_ENUM_MEMBER(Take)
+DECLARE_ENUM_END
+
     class RangeNode : public SyntaxNode {
     protected:
-        SyntaxNode * skip;
-        SyntaxNode * step;
-        SyntaxNode * take;
+        RangeType::Type rtype;
+        SyntaxNode * range;
     public:
-        RangeNode();
-        // virtual SyntaxNode * get_skip();
-        // virtual SyntaxNode * get_step();
-        // virtual SyntaxNode * get_take();
-        virtual RangeNode * set_skip(SyntaxNode *);
-        virtual RangeNode * set_step(SyntaxNode *);
-        virtual RangeNode * set_take(SyntaxNode *);
+        RangeNode(RangeType::Type, SyntaxNode *);
         virtual void print_using(ostream &, unsigned, bool nl = true);
     };
 
     class SelectNode : public SyntaxNode {
     protected:
         VectorNode * selection;
-        SyntaxNode * range;
     public:
-        SelectNode(VectorNode *, SyntaxNode *);
+        SelectNode(VectorNode *);
         virtual void print_using(ostream &, unsigned, bool nl = true);
     };
 

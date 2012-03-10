@@ -1,9 +1,9 @@
 module Another do
-inline doc "
-  Description of this module...
-  
-  Accessible by Another.__Description
-";
+# inline doc "
+  # Description of this module...
+  # 
+  # Accessible by Another.__Description
+# ";
   class Banco do
     var Nome: String ;
     var Endereco: String ;
@@ -42,8 +42,8 @@ inline doc "
   end
 
   class GerenciadorDeTransacoes do
-    var VetorDeTransacoesEmExecucao: Array(Transacao);
-    var VetorDeTransacoesEsperando: Array(Transacao);
+    var VetorDeTransacoesEmExecucao: Transacao[];
+    var VetorDeTransacoesEsperando: Transacao[];
     
     def EfetuarTransacao
     do
@@ -74,7 +74,7 @@ inline doc "
   end
 
   class Calendario do
-    var DiasUteis: Array(Date);
+    var DiasUteis: Date[];
     
     def EhDiaUtil?: Boolean
     do
