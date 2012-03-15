@@ -75,7 +75,6 @@ using namespace SyntaxTree;
 %token  kEVENT      "event"
 %token  kEXIT       "exit"
 %token  kFALSE      "false"
-%token  kFINALLY    "finally"
 %token  kFOR        "for"
 %token  kFROM       "from"
 %token  kGET        "get"
@@ -85,6 +84,7 @@ using namespace SyntaxTree;
 %token  kIMPLIES    "implies"
 %token  kIMPORT     "import"
 %token  kINCLUDE    "include"
+%token  kINTERFACE  "interface"
 %token  kINVARIANTS "invariants"
 %token  kIN         "in"
 %token  kIS         "is"
@@ -159,12 +159,14 @@ using namespace SyntaxTree;
 %token  '}'     "}"
 %token  ','     ","
 %token  ';'     ";"
+%token  sSACC   "->"
 %token  '.'     "."
+%token  sSCOPE  "::"
 
 %nonassoc ID FLOAT INTEGER STRING REGEX kTRUE kFALSE
 
 %left   '?' ':' kOR kAND kIMPLIES sEQL sNEQ sMAT sNMA '>' '<' sLEE sGEE sSHL sSHR
-%left   '+' '-' '*' '/' kMOD kDIV sPOW sDOT2 sDOT3 kIN kIS '.' '['
+%left   '+' '-' '*' '/' kMOD kDIV sPOW sDOT2 sDOT3 kIN kIS '.' '[' sSACC sSCOPE
 %right  UNARY '=' sADE  sSUE  sMUE  sDIE  ']'
 
 %type   <v_node>    Identifier
@@ -238,12 +240,14 @@ QualifiedId
             $$ = $1;
         }
         | QualifiedId '.' '*'
+        // | QualifiedId sSACC Identifier
+        // | QualifiedId sSCOPE Identifier
         | QualifiedId '.' Identifier {
             $$ = new BinaryExprNode(Operation::BinaryAccess, $1, $3);
         }
-        | QualifiedId '[' Expression ']' {
-            $$ = new BinaryExprNode(Operation::BinaryAccess, $1, $3);
-        }
+        // | QualifiedId '[' Expression ']' {
+        //     $$ = new BinaryExprNode(Operation::BinaryAccess, $1, $3);
+        // }
         ;
 
 String
@@ -323,9 +327,6 @@ FunctionCall
         : QualifiedId RealParams {
             $$ = new FunctionCallNode($1, $2);
         }
-        | QualifiedId {
-            $$ = new FunctionCallNode($1);
-        }
         ;
 
 RealParams
@@ -359,6 +360,8 @@ SuffixExpr
         : Value {
             $$ = $1;
         }
+        | SuffixExpr sSACC Identifier
+        | SuffixExpr sSCOPE Identifier
         | SuffixExpr '.' QualifiedId {
             $$ = new BinaryExprNode(Operation::BinaryAccess, $1, $3);
         }
@@ -1040,6 +1043,26 @@ Heritance
         : '>' IdentifierList
         ;
 
+InterfaceStmt
+        : kINTERFACE Identifier IntfBlock
+        | kINTERFACE Identifier Heritance IntfBlock
+        ;
+
+IntfBlock
+        : kDO IntfStmts kEND
+        ;
+
+IntfStmts
+        : VisibilityStmt
+        | ImportStmt ';'
+        | VarStmt ';'
+        | ConstStmt ';'
+        | EventStmt ';'
+        | AttrStmt ';'
+        | FunctionStmt ';'
+        | InterfaceStmt
+        ;
+
 ModuleStmt
         : kMODULE QualifiedId BlockStmt
         ;
@@ -1055,6 +1078,7 @@ TypeStmt
         | FunctionStmt ';'
         | FunctionStmt BlockStmt
         | ClassStmt BlockStmt
+        | InterfaceStmt
         | ModuleStmt
         ;
 
@@ -1073,8 +1097,9 @@ Statement
         | AsyncStmt
         | RaiseStmt ';'
         | ControlStmt ';'
-        | AssignExpr ';'
-        | SuffixExpr ';'
+        | Expression ';'
+        // | AssignExpr ';'
+        // | SuffixExpr ';'
         | AnnotationStmt
         | TypeStmt
         ;

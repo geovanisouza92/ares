@@ -36,7 +36,7 @@ LEX=flex
 LFLAGS=
 
 BINARY=arc
-BINFLAGS=--verbose=2 -c
+BINFLAGS=--verbose=2
 MODULES=st.o stoql.o parser.o scanner.o driver.o main.o
 CLEAN=parser.cpp parser.h scanner.cpp *.hh *.out* *.results *.diff
 TEST_MODULES=tests/*.$(BINARY)

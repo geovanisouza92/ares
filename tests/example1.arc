@@ -1,15 +1,15 @@
 module IdeaCloud.Vistem do
     class Base do
     private # change visibility for section
-        def GetId(): Integer do
-        # do
+        def GetId(): Integer
+        do
             # do getter
         end
     public
         var Id: Integer ;
     private
-        def SetId(Value: Integer) do # the order doesn't matter...
-        # do
+        def SetId(Value: Integer) # the order doesn't matter...
+        do
            # do setter
         end ## Comment block
     end
@@ -18,8 +18,8 @@ module IdeaCloud.Vistem do
         # general validations here
     public
         var Name: String ; # invariants not nil; # read-only, with constance
-        def Update() do
-        # do
+        def Update()
+        do
             # update
             if "blue" == Sky.Color then
             
@@ -31,10 +31,10 @@ module IdeaCloud.Vistem do
             end
         end
         private
-        def Save() do # visibility for def, only
-        # require # pre-conditions here
+        def Save() # visibility for def, only
+        require # pre-conditions here
             print(Self.Valid?);
-        # do # do of significant code
+        do # do of significant code
             # do something
             # bellow a "query expression", that take an collection (one def,
             # in this case), perform conditions to return a set.
@@ -46,8 +46,8 @@ module IdeaCloud.Vistem do
             # catch exceptions
         # finally
             # execute at finalization of def
-        # ensure # post-conditions here
-            # Self.Valid?;
+        ensure # post-conditions here
+            Self.Valid?;
         end
     end
 end

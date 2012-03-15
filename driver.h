@@ -57,7 +57,7 @@ public:
     virtual void hint(const string&);
     virtual string resume_messages();
 
-    virtual inline void syntax_ok_for(const string what) { cout << "=> Syntax OK for " << COLOR_GREEN << what << COLOR_RESET << endl; }
+    virtual inline void syntax_ok_for(const string what) { cout << "=> Syntax OK for " << COLOR_BGREEN << what << COLOR_RESET << endl; }
     virtual inline void reset_lines() { total_lines += lines; lines = 0; }
     virtual inline void inc_lines() { ++lines; }
     virtual inline void dec_lines() { --lines; }
