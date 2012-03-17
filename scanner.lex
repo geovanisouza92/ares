@@ -31,10 +31,6 @@ id  [a-zA-Z_][a-zA-Z_0-9]*[?]?
     yylloc->step();
 %}
 
-"::"    return token::sSCOPE;
-"->"    return token::sSACC;
-".."    return token::sDOT2;
-"..."   return token::sDOT3;
 "+="    return token::sADE;
 "-="    return token::sSUE;
 "*="    return token::sMUE;
@@ -83,7 +79,6 @@ id  [a-zA-Z_][a-zA-Z_0-9]*[?]?
 "implies"   return token::kIMPLIES;
 "import"    return token::kIMPORT;
 "include"   return token::kINCLUDE;
-"interface" return token::kINTERFACE;
 "invariants" return token::kINVARIANTS;
 "in"        return token::kIN;
 "is"        return token::kIS;

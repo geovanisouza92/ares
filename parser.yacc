@@ -84,7 +84,6 @@ using namespace SyntaxTree;
 %token  kIMPLIES    "implies"
 %token  kIMPORT     "import"
 %token  kINCLUDE    "include"
-%token  kINTERFACE  "interface"
 %token  kINVARIANTS "invariants"
 %token  kIN         "in"
 %token  kIS         "is"
@@ -131,8 +130,6 @@ using namespace SyntaxTree;
 
 %token  '?'     "?"
 %token  ':'     ":"
-%token  sDOT2   ".."
-%token  sDOT3   "..."
 %token  sEQL    "=="
 %token  sNEQ    "!="
 %token  sMAT    "=~"
@@ -159,14 +156,12 @@ using namespace SyntaxTree;
 %token  '}'     "}"
 %token  ','     ","
 %token  ';'     ";"
-%token  sSACC   "->"
 %token  '.'     "."
-%token  sSCOPE  "::"
 
 %nonassoc ID FLOAT INTEGER STRING REGEX kTRUE kFALSE
 
 %left   '?' ':' kOR kAND kIMPLIES sEQL sNEQ sMAT sNMA '>' '<' sLEE sGEE sSHL sSHR
-%left   '+' '-' '*' '/' kMOD kDIV sPOW sDOT2 sDOT3 kIN kIS '.' '[' sSACC sSCOPE
+%left   '+' '-' '*' '/' kMOD kDIV sPOW kIN kIS '.' '['
 %right  UNARY '=' sADE  sSUE  sMUE  sDIE  ']'
 
 %type   <v_node>    Identifier
@@ -188,7 +183,6 @@ using namespace SyntaxTree;
 %type   <v_node>    ShiftExpr
 %type   <v_node>    RelatExpr
 %type   <v_node>    LogicExpr
-%type   <v_node>    RangeExpr
 %type   <v_node>    TernaryExpr
 %type   <v_node>    AssignExpr
 %type   <v_node>    AssignValue
@@ -208,6 +202,7 @@ using namespace SyntaxTree;
 %type   <v_node>    Statement
 
 %type   <v_list>    RealParams
+%type   <v_list>    ParamValueList
 %type   <v_list>    NamedExprList
 %type   <v_list>    QueryBodyClauses
 %type   <v_list>    OrderingNodes
@@ -233,21 +228,19 @@ Identifier
         | kSELF {
             $$ = new IdentifierNode("self");
         }
+        | kNIL {
+            $$ = new IdentifierNode("nil");
+        }
         ;
 
 QualifiedId
         : Identifier {
             $$ = $1;
         }
-        | QualifiedId '.' '*'
-        // | QualifiedId sSACC Identifier
-        // | QualifiedId sSCOPE Identifier
         | QualifiedId '.' Identifier {
             $$ = new BinaryExprNode(Operation::BinaryAccess, $1, $3);
         }
-        // | QualifiedId '[' Expression ']' {
-        //     $$ = new BinaryExprNode(Operation::BinaryAccess, $1, $3);
-        // }
+        | QualifiedId '.' FunctionCall
         ;
 
 String
@@ -256,33 +249,6 @@ String
         }
         | String STRING {
             ((StringNode *) $$)->append(*$2);
-        }
-        ;
-
-Literal
-        : String {
-            $$ = $1;
-        }
-        | REGEX {
-            $$ = new RegexNode(*$1);
-        }
-        | FLOAT {
-            $$ = new FloatNode($1);
-        }
-        | INTEGER {
-            $$ = new IntegerNode($1);
-        }
-        | kFALSE {
-            $$ = new BooleanNode(false);
-        }
-        | kTRUE {
-            $$ = new BooleanNode(true);
-        }
-        | Array {
-            $$ = $1;
-        }
-        | Hash {
-            $$ = $1;
         }
         ;
 
@@ -323,32 +289,41 @@ NamedExpr
         }
         ;
 
-FunctionCall
-        : QualifiedId RealParams {
-            $$ = new FunctionCallNode($1, $2);
+Literal
+        : REGEX {
+            $$ = new RegexNode(*$1);
         }
-        ;
-
-RealParams
-        : '(' ')' {
-            $$ = new VectorNode();
+        | FLOAT {
+            $$ = new FloatNode($1);
         }
-        | '(' ExpressionList ')' {
-            $$ = $2;
+        | INTEGER {
+            $$ = new IntegerNode($1);
+        }
+        | kFALSE {
+            $$ = new BooleanNode(false);
+        }
+        | kTRUE {
+            $$ = new BooleanNode(true);
+        }
+        | String {
+            $$ = $1;
+        }
+        | Array {
+            $$ = $1;
+        }
+        | Hash {
+            $$ = $1;
         }
         ;
 
 Value
-        : kNIL {
-            $$ = new NilNode();
-        }
-        | QualifiedId {
-            $$ = $1;
-        }
-        | Literal {
+        : Literal {
             $$ = $1;
         }
         | FunctionCall {
+            $$ = $1;
+        }
+        | QualifiedId {
             $$ = $1;
         }
         | '(' Expression ')' {
@@ -356,14 +331,37 @@ Value
         }
         ;
 
+FunctionCall
+        : Identifier RealParams {
+            $$ = new FunctionCallNode($1, $2);
+        }
+        | kNEW RealParams {
+            // $$ = new UnaryExprNode(Operation::UnaryNew, StbLib::Object);
+        }
+        ;
+
+RealParams
+        : '(' ')' {
+            $$ = new VectorNode();
+        }
+        | '(' ParamValueList ')' {
+            $$ = $2;
+        }
+        ;
+
+ParamValueList
+        : AssignValue {
+            $$ = new VectorNode();
+            $$->push_back($1);
+        }
+        | ParamValueList ',' AssignValue {
+            $$->push_back($3);
+        }
+        ;
+
 SuffixExpr
         : Value {
             $$ = $1;
-        }
-        | SuffixExpr sSACC Identifier
-        | SuffixExpr sSCOPE Identifier
-        | SuffixExpr '.' QualifiedId {
-            $$ = new BinaryExprNode(Operation::BinaryAccess, $1, $3);
         }
         | SuffixExpr '.' FunctionCall {
             $$ = new BinaryExprNode(Operation::BinaryAccess, $1, $3);
@@ -404,7 +402,9 @@ PrefixExpr
         | kNEW PrefixExpr %prec UNARY {
             $$ = new UnaryExprNode(Operation::UnaryNew, $2);
         }
-        | kNEW kCLASS '(' NamedExprList ')'
+        | kNEW kCLASS '(' NamedExprList ')' {
+            // $$ = new UnaryExprNode(Operation::UnaryNew, StdLib::Object);
+        }
         ;
 
 CastExpr
@@ -527,26 +527,14 @@ LogicExpr
         }
         ;
 
-RangeExpr
+TernaryExpr
         : LogicExpr {
             $$ = $1;
         }
-        | RangeExpr sDOT2 LogicExpr {
-            $$ = new BinaryExprNode(Operation::BinaryDot2, $1, $3);
-        }
-        | RangeExpr sDOT3 LogicExpr {
-            $$ = new BinaryExprNode(Operation::BinaryDot3, $1, $3);
-        }
-        ;
-
-TernaryExpr
-        : RangeExpr {
-            $$ = $1;
-        }
-        | RangeExpr '?' Expression ':' Expression {
+        | LogicExpr '?' Expression ':' Expression {
             $$ = new TernaryExprNode(Operation::TernaryIf, $1, $3, $5);
         }
-        | RangeExpr kBETWEEN RelatExpr kAND RelatExpr {
+        | LogicExpr kBETWEEN RelatExpr kAND RelatExpr {
             $$ = new TernaryExprNode(Operation::TernaryBetween, $1, $3, $5);
         }
         ;
@@ -876,18 +864,18 @@ VisibilityStmt
         | kPUBLIC
         ;
 
-IncludeStmt
-        : kINCLUDE ListLinkable
-        ;
-
 ImportStmt
-        : kIMPORT ListLinkable
-        | kFROM QualifiedId kIMPORT ListLinkable
+        : kIMPORT LinkableList
+        | kFROM Identifier kIMPORT LinkableList
         ;
 
-ListLinkable
+IncludeStmt
+        : kINCLUDE LinkableList
+        ;
+
+LinkableList
         : Linkable
-        | ListLinkable ',' Linkable
+        | LinkableList ',' Linkable
         ;
 
 Linkable
@@ -1043,34 +1031,14 @@ Heritance
         : '>' IdentifierList
         ;
 
-InterfaceStmt
-        : kINTERFACE Identifier IntfBlock
-        | kINTERFACE Identifier Heritance IntfBlock
-        ;
-
-IntfBlock
-        : kDO IntfStmts kEND
-        ;
-
-IntfStmts
-        : VisibilityStmt
-        | ImportStmt ';'
-        | VarStmt ';'
-        | ConstStmt ';'
-        | EventStmt ';'
-        | AttrStmt ';'
-        | FunctionStmt ';'
-        | InterfaceStmt
-        ;
-
 ModuleStmt
         : kMODULE QualifiedId BlockStmt
         ;
 
 TypeStmt
         : VisibilityStmt
-        | IncludeStmt ';'
         | ImportStmt ';'
+        | IncludeStmt ';'
         | VarStmt ';'
         | ConstStmt ';'
         | EventStmt ';'
@@ -1078,7 +1046,6 @@ TypeStmt
         | FunctionStmt ';'
         | FunctionStmt BlockStmt
         | ClassStmt BlockStmt
-        | InterfaceStmt
         | ModuleStmt
         ;
 
@@ -1098,8 +1065,6 @@ Statement
         | RaiseStmt ';'
         | ControlStmt ';'
         | Expression ';'
-        // | AssignExpr ';'
-        // | SuffixExpr ';'
         | AnnotationStmt
         | TypeStmt
         ;

@@ -33,13 +33,6 @@ Environment::print_tree_using(ostream & out) {
         (*cmd)->print_using(out, 0, true);
 }
 
-NilNode::NilNode() { set_type(NodeType::Nil); }
-
-void
-NilNode::print_using(ostream & out, unsigned d, bool nl) {
-    out << string(d * 2, ' ') << "Nil" << ( nl ? "\n" : "" );
-}
-
 IdentifierNode::IdentifierNode(string v) : value(v) { set_type(NodeType::Identifier); }
 
 void

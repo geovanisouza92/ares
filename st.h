@@ -53,12 +53,6 @@ DECLARE_ENUM_END
         virtual void print_tree_using(ostream &);
     };
 
-    class NilNode : public SyntaxNode {
-    public:
-        NilNode();
-        virtual void print_using(ostream &, unsigned, bool);
-    };
-
     class IdentifierNode : public SyntaxNode {
     protected:
         string value;
@@ -175,8 +169,6 @@ DECLARE_ENUM_START(Operation,Operator)
     DECLARE_ENUM_MEMBER(BinaryOr)
     DECLARE_ENUM_MEMBER(BinaryXor)
     DECLARE_ENUM_MEMBER(BinaryImplies)
-    DECLARE_ENUM_MEMBER(BinaryDot2)
-    DECLARE_ENUM_MEMBER(BinaryDot3)
     DECLARE_ENUM_MEMBER(BinaryAccess)
     DECLARE_ENUM_MEMBER(BinaryAssign)
     DECLARE_ENUM_MEMBER(BinaryAde)
@@ -215,8 +207,6 @@ DECLARE_ENUM_NAMES_START(Operation)
     DECLARE_ENUM_MEMBER_NAME("BinaryOr")
     DECLARE_ENUM_MEMBER_NAME("BinaryXor")
     DECLARE_ENUM_MEMBER_NAME("BinaryImplies")
-    DECLARE_ENUM_MEMBER_NAME("BinaryDot2")
-    DECLARE_ENUM_MEMBER_NAME("BinaryDot3")
     DECLARE_ENUM_MEMBER_NAME("BinaryAccess")
     DECLARE_ENUM_MEMBER_NAME("BinaryAssign")
     DECLARE_ENUM_MEMBER_NAME("BinaryAde")

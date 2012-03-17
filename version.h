@@ -16,11 +16,11 @@
 
 #define LANG_RELEASE_YEAR       2012
 #define LANG_RELEASE_MONTH      3
-#define LANG_RELEASE_DAY        10
+#define LANG_RELEASE_DAY        17
 
 #define LANG_VERSION_MAJOR      0
 #define LANG_VERSION_MINOR      2
-#define LANG_VERSION_PATCH      0
+#define LANG_VERSION_PATCH      1
 #define LANG_VERSION_COMMENT    "proto"
 
 #if   defined(_WIN32) || defined(MSWIN) || defined(MSWINDOWS)

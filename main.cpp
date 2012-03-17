@@ -21,6 +21,36 @@ DECLARE_ENUM_START(InteractionMode,Mode)
     DECLARE_ENUM_MEMBER(FileParse)
 DECLARE_ENUM_END
 
+static inline string
+trim(string str, char c) {
+    string::size_type posb, pose;
+    posb = str.find_first_not_of(c);
+    if (posb != string::npos)
+        str = str.substr(posb, str.length());
+    pose = str.find_last_not_of(c);
+    if (pose != string::npos)
+        str = str.substr(0, pose + 1);
+    if (posb == pose)
+        str.clear();
+    return str;
+}
+
+#define TRAIT_END \
+line = trim(line, ' '); \
+line = trim(line, '\t'); \
+line = trim(line, '\n'); \
+if (!line.empty()) { \
+    if (line.length() > 3) { \
+        if (line.substr(line.length() - 3, 3) == "end") { \
+            \
+        } else { \
+            if (line[line.length() - 1] != ';') line += ';'; \
+        } \
+    } else { \
+        if (line[line.length() - 1] != ';') line += ';'; \
+    } \
+}
+
 int main(int argc, char** argv) {
     
     bool printed = false, check_only = false;
@@ -73,6 +103,7 @@ int main(int argc, char** argv) {
         }
         line = options["eval"].as<string>();
         if (!line.empty()) {
+            TRAIT_END
             bool parse_result = driver.parse_string(line, "line eval");
             if (parse_result) {
                 if (driver.errors > max_errors) return 1;
@@ -147,6 +178,7 @@ int main(int argc, char** argv) {
         int blanks = 0; cout << endl;
         while (cout << COLOR_BGREEN << LANG_SHELL_NAME << COLOR_RESET << guide && getline(cin, line))
             if (!line.empty()) {
+                TRAIT_END
                 bool parse_ok = driver.parse_string(line, LANG_SHELL_NAME);
                 if (parse_ok)
                     if (driver.errors > max_errors) return 1;

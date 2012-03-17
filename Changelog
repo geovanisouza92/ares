@@ -12,10 +12,15 @@ TODO
 
 Changelog
 
-[0.2.0]
-    + Query expressions
+[0.2.1]
+    + Two ways to create new object:
+        new Object();
+        Object.new();
     - Generate AST for productions
     - Print AST
+
+[0.2.0]
+    + Query expressions
 
 [0.1.0]
     + 'Ares' is the language name

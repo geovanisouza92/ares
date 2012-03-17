@@ -5,7 +5,7 @@ System("PAUSE");
 
 def updateUsing(args: Array)
 do
-  var dirs = new Array();
+  var dirs = Array.new();
   for var pair in args
   do
     var cmd = "PAUSE";
