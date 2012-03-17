@@ -1,10 +1,9 @@
-arc
 __*
+ares
 *.o
 *.hh
-*.out*
-*.diff
-*.results
 parser.h
 parser.cpp
 scanner.cpp
+*.results
+*.out*
