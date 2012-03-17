@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Ares Shell
+Type=Application
+Terminal=true
+Exec=/home/geovani/dev/ares/ares
+Icon=/home/geovani/dev/ares/ares-logo.svg
+Categories=Development
+Comment=Ares programming language compiler/interpreter

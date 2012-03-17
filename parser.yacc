@@ -93,6 +93,7 @@ using namespace SyntaxTree;
 %token  kMOD        "mod"
 %token  kNEW        "new"
 %token  kNIL        "nil"
+%token  kNOT        "not"
 %token  kON         "on"
 %token  kORDER      "order"
 %token  kOR         "or"
@@ -390,7 +391,7 @@ PrefixExpr
         : SuffixExpr {
             $$ = $1;
         }
-        | '!' PrefixExpr %prec UNARY {
+        | kNOT PrefixExpr %prec UNARY {
             $$ = new UnaryExprNode(Operation::UnaryNot, $2);
         }
         | '+' PrefixExpr %prec UNARY {

@@ -3,7 +3,7 @@
 #define LANG_VERSION_H
 
 #define LANG_NAME               "Ares"
-#define LANG_SHELL_NAME         "arc"
+#define LANG_SHELL_NAME         "ares"
 #define LANG_NAMESPACE          Ares
 
 #define LANG_AUTHOR_NAME        "Geovani de Souza"

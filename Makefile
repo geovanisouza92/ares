@@ -35,7 +35,7 @@ YFLAGS=--defines=parser.h -v
 LEX=flex
 LFLAGS=
 
-BINARY=arc
+BINARY=ares
 BINFLAGS=--verbose=2
 MODULES=st.o stoql.o parser.o scanner.o driver.o main.o
 CLEAN=parser.cpp parser.h scanner.cpp *.hh *.out* *.results *.diff

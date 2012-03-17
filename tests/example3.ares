@@ -13,7 +13,7 @@ module Clientes do
   class Pessoa > Base, IPessoa do
     def TemBoaReputacao? : Boolean do
         # Retorna verdadeiro somente se a pessoa for de boa fé...
-        Result = ! Nome.IsEmpty?;
+        Result = not Nome.IsEmpty?;
     end
     var Nome: String ;
   end

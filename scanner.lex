@@ -23,7 +23,7 @@ typedef Parser::token_type token_type;
 #define YY_USER_ACTION yylloc->columns(yyleng);
 %}
 
-id  [a-zA-Z_][a-zA-Z_0-9]*[?]?
+id  [a-zA-Z_][a-zA-Z_0-9]*[?!]?
 
 %%
 
@@ -88,6 +88,7 @@ id  [a-zA-Z_][a-zA-Z_0-9]*[?]?
 "mod"       return token::kMOD;
 "new"       return token::kNEW;
 "nil"       return token::kNIL;
+"not"       return token::kNOT;
 "on"        return token::kON;
 "order"     return token::kORDER;
 "or"        return token::kOR;
