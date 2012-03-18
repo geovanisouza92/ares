@@ -6,9 +6,11 @@ using namespace std;
 
 #include "st.h"
 #include "stoql.h"
+#include "stmt.h"
 #include "driver.h"
 
 using namespace SyntaxTree;
+
 %}
 
 %debug
@@ -52,7 +54,6 @@ using namespace SyntaxTree;
 
 %token  kABSTRACT   "abstract"
 %token  kAFTER      "after"
-%token  kAND        "and"
 %token  kASYNC      "async"
 %token  kASC        "asc"
 %token  kAS         "as"
@@ -66,7 +67,6 @@ using namespace SyntaxTree;
 %token  kCONST      "const"
 %token  kDEF        "def"
 %token  kDESC       "desc"
-%token  kDIV        "div"
 %token  kDO         "do"
 %token  kELIF       "elif"
 %token  kELSE       "else"
@@ -81,7 +81,6 @@ using namespace SyntaxTree;
 %token  kGROUP      "group"
 %token  kHAS        "has"
 %token  kIF         "if"
-%token  kIMPLIES    "implies"
 %token  kIMPORT     "import"
 %token  kINCLUDE    "include"
 %token  kINVARIANTS "invariants"
@@ -90,13 +89,10 @@ using namespace SyntaxTree;
 %token  kJOIN       "join"
 %token  kLEFT       "left"
 %token  kMODULE     "module"
-%token  kMOD        "mod"
 %token  kNEW        "new"
 %token  kNIL        "nil"
-%token  kNOT        "not"
 %token  kON         "on"
 %token  kORDER      "order"
-%token  kOR         "or"
 %token  kPRIVATE    "private"
 %token  kPROTECTED  "protected"
 %token  kPUBLIC     "public"
@@ -120,7 +116,6 @@ using namespace SyntaxTree;
 %token  kWHEN       "when"
 %token  kWHERE      "where"
 %token  kWHILE      "while"
-%token  kXOR        "xor"
 %token  kYIELD      "yield"
 
 %token  '='     "="
@@ -131,7 +126,11 @@ using namespace SyntaxTree;
 
 %token  '?'     "?"
 %token  ':'     ":"
+%token  sAND    "&&"
+%token  sOR     "||"
+%token  sIMPLIES "=>"
 %token  sEQL    "=="
+%token  sIDE    "==="
 %token  sNEQ    "!="
 %token  sMAT    "=~"
 %token  sNMA    "!~"
@@ -139,14 +138,20 @@ using namespace SyntaxTree;
 %token  sLEE    "<="
 %token  '>'     ">"
 %token  sGEE    ">="
+%token  sDOT2   ".."
+%token  sDOT3   "..."
+%token  '&'     "&"
+%token  '|'     "|"
+%token  '^'     "^"
 %token  sSHL    "<<"
 %token  sSHR    ">>"
 %token  '+'     "+"
 %token  '-'     "-"
 %token  '*'     "*"
 %token  '/'     "/"
-%token  '!'     "!"
 %token  sPOW    "**"
+%token  '!'     "!"
+%token  sSCP    "::"
 %token  UNARY
 
 %token  '('     "("
@@ -161,12 +166,14 @@ using namespace SyntaxTree;
 
 %nonassoc ID FLOAT INTEGER STRING REGEX kTRUE kFALSE
 
-%left   '?' ':' kOR kAND kIMPLIES sEQL sNEQ sMAT sNMA '>' '<' sLEE sGEE sSHL sSHR
-%left   '+' '-' '*' '/' kMOD kDIV sPOW kIN kIS '.' '['
-%right  UNARY '=' sADE  sSUE  sMUE  sDIE  ']'
+%left   sOR sAND sIMPLIES sEQL sNEQ sMAT sNMA sLEE sGEE sSHL sSHR sPOW sDOT2 sDOT3 sSCP sIDE kIN kIS
+%left   '?' ':' '<' '>' '^' '+' '-' '*' '/' '%' '\\' '&' '|' '[' ']' '{' '}' '(' ')' ',' '.' '!'
+%right  UNARY sADE sSUE sMUE sDIE
+%right  '='
 
 %type   <v_node>    Identifier
 %type   <v_node>    QualifiedId
+%type   <v_node>    ArrayAccessInfo
 %type   <v_node>    String
 %type   <v_node>    Literal
 %type   <v_node>    Array
@@ -174,15 +181,14 @@ using namespace SyntaxTree;
 %type   <v_node>    Value
 %type   <v_node>    FunctionCall
 %type   <v_node>    NamedExpr
-%type   <v_node>    CastExpr
-%type   <v_node>    PowerExpr
-%type   <v_node>    ArrayAccessInfo
 %type   <v_node>    SuffixExpr
 %type   <v_node>    PrefixExpr
 %type   <v_node>    MultExpr
 %type   <v_node>    AddExpr
 %type   <v_node>    ShiftExpr
+%type   <v_node>    BitwiseExpr
 %type   <v_node>    RelatExpr
+%type   <v_node>    RangeExpr
 %type   <v_node>    LogicExpr
 %type   <v_node>    TernaryExpr
 %type   <v_node>    AssignExpr
@@ -201,6 +207,11 @@ using namespace SyntaxTree;
 %type   <v_node>    SelectClause
 %type   <v_node>    Expression
 %type   <v_node>    Statement
+%type   <v_node>    IfStmt
+%type   <v_node>    IfClause
+%type   <v_node>    ElifClause
+%type   <v_node>    AsyncStmt
+%type   <v_node>    BlockStmt
 
 %type   <v_list>    RealParams
 %type   <v_list>    ParamValueList
@@ -208,6 +219,9 @@ using namespace SyntaxTree;
 %type   <v_list>    QueryBodyClauses
 %type   <v_list>    OrderingNodes
 %type   <v_list>    ExpressionList
+%type   <v_list>    ThenClause
+%type   <v_list>    RepeatElifClause
+%type   <v_list>    ElseClause
 %type   <v_list>    Statements
 
 %%
@@ -241,7 +255,27 @@ QualifiedId
         | QualifiedId '.' Identifier {
             $$ = new BinaryExprNode(Operation::BinaryAccess, $1, $3);
         }
+        | QualifiedId sSCP Identifier {
+            $$ = new BinaryExprNode(Operation::BinaryScope, $1, $3);
+        }
         | QualifiedId '.' FunctionCall
+        | QualifiedId sSCP FunctionCall
+        | QualifiedId '[' ArrayAccessInfo ']'
+        ;
+
+ArrayAccessInfo
+        : Expression {
+            $$ = new ArrayAccessNode($1);
+        }
+        | Expression ':' {
+            $$ = new ArrayAccessNode($1, NULL);
+        }
+        | Expression ':' Expression {
+            $$ = new ArrayAccessNode($1, $3);
+        }
+        | ':' Expression {
+            $$ = new ArrayAccessNode(NULL, $2);
+        }
         ;
 
 String
@@ -282,7 +316,7 @@ NamedExprList
         ;
 
 NamedExpr
-        : QualifiedId ':' Expression {
+        : Identifier ':' Expression {
             $$ = new HashPairNode($1, $3);
         }
         | String ':' Expression {
@@ -321,10 +355,10 @@ Value
         : Literal {
             $$ = $1;
         }
-        | FunctionCall {
+        | QualifiedId {
             $$ = $1;
         }
-        | QualifiedId {
+        | FunctionCall {
             $$ = $1;
         }
         | '(' Expression ')' {
@@ -336,9 +370,10 @@ FunctionCall
         : Identifier RealParams {
             $$ = new FunctionCallNode($1, $2);
         }
-        | kNEW RealParams {
+        | kNEW RealParams // {
+            // throw NotImplementedError();
             // $$ = new UnaryExprNode(Operation::UnaryNew, StbLib::Object);
-        }
+        // }
         ;
 
 RealParams
@@ -364,34 +399,20 @@ SuffixExpr
         : Value {
             $$ = $1;
         }
+        | SuffixExpr '.' Identifier
         | SuffixExpr '.' FunctionCall {
             $$ = new BinaryExprNode(Operation::BinaryAccess, $1, $3);
         }
-        | SuffixExpr '[' ArrayAccessInfo ']' {
-            $$ = new BinaryExprNode(Operation::BinaryAccess, $1, $3);
-        }
-        ;
-
-ArrayAccessInfo
-        : Expression {
-            $$ = new ArrayAccessNode($1);
-        }
-        | Expression ':' {
-            $$ = new ArrayAccessNode($1, NULL);
-        }
-        | Expression ':' Expression {
-            $$ = new ArrayAccessNode($1, $3);
-        }
-        | ':' Expression {
-            $$ = new ArrayAccessNode(NULL, $2);
-        }
+        // | SuffixExpr '[' ArrayAccessInfo ']' {
+        //     $$ = new BinaryExprNode(Operation::BinaryAccess, $1, $3);
+        // }
         ;
 
 PrefixExpr
         : SuffixExpr {
             $$ = $1;
         }
-        | kNOT PrefixExpr %prec UNARY {
+        | '!' PrefixExpr %prec UNARY {
             $$ = new UnaryExprNode(Operation::UnaryNot, $2);
         }
         | '+' PrefixExpr %prec UNARY {
@@ -400,49 +421,35 @@ PrefixExpr
         | '-' PrefixExpr %prec UNARY {
             $$ = new UnaryExprNode(Operation::UnarySub, $2);
         }
+        | '(' QualifiedId ')' PrefixExpr %prec UNARY {
+            $$ = new BinaryExprNode(Operation::BinaryCast, $4, $2);
+        }
         | kNEW PrefixExpr %prec UNARY {
             $$ = new UnaryExprNode(Operation::UnaryNew, $2);
         }
-        | kNEW kCLASS '(' NamedExprList ')' {
+        | kNEW kCLASS '(' NamedExprList ')' // {
+            // throw NotImplementedError();
             // $$ = new UnaryExprNode(Operation::UnaryNew, StdLib::Object);
-        }
-        ;
-
-CastExpr
-        : PrefixExpr {
-            $$ = $1;
-        }
-        | CastExpr kAS QualifiedId {
-            $$ = new BinaryExprNode(Operation::BinaryCast, $1, $3);
-        }
-        | '(' QualifiedId ')' CastExpr {
-            $$ = new BinaryExprNode(Operation::BinaryCast, $4, $2);
-        }
-        ;
-
-PowerExpr
-        : CastExpr {
-            $$ = $1;
-        }
-        | PowerExpr sPOW CastExpr {
-            $$ = new BinaryExprNode(Operation::BinaryPow, $1, $3);
-        }
+        // }
         ;
 
 MultExpr
-        : PowerExpr {
+        : PrefixExpr {
             $$ = $1;
         }
-        | MultExpr '*' PowerExpr {
+        | MultExpr sPOW PrefixExpr {
+            $$ = new BinaryExprNode(Operation::BinaryPow, $1, $3);
+        }
+        | MultExpr '*' PrefixExpr {
             $$ = new BinaryExprNode(Operation::BinaryMul, $1, $3);
         }
-        | MultExpr '/' PowerExpr {
+        | MultExpr '/' PrefixExpr {
             $$ = new BinaryExprNode(Operation::BinaryDiv, $1, $3);
         }
-        | MultExpr kMOD PowerExpr {
+        | MultExpr '%' PrefixExpr {
             $$ = new BinaryExprNode(Operation::BinaryMod, $1, $3);
         }
-        | MultExpr kDIV PowerExpr {
+        | MultExpr '\\' PrefixExpr {
             $$ = new BinaryExprNode(Operation::BinaryDiv, $1, $3);
         }
         ;
@@ -471,41 +478,59 @@ ShiftExpr
         }
         ;
 
-RelatExpr
+BitwiseExpr
         : ShiftExpr {
             $$ = $1;
         }
-        | RelatExpr '<' ShiftExpr {
+        | BitwiseExpr '&' ShiftExpr {
+            $$ = new BinaryExprNode(Operation::BinaryBAnd, $1, $3);
+        }
+        | BitwiseExpr '|' ShiftExpr {
+            $$ = new BinaryExprNode(Operation::BinaryBOr, $1, $3);
+        }
+        | BitwiseExpr '^' ShiftExpr {
+            $$ = new BinaryExprNode(Operation::BinaryBXor, $1, $3);
+        }
+        ;
+
+RelatExpr
+        : BitwiseExpr {
+            $$ = $1;
+        }
+        | RelatExpr '<' BitwiseExpr {
             $$ = new BinaryExprNode(Operation::BinaryLet, $1, $3);
         }
-        | RelatExpr sLEE ShiftExpr {
+        | RelatExpr sLEE BitwiseExpr {
             $$ = new BinaryExprNode(Operation::BinaryLee, $1, $3);
         }
-        | RelatExpr '>' ShiftExpr {
+        | RelatExpr '>' BitwiseExpr {
             $$ = new BinaryExprNode(Operation::BinaryGet, $1, $3);
         }
-        | RelatExpr sGEE ShiftExpr {
+        | RelatExpr sGEE BitwiseExpr {
             $$ = new BinaryExprNode(Operation::BinaryGee, $1, $3);
         }
-        | RelatExpr sEQL ShiftExpr {
+        | RelatExpr sEQL BitwiseExpr {
             $$ = new BinaryExprNode(Operation::BinaryEql, $1, $3);
         }
-        | RelatExpr sNEQ ShiftExpr {
+        | RelatExpr sNEQ BitwiseExpr {
             $$ = new BinaryExprNode(Operation::BinaryNeq, $1, $3);
         }
-        | RelatExpr kIS ShiftExpr {
+        | RelatExpr sIDE BitwiseExpr {
+            $$ = new BinaryExprNode(Operation::BinaryIde, $1, $3);
+        }
+        | RelatExpr kIS BitwiseExpr {
             $$ = new BinaryExprNode(Operation::BinaryIs, $1, $3);
         }
-        | RelatExpr kIN ShiftExpr {
+        | RelatExpr kIN BitwiseExpr {
             $$ = new BinaryExprNode(Operation::BinaryIn, $1, $3);
         }
-        | RelatExpr kHAS ShiftExpr {
+        | RelatExpr kHAS BitwiseExpr {
             $$ = new BinaryExprNode(Operation::BinaryHas, $3, $1);
         }
-        | RelatExpr sMAT ShiftExpr {
+        | RelatExpr sMAT BitwiseExpr {
             $$ = new BinaryExprNode(Operation::BinaryMat, $1, $3);
         }
-        | RelatExpr sNMA ShiftExpr {
+        | RelatExpr sNMA BitwiseExpr {
             $$ = new BinaryExprNode(Operation::BinaryNma, $1, $3);
         }
         ;
@@ -514,28 +539,37 @@ LogicExpr
         : RelatExpr {
             $$ = $1;
         }
-        | LogicExpr kAND RelatExpr {
-            $$ = new BinaryExprNode(Operation::BinaryAnd, $1, $3);
+        | LogicExpr sAND RelatExpr {
+            $$ = new BinaryExprNode(Operation::BinaryLAnd, $1, $3);
         }
-        | LogicExpr kOR RelatExpr {
-            $$ = new BinaryExprNode(Operation::BinaryOr, $1, $3);
+        | LogicExpr sOR RelatExpr {
+            $$ = new BinaryExprNode(Operation::BinaryLOr, $1, $3);
         }
-        | LogicExpr kXOR RelatExpr {
-            $$ = new BinaryExprNode(Operation::BinaryXor, $1, $3);
+        | LogicExpr sIMPLIES RelatExpr {
+            $$ = new BinaryExprNode(Operation::BinaryLImplies, $1, $3);
         }
-        | LogicExpr kIMPLIES RelatExpr {
-            $$ = new BinaryExprNode(Operation::BinaryImplies, $1, $3);
+        ;
+
+RangeExpr
+        : LogicExpr {
+            $$ = $1;
+        }
+        | RangeExpr sDOT2 LogicExpr {
+            $$ = new BinaryExprNode(Operation::BinaryDot2, $1, $3);
+        }
+        | RangeExpr sDOT3 LogicExpr {
+            $$ = new BinaryExprNode(Operation::BinaryDot3, $1, $3);
         }
         ;
 
 TernaryExpr
-        : LogicExpr {
+        : RangeExpr {
             $$ = $1;
         }
-        | LogicExpr '?' Expression ':' Expression {
+        | RangeExpr '?' Expression ':' Expression {
             $$ = new TernaryExprNode(Operation::TernaryIf, $1, $3, $5);
         }
-        | LogicExpr kBETWEEN RelatExpr kAND RelatExpr {
+        | RangeExpr kBETWEEN RelatExpr sAND RelatExpr {
             $$ = new TernaryExprNode(Operation::TernaryBetween, $1, $3, $5);
         }
         ;
@@ -562,9 +596,15 @@ AssignValue
         : Expression {
             $$ = $1;
         }
-        | BlockStmt
-        | kASYNC Expression
-        | kASYNC BlockStmt
+        | BlockStmt {
+            $$ = $1;
+        }
+        | kASYNC Expression {
+            $$ = new AsyncStmtNode($2);
+        }
+        | kASYNC BlockStmt {
+            $$ = new AsyncStmtNode($2);
+        }
         ;
 
 QueryExpr
@@ -728,35 +768,64 @@ ExpressionList
         ;
 
 IfStmt
-        : IfClause ThenClause kEND
-        | IfClause ThenClause RepeatElifClause kEND
-        | IfClause ThenClause ElseClause kEND
-        | IfClause ThenClause RepeatElifClause ElseClause kEND
+        : IfClause ThenClause kEND {
+            $$ = new IfStmtNode($1, $2);
+        }
+        | IfClause ThenClause ElseClause kEND {
+            $$ = new IfStmtNode($1, $2);
+            ((IfStmtNode *) $$)
+              ->set_else($3);
+        }
+        | IfClause ThenClause RepeatElifClause kEND {
+            $$ = new IfStmtNode($1, $2);
+            ((IfStmtNode *) $$)
+              ->set_elif($3);
+        }
+        | IfClause ThenClause RepeatElifClause ElseClause kEND {
+            $$ = new IfStmtNode($1, $2);
+            ((IfStmtNode *) $$)
+              ->set_elif($3)
+              ->set_else($4);
+        }
         ;
 
 IfClause
-        : kIF Expression
-        | kIF Expression WhereClause
+        : kIF Expression {
+            $$ = $2;
+        }
         ;
 
 ThenClause
-        : kTHEN
-        | kTHEN Statements
+        : kTHEN {
+            $$ = NULL;
+        }
+        | kTHEN Statements {
+            $$ = $2;
+        }
         ;
 
 RepeatElifClause
-        : ElifClause
-        | RepeatElifClause ElifClause
+        : ElifClause {
+            $$ = new VectorNode();
+        }
+        | RepeatElifClause ElifClause {
+            $$->push_back($2);
+        }
         ;
 
 ElifClause
-        : kELIF Expression ThenClause
-        | kELIF Expression WhereClause ThenClause
+        : kELIF Expression ThenClause {
+            $$ = new IfStmtNode($2, $3);
+        }
         ;
 
 ElseClause
-        : kELSE
-        | kELSE Statements
+        : kELSE {
+            $$ = NULL;
+        }
+        | kELSE Statements {
+            $$ = $2;
+        }
         ;
 
 UnlessStmt
@@ -993,12 +1062,12 @@ Attribute
 
 Getter
         : kGET
-        | kGET QualifiedId
+        | kGET Identifier
         ;
 
 Setter
         : kSET
-        | kSET QualifiedId
+        | kSET Identifier
         ;
 
 FunctionStmt
@@ -1051,12 +1120,14 @@ TypeStmt
         ;
 
 AnnotationStmt
-        : '@' QualifiedId
-        | '@' QualifiedId RealParams
+        : '@' Identifier
+        | '@' Identifier RealParams
         ;
 
 Statement
-        : IfStmt
+        : IfStmt {
+            $$ = $1;
+        }
         | UnlessStmt
         | CaseStmt
         | ForStmt
@@ -1071,8 +1142,12 @@ Statement
         ;
 
 Statements
-        : Statement
-        | Statements Statement
+        : Statement {
+            $$ = new VectorNode();
+        }
+        | Statements Statement {
+            $$->push_back($2);
+        }
         ;
 
 %%

@@ -1,6 +1,6 @@
 
-#ifndef ARC_DRIVER_H
-#define ARC_DRIVER_H
+#ifndef ARES_DRIVER_H
+#define ARES_DRIVER_H
 
 #include <string>
 #include <vector>

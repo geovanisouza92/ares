@@ -1,5 +1,5 @@
 #! /bin/sh
-EXT=arc
+EXT=ares
 
 cd tests
 echo "Removing provious temporary test files ..."

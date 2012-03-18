@@ -23,7 +23,7 @@ typedef Parser::token_type token_type;
 #define YY_USER_ACTION yylloc->columns(yyleng);
 %}
 
-id  [a-zA-Z_][a-zA-Z_0-9]*[?!]?
+id  [a-zA-Z_][a-zA-Z_\-0-9]*[?!]?
 
 %%
 
@@ -31,11 +31,18 @@ id  [a-zA-Z_][a-zA-Z_0-9]*[?!]?
     yylloc->step();
 %}
 
+"::"    return token::sSCP;
+"..."   return token::sDOT3;
+".."    return token::sDOT2;
+"&&"    return token::sAND;
+"||"    return token::sOR;
+"=>"    return token::sIMPLIES;
 "+="    return token::sADE;
 "-="    return token::sSUE;
 "*="    return token::sMUE;
 "/="    return token::sDIE;
 "**"    return token::sPOW;
+"==="   return token::sIDE;
 "=="    return token::sEQL;
 "!="    return token::sNEQ;
 "<="    return token::sLEE;
@@ -47,7 +54,6 @@ id  [a-zA-Z_][a-zA-Z_0-9]*[?!]?
 
 "abstract"  return token::kABSTRACT;
 "after"     return token::kAFTER;
-"and"       return token::kAND;
 "async"     return token::kASYNC;
 "asc"       return token::kASC;
 "as"        return token::kAS;
@@ -61,7 +67,6 @@ id  [a-zA-Z_][a-zA-Z_0-9]*[?!]?
 "const"     return token::kCONST;
 "def"       return token::kDEF;
 "desc"      return token::kDESC;
-"div"       return token::kDIV;
 "do"        return token::kDO;
 "elif"      return token::kELIF;
 "else"      return token::kELSE;
@@ -76,7 +81,6 @@ id  [a-zA-Z_][a-zA-Z_0-9]*[?!]?
 "group"     return token::kGROUP;
 "has"       return token::kHAS;
 "if"        return token::kIF;
-"implies"   return token::kIMPLIES;
 "import"    return token::kIMPORT;
 "include"   return token::kINCLUDE;
 "invariants" return token::kINVARIANTS;
@@ -85,13 +89,10 @@ id  [a-zA-Z_][a-zA-Z_0-9]*[?!]?
 "join"      return token::kJOIN;
 "left"      return token::kLEFT;
 "module"    return token::kMODULE;
-"mod"       return token::kMOD;
 "new"       return token::kNEW;
 "nil"       return token::kNIL;
-"not"       return token::kNOT;
 "on"        return token::kON;
 "order"     return token::kORDER;
-"or"        return token::kOR;
 "private"   return token::kPRIVATE;
 "protected" return token::kPROTECTED;
 "public"    return token::kPUBLIC;
@@ -115,7 +116,6 @@ id  [a-zA-Z_][a-zA-Z_0-9]*[?!]?
 "when"      return token::kWHEN;
 "where"     return token::kWHERE;
 "while"     return token::kWHILE;
-"xor"       return token::kXOR;
 "yield"     return token::kYIELD;
 
 [0-9]*"."[0-9]+([Ee][\+\-]?[0-9]+)? {
@@ -138,7 +138,7 @@ id  [a-zA-Z_][a-zA-Z_0-9]*[?!]?
     return token::STRING;
 }
 
-\/[^\/]*\/ {
+\~\/[^\/]*\/[imx]* {
     yylval->v_str = new std::string(yytext, yyleng);
     return token::REGEX;
 }

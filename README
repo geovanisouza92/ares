@@ -7,5 +7,6 @@ Dependencies:
       + Bison++ >= 2.3
       + LLVM-Clang >= 3.0 or GCC >= 4.6.1
       + LLVM >= 3.0
+      + Boost >= 1.48
       + GDB Debugger
       + GIT >= 1.7.5.4

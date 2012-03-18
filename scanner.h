@@ -1,6 +1,6 @@
 
-#ifndef ARC_SCANNER_H
-#define ARC_SCANNER_H
+#ifndef ARES_SCANNER_H
+#define ARES_SCANNER_H
 
 #include <iostream>
 

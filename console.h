@@ -1,6 +1,6 @@
 
-#ifndef CLD_CONSOLE_H
-#define CLD_CONSOLE_H
+#ifndef ARES_CONSOLE_H
+#define ARES_CONSOLE_H
 
 #include <string>
 #include <iostream>

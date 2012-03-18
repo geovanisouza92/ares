@@ -1,0 +1,16 @@
+{section: {
+  float: _left,
+  margin-right: flex-gutter(),
+  width: flex-grid(8),
+
+  article: {
+    float: _left,
+    margin-right: flex-gutter(),
+    width: flex-grid(6, 8)
+  },
+
+  aside: {
+    float: _left,
+    width: flex-grid(2, 8)
+  }
+}};
