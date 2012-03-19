@@ -15,7 +15,6 @@ namespace SyntaxTree {
     public:
         QueryNode(SyntaxNode *, SyntaxNode *);
         virtual void print_using(ostream &, unsigned, bool nl = true);
-        virtual void evaluate();
     };
 
     class QueryOriginNode : public SyntaxNode {

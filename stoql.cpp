@@ -14,11 +14,6 @@ QueryNode::print_using(ostream & out, unsigned d, bool nl) {
     out << ( nl ? "\n" : "" );
 }
 
-void
-QueryNode::evaluate() {
-    // TODO
-}
-
 QueryOriginNode::QueryOriginNode(SyntaxNode * i, SyntaxNode * e) : id(i), expr(e) { set_type(NodeType::Nil); }
 
 void

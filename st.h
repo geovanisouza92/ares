@@ -175,7 +175,6 @@ DECLARE_ENUM_START(Operation,Operator)
     DECLARE_ENUM_MEMBER(BinaryLOr)
     DECLARE_ENUM_MEMBER(BinaryLImplies)
     DECLARE_ENUM_MEMBER(BinaryAccess)
-    DECLARE_ENUM_MEMBER(BinaryScope)
     DECLARE_ENUM_MEMBER(BinaryAssign)
     DECLARE_ENUM_MEMBER(BinaryAde)
     DECLARE_ENUM_MEMBER(BinarySue)
@@ -219,7 +218,6 @@ DECLARE_ENUM_NAMES_START(Operation)
     DECLARE_ENUM_MEMBER_NAME("BinaryLOr")
     DECLARE_ENUM_MEMBER_NAME("BinaryLImplies")
     DECLARE_ENUM_MEMBER_NAME("BinaryAccess")
-    DECLARE_ENUM_MEMBER_NAME("BinaryScope")
     DECLARE_ENUM_MEMBER_NAME("BinaryAssign")
     DECLARE_ENUM_MEMBER_NAME("BinaryAde")
     DECLARE_ENUM_MEMBER_NAME("BinarySue")
@@ -232,7 +230,6 @@ DECLARE_ENUM_NAMES_END(Operator)
     class ExpressionNode : public SyntaxNode {
     public:
         // virtual ~ExpressionNode();
-        virtual void evaluate() = 0;
         virtual void print_using(ostream &, unsigned, bool) = 0;
     };
 
@@ -242,7 +239,6 @@ DECLARE_ENUM_NAMES_END(Operator)
         SyntaxNode * member1;
     public:
         UnaryExprNode(Operation::Operator op, SyntaxNode * m1) : operation(op), member1(m1) { set_type(NodeType::Nil); }
-        virtual void evaluate();
         virtual void print_using(ostream &, unsigned, bool);
     };
 
@@ -253,7 +249,6 @@ DECLARE_ENUM_NAMES_END(Operator)
         SyntaxNode * member2;
     public:
         BinaryExprNode(Operation::Operator op, SyntaxNode * m1, SyntaxNode * m2) : operation(op), member1(m1), member2(m2) { set_type(NodeType::Nil); }
-        virtual void evaluate();
         virtual void print_using(ostream &, unsigned, bool);
     };
 
@@ -265,7 +260,6 @@ DECLARE_ENUM_NAMES_END(Operator)
         SyntaxNode * member3;
     public:
         TernaryExprNode(Operation::Operator op, SyntaxNode * m1, SyntaxNode * m2, SyntaxNode * m3) : operation(op), member1(m1), member2(m2), member3(m3) { set_type(NodeType::Nil); }
-        virtual void evaluate();
         virtual void print_using(ostream &, unsigned, bool);
     };
 

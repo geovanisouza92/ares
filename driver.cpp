@@ -64,6 +64,8 @@ bool
 Driver::parse_file(const string& filename) {
     fs::path file = fs::absolute(filename);
     if (fs::exists(file) && file.extension() == string("." LANG_SHELL_NAME)) {
+        if (verbose_mode >= VerboseMode::ErrorsWarningsAndHints)
+            cout << "=> Start parsing: " << filename << endl;
         ifstream in(filename.c_str());
         if (!in.good()) {
             error("Could not open file: " + filename);
@@ -150,10 +152,9 @@ Driver::make_things_happen(FinallyAction::Action action, ostream& out) {
     case FinallyAction::None:
         break;
     case FinallyAction::PrintResults:
-        if (errors == 0) {
+        if (errors == 0 && verbose_mode >= VerboseMode::ErrorsWarningsAndHints) {
             syntax_ok_for(origin);
-            if (verbose_mode >= VerboseMode::ErrorsWarningsAndHints)
-                Env->print_tree_using(out);
+            Env->print_tree_using(out);
         }
         break;
     case FinallyAction::Execute:

@@ -142,20 +142,10 @@ HashNode::print_using(ostream & out, unsigned d, bool nl) {
 }
 
 void
-UnaryExprNode::evaluate() {
-    // TODO
-}
-
-void
 UnaryExprNode::print_using(ostream & out, unsigned tab, bool nl) {
     out << string(tab * 2, ' ') << "Unary expr. => [ " << Operation::get_enum_name(operation) << ( nl ? "\n" : "" );
     member1->print_using(out, tab + 1, nl);
     out << " ]" << ( nl ? "\n" : "" );
-}
-
-void
-BinaryExprNode::evaluate() {
-    // TODO
 }
 
 void
@@ -164,11 +154,6 @@ BinaryExprNode::print_using(ostream & out, unsigned tab, bool nl) {
     member1->print_using(out, tab + 1, nl);
     member2->print_using(out, tab + 1, nl);
     out << " ]" << ( nl ? "\n" : "" );
-}
-
-void
-TernaryExprNode::evaluate() {
-    // TODO
 }
 
 void

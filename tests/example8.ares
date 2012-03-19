@@ -4,7 +4,7 @@ var tweets = async # Execução assíncrona
   where tweet.fromUser("one_user")
   select tweet;
 # Percorre o vetor de tweets
-for var tweet in tweets do
+for tweet in tweets do
   tweet.replyTo("another_user", "Message");
   WriteLn(tweet);
 end

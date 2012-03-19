@@ -51,10 +51,19 @@ if (!line.empty()) { \
     } \
 }
 
+#define STATS \
+if (driver.verbose_mode >= VerboseMode::ErrorsOnly) { \
+    string errors = driver.resume_messages(); \
+    if (!errors.empty()) { \
+        cout << "=> " << errors; \
+    } \
+    cout << Util::resume_statistics(files_processed, driver.total_lines); \
+}
+
 int main(int argc, char** argv) {
     
     bool printed = false, check_only = false;
-    int max_errors = 3;
+    int max_errors = 3, files_processed = 0;
     InteractionMode::Mode mode = InteractionMode::None;
     vector<string> files, messages;
     string output_filename(LANG_SHELL_NAME ".out"), line;
@@ -109,13 +118,7 @@ int main(int argc, char** argv) {
                 if (driver.errors > max_errors) return 1;
                 driver.make_things_happen((check_only ? FinallyAction::None : FinallyAction::PrintResults), cout);
             }
-            if (driver.verbose_mode >= VerboseMode::ErrorsAndWarnings) {
-                string errors = driver.resume_messages();
-                if (!errors.empty()) {
-                    cout << "=> " << errors;
-                }
-                cout << Util::resume_statistics(1, driver.total_lines);
-            }
+            STATS
         }
     }
 
@@ -151,12 +154,9 @@ int main(int argc, char** argv) {
             cout << *message << endl;
 
     // TODO Transpor código para Driver
-    int files_processed = 0;
     if (!files.empty()) {
         mode = InteractionMode::FileParse;
         for (vector<string>::iterator file = files.begin(); file < files.end(); file++) {
-            if (driver.verbose_mode >= VerboseMode::ErrorsAndWarnings)
-                cout << "=> Start parsing: " << *file << endl;
             bool parse_ok = driver.parse_file(*file);
             if (parse_ok) {
                 files_processed++;
@@ -164,13 +164,7 @@ int main(int argc, char** argv) {
                 driver.make_things_happen((check_only ? FinallyAction::None : FinallyAction::PrintResults), cout);
             } else break;
         }
-        if (driver.verbose_mode >= VerboseMode::ErrorsAndWarnings) {
-            string errors = driver.resume_messages();
-            if (!errors.empty()) {
-                cout << "=> " << errors;
-            }
-            cout << Util::resume_statistics(files_processed, driver.total_lines);
-        }
+        STATS
     } else if (mode == InteractionMode::None) mode = InteractionMode::Shell;
 
     if (mode == InteractionMode::Shell) {

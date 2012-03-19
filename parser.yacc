@@ -151,7 +151,6 @@ using namespace SyntaxTree;
 %token  '/'     "/"
 %token  sPOW    "**"
 %token  '!'     "!"
-%token  sSCP    "::"
 %token  UNARY
 
 %token  '('     "("
@@ -166,8 +165,8 @@ using namespace SyntaxTree;
 
 %nonassoc ID FLOAT INTEGER STRING REGEX kTRUE kFALSE
 
-%left   sOR sAND sIMPLIES sEQL sNEQ sMAT sNMA sLEE sGEE sSHL sSHR sPOW sDOT2 sDOT3 sSCP sIDE kIN kIS
-%left   '?' ':' '<' '>' '^' '+' '-' '*' '/' '%' '\\' '&' '|' '[' ']' '{' '}' '(' ')' ',' '.' '!'
+%left   sOR sAND sIMPLIES sEQL sNEQ sMAT sNMA sLEE sGEE sSHL sSHR sPOW sDOT2 sDOT3 sIDE kIN kIS
+%left   '?' ':' '<' '>' '^' '+' '-' '*' '/' '%' '&' '|' '[' ']' '{' '}' '(' ')' ',' '.' '!'
 %right  UNARY sADE sSUE sMUE sDIE
 %right  '='
 
@@ -208,10 +207,21 @@ using namespace SyntaxTree;
 %type   <v_node>    Expression
 %type   <v_node>    Statement
 %type   <v_node>    IfStmt
-%type   <v_node>    IfClause
 %type   <v_node>    ElifClause
+%type   <v_node>    UnlessStmt
+%type   <v_node>    CaseStmt
+%type   <v_node>    WhenClause
+%type   <v_node>    ForStmt
+%type   <v_node>    LoopStmt
 %type   <v_node>    AsyncStmt
+%type   <v_node>    RaiseStmt
+%type   <v_node>    ControlStmt
 %type   <v_node>    BlockStmt
+%type   <v_node>    Condition
+%type   <v_node>    VisibilityStmt
+%type   <v_node>    ImportStmt
+%type   <v_node>    IncludeStmt
+%type   <v_node>    Linkable
 
 %type   <v_list>    RealParams
 %type   <v_list>    ParamValueList
@@ -222,7 +232,13 @@ using namespace SyntaxTree;
 %type   <v_list>    ThenClause
 %type   <v_list>    RepeatElifClause
 %type   <v_list>    ElseClause
+%type   <v_list>    RepeatWhenClause
 %type   <v_list>    Statements
+%type   <v_list>    RequireClause
+%type   <v_list>    Conditions
+%type   <v_list>    RescueClause
+%type   <v_list>    EnsureClause
+%type   <v_list>    LinkableList
 
 %%
 
@@ -255,11 +271,7 @@ QualifiedId
         | QualifiedId '.' Identifier {
             $$ = new BinaryExprNode(Operation::BinaryAccess, $1, $3);
         }
-        | QualifiedId sSCP Identifier {
-            $$ = new BinaryExprNode(Operation::BinaryScope, $1, $3);
-        }
         | QualifiedId '.' FunctionCall
-        | QualifiedId sSCP FunctionCall
         | QualifiedId '[' ArrayAccessInfo ']'
         ;
 
@@ -449,9 +461,6 @@ MultExpr
         | MultExpr '%' PrefixExpr {
             $$ = new BinaryExprNode(Operation::BinaryMod, $1, $3);
         }
-        | MultExpr '\\' PrefixExpr {
-            $$ = new BinaryExprNode(Operation::BinaryDiv, $1, $3);
-        }
         ;
 
 AddExpr
@@ -600,10 +609,10 @@ AssignValue
             $$ = $1;
         }
         | kASYNC Expression {
-            $$ = new AsyncStmtNode($2);
+            $$ = new AsyncStmtNode($2, AsyncType::Expression);
         }
         | kASYNC BlockStmt {
-            $$ = new AsyncStmtNode($2);
+            $$ = new AsyncStmtNode($2, AsyncType::Statement);
         }
         ;
 
@@ -768,36 +777,30 @@ ExpressionList
         ;
 
 IfStmt
-        : IfClause ThenClause kEND {
-            $$ = new IfStmtNode($1, $2);
+        : kIF Expression ThenClause kEND {
+            $$ = new IfStmtNode($2, $3);
         }
-        | IfClause ThenClause ElseClause kEND {
-            $$ = new IfStmtNode($1, $2);
+        | kIF Expression ThenClause ElseClause kEND {
+            $$ = new IfStmtNode($2, $3);
             ((IfStmtNode *) $$)
-              ->set_else($3);
-        }
-        | IfClause ThenClause RepeatElifClause kEND {
-            $$ = new IfStmtNode($1, $2);
-            ((IfStmtNode *) $$)
-              ->set_elif($3);
-        }
-        | IfClause ThenClause RepeatElifClause ElseClause kEND {
-            $$ = new IfStmtNode($1, $2);
-            ((IfStmtNode *) $$)
-              ->set_elif($3)
               ->set_else($4);
         }
-        ;
-
-IfClause
-        : kIF Expression {
-            $$ = $2;
+        | kIF Expression ThenClause RepeatElifClause kEND {
+            $$ = new IfStmtNode($2, $3);
+            ((IfStmtNode *) $$)
+              ->set_elif($4);
+        }
+        | kIF Expression ThenClause RepeatElifClause ElseClause kEND {
+            $$ = new IfStmtNode($2, $3);
+            ((IfStmtNode *) $$)
+              ->set_elif($4)
+              ->set_else($5);
         }
         ;
 
 ThenClause
         : kTHEN {
-            $$ = NULL;
+            $$ = new VectorNode();
         }
         | kTHEN Statements {
             $$ = $2;
@@ -821,7 +824,7 @@ ElifClause
 
 ElseClause
         : kELSE {
-            $$ = NULL;
+            $$ = new VectorNode();
         }
         | kELSE Statements {
             $$ = $2;
@@ -829,128 +832,254 @@ ElseClause
         ;
 
 UnlessStmt
-        : UnlessClause ThenClause kEND
-        | UnlessClause ThenClause ElseClause kEND
-        ;
-
-UnlessClause
-        : kUNLESS Expression
-        | kUNLESS Expression WhereClause
+        : kUNLESS Expression ThenClause kEND {
+            $$ = new UnlessStmtNode($2, $3);
+        }
+        | kUNLESS Expression ThenClause ElseClause kEND {
+            $$ = new UnlessStmtNode($2, $3);
+            ((UnlessStmtNode *) $$)
+              ->set_else($4);
+        }
         ;
 
 CaseStmt
-        : CaseExpr kEND
-        | CaseExpr ElseClause kEND
-        | CaseExpr RepeatWhenClause kEND
-        | CaseExpr RepeatWhenClause ElseClause kEND
-        ;
-
-CaseExpr
-        : kCASE Expression
-        | kCASE Expression WhereClause
+        : kCASE Expression kEND {
+            $$ = new CaseStmtNode($2);
+        }
+        | kCASE Expression ElseClause kEND {
+            $$ = new CaseStmtNode($2);
+            ((CaseStmtNode *) $$)
+              ->set_else($3);
+        }
+        | kCASE Expression RepeatWhenClause kEND {
+            $$ = new CaseStmtNode($2);
+            ((CaseStmtNode *) $$)
+              ->set_when($3);
+        }
+        | kCASE Expression RepeatWhenClause ElseClause kEND {
+            $$ = new CaseStmtNode($2);
+            ((CaseStmtNode *) $$)
+              ->set_when($3)
+              ->set_else($4);
+        }
         ;
 
 RepeatWhenClause
-        : WhenClause
-        | RepeatWhenClause WhenClause
+        : WhenClause {
+            $$ = new VectorNode();
+            $$->push_back($1);
+        }
+        | RepeatWhenClause WhenClause {
+            $$->push_back($2);
+        }
         ;
 
 WhenClause
-        : kWHEN Expression BlockStmt
+        : kWHEN Expression BlockStmt {
+            $$ = new WhenClauseNode($2, $3);
+        }
         ;
 
 ForStmt
-        : kFOR Expression kASC Expression BlockStmt
-        | kFOR Expression kASC Expression kSTEP Expression BlockStmt
-        | kFOR Expression kDESC Expression BlockStmt
-        | kFOR Expression kDESC Expression kSTEP Expression BlockStmt
-        | kFOR VarStmt kIN Expression BlockStmt
-        | kFOR Identifier kIN Expression BlockStmt
+        : kFOR   Expression kASC Expression BlockStmt {
+            $$ = new ForStmtNode($2, $4, Loop::Ascending, $5);
+        }
+        | kFOR Expression kASC Expression kSTEP Expression BlockStmt {
+            $$ = new ForStmtNode($2, $4, Loop::Ascending, $7);
+            ((ForStmtNode *) $$)
+              ->set_step($6);
+        }
+        | kFOR Expression kDESC Expression BlockStmt {
+            $$ = new ForStmtNode($2, $4, Loop::Descending, $5);
+        }
+        | kFOR Expression kDESC Expression kSTEP Expression BlockStmt {
+            $$ = new ForStmtNode($2, $4, Loop::Descending, $7);
+            ((ForStmtNode *) $$)
+              ->set_step($6);
+        }
+        | kFOR Identifier kIN Expression BlockStmt {
+            $$ = new ForStmtNode($2, $4, Loop::Iteration, $5);
+        }
         ;
 
 LoopStmt
-        : kWHILE Expression BlockStmt
-        | kWHILE Expression WhereClause BlockStmt
-        | kUNTIL Expression BlockStmt
-        | kUNTIL Expression WhereClause BlockStmt
+        : kWHILE Expression BlockStmt {
+            $$ = new LoopStmtNode($2, $3, Loop::While);
+        }
+        | kUNTIL Expression BlockStmt {
+            $$ = new LoopStmtNode($2, $3, Loop::Until);
+        }
         ;
 
 AsyncStmt
-        : kASYNC Statement
+        : kASYNC Statement {
+            $$ = new AsyncStmtNode($2, AsyncType::Statement);
+        }
         ;
 
 RaiseStmt
-        : kRAISE
-        | kRAISE String
-        | kRAISE kNEW PrefixExpr
+        : kRAISE {
+            $$ = new RaiseStmtNode(NULL);
+        }
+        | kRAISE String {
+            $$ = new RaiseStmtNode($2);
+        }
+        | kRAISE kNEW PrefixExpr {
+            $$ = new RaiseStmtNode(new UnaryExprNode(Operation::UnaryNew, $3));
+        }
         ;
 
 ControlStmt
-        : kBREAK
-        | kEXIT
-        | kEXIT AssignValue
-        | kYIELD
-        | kYIELD AssignValue
+        : kBREAK {
+            $$ = new ControlStmtNode(Control::Break, NULL);
+        }
+        | kEXIT {
+            $$ = new ControlStmtNode(Control::Exit, NULL);
+        }
+        | kEXIT AssignValue {
+            $$ = new ControlStmtNode(Control::Exit, $2);
+        }
+        | kYIELD {
+            $$ = new ControlStmtNode(Control::Yield, NULL);
+        }
+        | kYIELD AssignValue {
+            $$ = new ControlStmtNode(Control::Yield, $2);
+        }
         ;
 
 BlockStmt
-        : kDO kEND
-        | kDO Statements kEND
-        | kDO Statements RescueClause kEND
-        | RequireClause kDO Statements kEND
-        | RequireClause kDO Statements RescueClause kEND
-        | kDO Statements EnsureClause kEND
-        | kDO Statements RescueClause EnsureClause kEND
-        | RequireClause kDO Statements EnsureClause kEND
-        | RequireClause kDO Statements RescueClause EnsureClause kEND
+        : kDO kEND {
+            $$ = new BlockStmtNode(new VectorNode());
+        }
+        | kDO Statements kEND {
+            $$ = new BlockStmtNode($2);
+        }
+        | kDO Statements RescueClause kEND {
+            $$ = new BlockStmtNode($2);
+            ((BlockStmtNode *) $$)
+              ->set_rescue($3);
+        }
+        | RequireClause kDO Statements kEND {
+            $$ = new BlockStmtNode($3);
+            ((BlockStmtNode *) $$)
+              ->set_require($1);
+        }
+        | RequireClause kDO Statements RescueClause kEND {
+            $$ = new BlockStmtNode($3);
+            ((BlockStmtNode *) $$)
+              ->set_require($1)
+              ->set_rescue($4);
+        }
+        | kDO Statements EnsureClause kEND {
+            $$ = new BlockStmtNode($2);
+            ((BlockStmtNode *) $$)
+              ->set_ensure($3);
+        }
+        | kDO Statements RescueClause EnsureClause kEND {
+            $$ = new BlockStmtNode($2);
+            ((BlockStmtNode *) $$)
+              ->set_rescue($3)
+              ->set_ensure($4);
+        }
+        | RequireClause kDO Statements EnsureClause kEND {
+            $$ = new BlockStmtNode($3);
+            ((BlockStmtNode *) $$)
+              ->set_require($1)
+              ->set_ensure($4);
+        }
+        | RequireClause kDO Statements RescueClause EnsureClause kEND {
+            $$ = new BlockStmtNode($3);
+            ((BlockStmtNode *) $$)
+              ->set_require($1)
+              ->set_rescue($4)
+              ->set_ensure($5);
+        }
         ;
 
 RequireClause
-        : kREQUIRE Conditions
+        : kREQUIRE Conditions {
+            $$ = $2;
+        }
         ;
 
 Conditions
-        : Condition
-        | Conditions Condition
+        : Condition {
+            $$ = new VectorNode();
+            $$->push_back($1);
+        }
+        | Conditions Condition {
+            $$->push_back($2);
+        }
         ;
 
 Condition
-        : LogicExpr ';'
-        | LogicExpr ':' String ';'
+        : LogicExpr ';' {
+            $$ = new ConditionNode($1, new RaiseStmtNode(NULL));
+        }
+        | LogicExpr ':' String ';' {
+            $$ = new ConditionNode($1, new RaiseStmtNode($3));
+        }
         ;
 
 EnsureClause
-        : kENSURE Statements
+        : kENSURE Statements {
+            $$ = $2;
+        }
         ;
 
 RescueClause
-        : kRESCUE RepeatWhenClause
-        | kRESCUE
+        : kRESCUE RepeatWhenClause {
+            $$ = $2;
+        }
+        | kRESCUE {
+            $$ = NULL;
+        }
         ;
 
 VisibilityStmt
-        : kPRIVATE
-        | kPROTECTED
-        | kPUBLIC
+        : kPRIVATE {
+            $$ = new ControlStmtNode(Control::Private, NULL);
+        }
+        | kPROTECTED {
+            $$ = new ControlStmtNode(Control::Protected, NULL);
+        }
+        | kPUBLIC {
+            $$ = new ControlStmtNode(Control::Public, NULL);
+        }
         ;
 
 ImportStmt
-        : kIMPORT LinkableList
-        | kFROM Identifier kIMPORT LinkableList
+        : kIMPORT LinkableList {
+            $$ = new InlineNode(Inline::Import, $2);
+        }
+        | kFROM Identifier kIMPORT LinkableList {
+            $$ = new InlineNode(Inline::Import, $4, $2);
+        }
         ;
 
 IncludeStmt
-        : kINCLUDE LinkableList
+        : kINCLUDE LinkableList {
+            $$ = new InlineNode(Inline::Include, $2);
+        }
         ;
 
 LinkableList
-        : Linkable
-        | LinkableList ',' Linkable
+        : Linkable {
+            $$ = new VectorNode();
+            $$->push_back($1);
+        }
+        | LinkableList ',' Linkable {
+            $$->push_back($3);
+        }
         ;
 
 Linkable
-        : QualifiedId
-        | String
+        : QualifiedId {
+            $$ = $1;
+        }
+        | String {
+            $$ = $1;
+        }
         ;
 
 VarStmt

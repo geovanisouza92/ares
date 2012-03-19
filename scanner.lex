@@ -31,7 +31,6 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*[?!]?
     yylloc->step();
 %}
 
-"::"    return token::sSCP;
 "..."   return token::sDOT3;
 ".."    return token::sDOT2;
 "&&"    return token::sAND;
