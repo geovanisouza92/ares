@@ -31,10 +31,11 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*[?!]?
     yylloc->step();
 %}
 
-"..."   return token::sDOT3;
-".."    return token::sDOT2;
 "&&"    return token::sAND;
 "||"    return token::sOR;
+"<=>"   return token::sCMP;
+"..."   return token::sDOT3;
+".."    return token::sDOT2;
 "=>"    return token::sIMPLIES;
 "+="    return token::sADE;
 "-="    return token::sSUE;
@@ -55,8 +56,6 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*[?!]?
 "after"     return token::kAFTER;
 "async"     return token::kASYNC;
 "asc"       return token::kASC;
-"as"        return token::kAS;
-"attr"      return token::kATTR;
 "before"    return token::kBEFORE;
 "between"   return token::kBETWEEN;
 "break"     return token::kBREAK;
@@ -86,6 +85,7 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*[?!]?
 "in"        return token::kIN;
 "is"        return token::kIS;
 "join"      return token::kJOIN;
+"lambda"    return token::kLAMBDA;
 "left"      return token::kLEFT;
 "module"    return token::kMODULE;
 "new"       return token::kNEW;

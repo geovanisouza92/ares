@@ -28,7 +28,7 @@ module Clientes do
   end
 
 # inline doc "Lista todos os clientes ativos no sistema";
-  def ListarTodosOsClientes: Pessoa[]
+  def ListarTodosOsClientes: Array
   do
     Result = (from Cliente in DBO.Clientes
                where Cliente.TemBoaReputacao?);

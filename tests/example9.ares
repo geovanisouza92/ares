@@ -42,8 +42,8 @@ module Another do
   end
 
   class GerenciadorDeTransacoes do
-    var VetorDeTransacoesEmExecucao: Transacao[];
-    var VetorDeTransacoesEsperando: Transacao[];
+    var VetorDeTransacoesEmExecucao: Array;
+    var VetorDeTransacoesEsperando: Array;
     
     def EfetuarTransacao
     do
@@ -74,7 +74,7 @@ module Another do
   end
 
   class Calendario do
-    var DiasUteis: Date[];
+    var DiasUteis: Array;
     
     def EhDiaUtil?: Boolean
     do

@@ -56,8 +56,6 @@ using namespace SyntaxTree;
 %token  kAFTER      "after"
 %token  kASYNC      "async"
 %token  kASC        "asc"
-%token  kAS         "as"
-%token  kATTR       "attr"
 %token  kBEFORE     "before"
 %token  kBETWEEN    "between"
 %token  kBREAK      "break"
@@ -87,6 +85,7 @@ using namespace SyntaxTree;
 %token  kIN         "in"
 %token  kIS         "is"
 %token  kJOIN       "join"
+%token  kLAMBDA     "lambda"
 %token  kLEFT       "left"
 %token  kMODULE     "module"
 %token  kNEW        "new"
@@ -131,6 +130,7 @@ using namespace SyntaxTree;
 %token  sIMPLIES "=>"
 %token  sEQL    "=="
 %token  sIDE    "==="
+%token  sCMP    "<=>"
 %token  sNEQ    "!="
 %token  sMAT    "=~"
 %token  sNMA    "!~"
@@ -165,13 +165,14 @@ using namespace SyntaxTree;
 
 %nonassoc ID FLOAT INTEGER STRING REGEX kTRUE kFALSE
 
-%left   sOR sAND sIMPLIES sEQL sNEQ sMAT sNMA sLEE sGEE sSHL sSHR sPOW sDOT2 sDOT3 sIDE kIN kIS
-%left   '?' ':' '<' '>' '^' '+' '-' '*' '/' '%' '&' '|' '[' ']' '{' '}' '(' ')' ',' '.' '!'
+%left   sAND sOR sIMPLIES sEQL sNEQ sIDE sCMP sMAT sNMA sLEE sGEE sSHL sSHR sPOW sDOT2 sDOT3 kIN kIS
+%left   '?' ':' '<' '>' '^' '+' '-' '*' '/' '%' '&' '|' ',' '.' '!'
 %right  UNARY sADE sSUE sMUE sDIE
-%right  '='
+%right  '=' '(' '[' '{'
 
 %type   <v_node>    Identifier
 %type   <v_node>    QualifiedId
+%type   <v_node>    AccessMember
 %type   <v_node>    ArrayAccessInfo
 %type   <v_node>    String
 %type   <v_node>    Literal
@@ -182,6 +183,7 @@ using namespace SyntaxTree;
 %type   <v_node>    NamedExpr
 %type   <v_node>    SuffixExpr
 %type   <v_node>    PrefixExpr
+%type   <v_node>    PowerExpr
 %type   <v_node>    MultExpr
 %type   <v_node>    AddExpr
 %type   <v_node>    ShiftExpr
@@ -259,9 +261,6 @@ Identifier
         | kSELF {
             $$ = new IdentifierNode("self");
         }
-        | kNIL {
-            $$ = new IdentifierNode("nil");
-        }
         ;
 
 QualifiedId
@@ -271,23 +270,8 @@ QualifiedId
         | QualifiedId '.' Identifier {
             $$ = new BinaryExprNode(Operation::BinaryAccess, $1, $3);
         }
-        | QualifiedId '.' FunctionCall
-        | QualifiedId '[' ArrayAccessInfo ']'
-        ;
-
-ArrayAccessInfo
-        : Expression {
-            $$ = new ArrayAccessNode($1);
-        }
-        | Expression ':' {
-            $$ = new ArrayAccessNode($1, NULL);
-        }
-        | Expression ':' Expression {
-            $$ = new ArrayAccessNode($1, $3);
-        }
-        | ':' Expression {
-            $$ = new ArrayAccessNode(NULL, $2);
-        }
+        | QualifiedId '.' Identifier RealParams
+        | QualifiedId '.' kNEW RealParams
         ;
 
 String
@@ -376,16 +360,16 @@ Value
         | '(' Expression ')' {
             $$ = $2;
         }
+        | kNIL {
+            // $$ = new IdentifierNode("nil");
+        }
         ;
 
 FunctionCall
         : Identifier RealParams {
             $$ = new FunctionCallNode($1, $2);
         }
-        | kNEW RealParams // {
-            // throw NotImplementedError();
-            // $$ = new UnaryExprNode(Operation::UnaryNew, StbLib::Object);
-        // }
+        | kNEW RealParams
         ;
 
 RealParams
@@ -411,13 +395,29 @@ SuffixExpr
         : Value {
             $$ = $1;
         }
-        | SuffixExpr '.' Identifier
-        | SuffixExpr '.' FunctionCall {
-            $$ = new BinaryExprNode(Operation::BinaryAccess, $1, $3);
+        | SuffixExpr AccessMember {
+            $$ = new BinaryExprNode(Operation::BinaryAccess, $1, $2);
         }
-        // | SuffixExpr '[' ArrayAccessInfo ']' {
-        //     $$ = new BinaryExprNode(Operation::BinaryAccess, $1, $3);
-        // }
+        ;
+
+AccessMember
+        : '.' FunctionCall
+        | '[' ArrayAccessInfo ']'
+        ;
+
+ArrayAccessInfo
+        : Expression {
+            $$ = new ArrayAccessNode($1);
+        }
+        | Expression ':' {
+            $$ = new ArrayAccessNode($1, NULL);
+        }
+        | Expression ':' Expression {
+            $$ = new ArrayAccessNode($1, $3);
+        }
+        | ':' Expression {
+            $$ = new ArrayAccessNode(NULL, $2);
+        }
         ;
 
 PrefixExpr
@@ -439,26 +439,31 @@ PrefixExpr
         | kNEW PrefixExpr %prec UNARY {
             $$ = new UnaryExprNode(Operation::UnaryNew, $2);
         }
-        | kNEW kCLASS '(' NamedExprList ')' // {
-            // throw NotImplementedError();
+        | kNEW kCLASS '(' NamedExprList ')' %prec UNARY {
             // $$ = new UnaryExprNode(Operation::UnaryNew, StdLib::Object);
-        // }
+        }
         ;
 
-MultExpr
+PowerExpr
         : PrefixExpr {
             $$ = $1;
         }
-        | MultExpr sPOW PrefixExpr {
+        | PowerExpr sPOW PrefixExpr {
             $$ = new BinaryExprNode(Operation::BinaryPow, $1, $3);
         }
-        | MultExpr '*' PrefixExpr {
+        ;
+
+MultExpr
+        : PowerExpr {
+            $$ = $1;
+        }
+        | MultExpr '*' PowerExpr {
             $$ = new BinaryExprNode(Operation::BinaryMul, $1, $3);
         }
-        | MultExpr '/' PrefixExpr {
+        | MultExpr '/' PowerExpr {
             $$ = new BinaryExprNode(Operation::BinaryDiv, $1, $3);
         }
-        | MultExpr '%' PrefixExpr {
+        | MultExpr '%' PowerExpr {
             $$ = new BinaryExprNode(Operation::BinaryMod, $1, $3);
         }
         ;
@@ -527,6 +532,15 @@ RelatExpr
         | RelatExpr sIDE BitwiseExpr {
             $$ = new BinaryExprNode(Operation::BinaryIde, $1, $3);
         }
+        | RelatExpr sCMP BitwiseExpr {
+            $$ = new BinaryExprNode(Operation::BinaryCmp, $1, $3);
+        }
+        | RelatExpr sMAT BitwiseExpr {
+            $$ = new BinaryExprNode(Operation::BinaryMat, $1, $3);
+        }
+        | RelatExpr sNMA BitwiseExpr {
+            $$ = new BinaryExprNode(Operation::BinaryNma, $1, $3);
+        }
         | RelatExpr kIS BitwiseExpr {
             $$ = new BinaryExprNode(Operation::BinaryIs, $1, $3);
         }
@@ -535,12 +549,6 @@ RelatExpr
         }
         | RelatExpr kHAS BitwiseExpr {
             $$ = new BinaryExprNode(Operation::BinaryHas, $3, $1);
-        }
-        | RelatExpr sMAT BitwiseExpr {
-            $$ = new BinaryExprNode(Operation::BinaryMat, $1, $3);
-        }
-        | RelatExpr sNMA BitwiseExpr {
-            $$ = new BinaryExprNode(Operation::BinaryNma, $1, $3);
         }
         ;
 
@@ -605,15 +613,16 @@ AssignValue
         : Expression {
             $$ = $1;
         }
-        | BlockStmt {
-            $$ = $1;
-        }
         | kASYNC Expression {
             $$ = new AsyncStmtNode($2, AsyncType::Expression);
         }
-        | kASYNC BlockStmt {
-            $$ = new AsyncStmtNode($2, AsyncType::Statement);
-        }
+        ;
+
+LambdaExpr
+        : kLAMBDA Expression
+        | kLAMBDA ':' QualifiedId Expression
+        | kLAMBDA FormalParams Expression
+        | kLAMBDA FormalParams ':' QualifiedId Expression
         ;
 
 QueryExpr
@@ -761,6 +770,7 @@ Expression
         | TernaryExpr {
             $$ = $1;
         }
+        | LambdaExpr
         | QueryExpr {
             $$ = $1;
         }
@@ -1052,7 +1062,7 @@ ImportStmt
         : kIMPORT LinkableList {
             $$ = new InlineNode(Inline::Import, $2);
         }
-        | kFROM Identifier kIMPORT LinkableList {
+        | kFROM QualifiedId kIMPORT LinkableList {
             $$ = new InlineNode(Inline::Import, $4, $2);
         }
         ;
@@ -1083,42 +1093,50 @@ Linkable
         ;
 
 VarStmt
-        : kVAR ListVariable
+        : kVAR Identifier
+        | kVAR Identifier InvariantsClause
+        | kVAR Identifier Setter
+        | kVAR Identifier Setter InvariantsClause
+        | kVAR Identifier Getter
+        | kVAR Identifier Getter InvariantsClause
+        | kVAR Identifier Getter Setter
+        | kVAR Identifier Getter Setter InvariantsClause
+        | kVAR Identifier '=' AssignValue
+        | kVAR Identifier '=' AssignValue InvariantsClause
+        | kVAR Identifier '=' AssignValue Setter
+        | kVAR Identifier '=' AssignValue Setter InvariantsClause
+        | kVAR Identifier '=' AssignValue Getter
+        | kVAR Identifier '=' AssignValue Getter InvariantsClause
+        | kVAR Identifier '=' AssignValue Getter Setter
+        | kVAR Identifier '=' AssignValue Getter Setter InvariantsClause
+        | kVAR Identifier ':' QualifiedId
+        | kVAR Identifier ':' QualifiedId InvariantsClause
+        | kVAR Identifier ':' QualifiedId Setter
+        | kVAR Identifier ':' QualifiedId Setter InvariantsClause
+        | kVAR Identifier ':' QualifiedId Getter
+        | kVAR Identifier ':' QualifiedId Getter InvariantsClause
+        | kVAR Identifier ':' QualifiedId Getter Setter
+        | kVAR Identifier ':' QualifiedId Getter Setter InvariantsClause
+        | kVAR Identifier ':' QualifiedId '=' AssignValue
+        | kVAR Identifier ':' QualifiedId '=' AssignValue InvariantsClause
+        | kVAR Identifier ':' QualifiedId '=' AssignValue Setter
+        | kVAR Identifier ':' QualifiedId '=' AssignValue Setter InvariantsClause
+        | kVAR Identifier ':' QualifiedId '=' AssignValue Getter
+        | kVAR Identifier ':' QualifiedId '=' AssignValue Getter InvariantsClause
+        | kVAR Identifier ':' QualifiedId '=' AssignValue Getter Setter
+        | kVAR Identifier ':' QualifiedId '=' AssignValue Getter Setter InvariantsClause
         ;
 
-ListVariable
-        : Variable
-        | ListVariable ',' Variable
+Getter
+        : kGET
+        | kGET Identifier
+        | kGET LambdaExpr
         ;
 
-Variable
-        : Identifier
-        | Identifier InvariantsClause
-        | Identifier InitialValue
-        | Identifier InitialValue InvariantsClause
-        | Identifier MemberType
-        | Identifier MemberType InvariantsClause
-        | Identifier MemberType InitialValue
-        | Identifier MemberType InitialValue InvariantsClause
-        ;
-
-MemberType
-        : ':' QualifiedId
-        | ':' QualifiedId TypeArrayTail
-        ;
-
-TypeArrayTail
-        : ArrayTail
-        | TypeArrayTail ArrayTail
-        ;
-
-ArrayTail
-        : '[' ']'
-        | '[' INTEGER ']'
-        ;
-
-InitialValue
-        : '=' AssignValue
+Setter
+        : kSET
+        | kSET Identifier
+        | kSET LambdaExpr
         ;
 
 InvariantsClause
@@ -1127,37 +1145,19 @@ InvariantsClause
         ;
 
 ConstStmt
-        : kCONST ListConstant
-        ;
-
-ListConstant
-        : Constant
-        | ListConstant ',' Constant
-        ;
-
-Constant
-        : Identifier InitialValue
-        | Identifier MemberType InitialValue
+        : kCONST Identifier '=' AssignValue
+        | kCONST Identifier ':' QualifiedId '=' AssignValue
         ;
 
 EventStmt
-        : kEVENT EventList
-        ;
-
-EventList
-        : Event
-        | EventList ',' Event
-        ;
-
-Event
-        : Identifier
-        | Identifier InitialValue
-        | Identifier InterceptClause
-        | Identifier InterceptClause InitialValue
-        | Identifier MemberType
-        | Identifier MemberType InitialValue
-        | Identifier MemberType InterceptClause
-        | Identifier MemberType InterceptClause InitialValue
+        : kEVENT Identifier
+        | kEVENT Identifier '=' AssignValue
+        | kEVENT Identifier InterceptClause
+        | kEVENT Identifier InterceptClause '=' AssignValue
+        | kEVENT Identifier ':' QualifiedId
+        | kEVENT Identifier ':' QualifiedId '=' AssignValue
+        | kEVENT Identifier ':' QualifiedId InterceptClause
+        | kEVENT Identifier ':' QualifiedId InterceptClause '=' AssignValue
         ;
 
 InterceptClause
@@ -1171,48 +1171,32 @@ IdentifierList
         | IdentifierList ',' QualifiedId
         ;
 
-AttrStmt
-        : kATTR AttributeList
-        ;
-
-AttributeList
-        : Attribute
-        | AttributeList ',' Attribute
-        ;
-
-Attribute
-        : Identifier MemberType
-        | Identifier MemberType InvariantsClause
-        | Identifier MemberType Getter
-        | Identifier MemberType Getter InvariantsClause
-        | Identifier MemberType Getter Setter
-        | Identifier MemberType Getter Setter InvariantsClause
-        ;
-
-Getter
-        : kGET
-        | kGET Identifier
-        ;
-
-Setter
-        : kSET
-        | kSET Identifier
-        ;
-
 FunctionStmt
         : kDEF Identifier
         | kDEF Identifier InterceptClause
-        | kDEF Identifier MemberType
-        | kDEF Identifier MemberType InterceptClause
+        | kDEF Identifier ':' QualifiedId
+        | kDEF Identifier ':' QualifiedId InterceptClause
         | kDEF Identifier FormalParams
         | kDEF Identifier FormalParams InterceptClause
-        | kDEF Identifier FormalParams MemberType
-        | kDEF Identifier FormalParams MemberType InterceptClause
+        | kDEF Identifier FormalParams ':' QualifiedId
+        | kDEF Identifier FormalParams ':' QualifiedId InterceptClause
         ;
 
 FormalParams
         : '(' ')'
-        | '(' ListVariable ')'
+        | '(' FormalParamList ')'
+        ;
+
+FormalParamList
+        : FormalParam
+        | FormalParamList ',' FormalParam
+        ;
+
+FormalParam
+        : Identifier ':' QualifiedId
+        | Identifier ':' QualifiedId InvariantsClause
+        | Identifier ':' QualifiedId '=' AssignValue
+        | Identifier ':' QualifiedId '=' AssignValue InvariantsClause
         ;
 
 ClassStmt
@@ -1241,7 +1225,6 @@ TypeStmt
         | VarStmt ';'
         | ConstStmt ';'
         | EventStmt ';'
-        | AttrStmt ';'
         | FunctionStmt ';'
         | FunctionStmt BlockStmt
         | ClassStmt BlockStmt
