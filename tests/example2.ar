@@ -4,31 +4,28 @@ WriteLn(repos);
 System("PAUSE");
 
 def updateUsing(args: Array)
-do
-  var dirs = Array.new();
-  for pair in args
-  do
+begin
+  var dirs = new Array();
+  for pair in args do
+  begin
     var cmd = "PAUSE";
     case pair.Key
       when "git" do
         cmd = "git pull";
-      end
       when "hg" do
         cmd = "hg up";
-      end
       when "svn" do
         cmd = "svn up";
+    else begin
+        WriteLn("CVS nao reconhecibegin");
+        System(cmd);
+        exit;
       end
-    else
-      WriteLn("CVS nao reconhecido");
-      System(cmd);
-      exit;
     end
     WriteLn("=== ${pair.Key}:up");
     System.Directory.Chan;
     var subRepos = System.Directory.ListDirectories;
-    for subRepo in subRepos
-    do
+    for subRepo in subRepos do begin
       WriteLn(">>> ${subRepo}");
       System.Directory.Chan;
       System(cmd);

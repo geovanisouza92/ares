@@ -1,66 +1,64 @@
-module XNA do
+module XNA
 
-   class Entidade do
+   class Entidade
     var X: Float ;
     var Y: Float ;
   end
 
-   class Nave > Entidade do
-    var Estado: EstadoNave ;
+   class Nave > Entidade
+    var Estabegin: EstabeginNave ;
     var Velocidade: Float ;
     var Direcao: DirecaoNave ;
   end
   
-  class Escudo > Entidade do
+  class Escubegin > Entidade
     var X: Float ;
     var Y: Float ;
   end
   
-  class JogoInvasores do
-    var Estado: EstadoJogo ;
+  class JogoInvasores
+    var Estabegin: EstabeginJogo ;
   end
   
-  class CelulaEscudo do
+  class CelulaEscubegin
     var Energia: Integer ;
     var Tipo: TipoDeCelula ;
   end
   
-  class Tiro do
+  class Tiro
     var X: Float ;
     var Y: Float ;
     var Velocidade: Float ;
   end
   
-  class NaveInvasor > Nave do
+  class NaveInvasor > Nave;
   
+  class NaveBonus > Nave
+    var Contabeginr: Integer ;
   end
   
-  class NaveBonus > Nave do
-    var Contador: Integer ;
-  end
-  
-  class NaveJogador > Nave do
+  class NaveJogabeginr > Nave
     var Vidas: Integer ;
     var Pontos: Integer ;
     var PodeAtirar?: Boolean ;
   end
   
-  class ControladorDeNaves do
+  class ControlabeginrDeNaves
     var InverterDirecao?: Boolean ;
     var QuantidadeDeNaves: Integer ;
     var TempoParaAtirar: Float ;
   end
   
-  # enum EstadoNave
-  #   # Estados da nave
+  # enum EstabeginNave
+  #   # Estabegins da nave
   # end
   
   # enum DirecaoNave
   #   # Direções da nave
   # end
   
-  # enum EstadoJogo
-  #   # Estados do jogo
+  # enum EstabeginJogo
+  #   # Estabegins begin jogo
   # end
   
   # enum TipoDeCelula

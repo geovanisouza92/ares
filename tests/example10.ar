@@ -1,105 +1,116 @@
-module Sistema do
+module Sistema
 
-  class Endereco do
+  class Endereco
     var Tipo: Integer;
     var Endereco: String;
     var Bairro: String;
     var Cep: String;
     var Cidade: String;
-    var Estado: String;
+    var Estabegin: String;
     
-    def Endereco do
+    def Endereco()
+    begin
       # .ctor
     end
   end
 
-  class Telefone do
+  class Telefone
     var Tipo: Integer;
     var CodigoDaCidade: Integer;
     var Numero: String; # Adicionar pattern
     
-    def Telefone do
+    def Telefone()
+    begin
       # .ctor
     end
   end
 
-  class Email do
+  class Email
     var Tipo: Integer;
     var Email: String; # Adicionar pattern
     
-    def Email do
+    def Email()
+    begin
       # .ctor
     end
   end
 
-   class Pessoa do
+   class Pessoa
     var Nome: String; # invariants not nil
     
-    def Pessoa do
+    def Pessoa()
+    begin
       # .ctor
     end  
   end
 
-  class PessoaFisica > Pessoa do
+  class PessoaFisica > Pessoa
     var Sexo: Integer;
     var DataNascimento: Date;
     var CPF: String; # Adicionar pattern
     
-    def PessoaFisica do
+    def PessoaFisica()
+    begin
       # .ctor
     end
   end
 
-  class PessoaJuridica > Pessoa do
+  class PessoaJuridica > Pessoa
     var CNPJ: String; # Adicionar pattern
     var NomeFantasia: String;
     
-    def PessoaJuridica do
+    def PessoaJuridica()
+    begin
       # .ctor
     end
   end
 
-  class Funcionario > PessoaFisica do
+  class Funcionario > PessoaFisica
     var Matricula: Integer;
     var Cargo: String;
     var DataAdmissao: Date;
     
-    def Funcionario do
+    def Funcionario()
+    begin
       # .ctor
     end
   end
 
-  class Cliente > PessoaFisica do
+  class Cliente > PessoaFisica
     var Tipo: Integer;
     
-    def Cliente do
+    def Cliente()
+    begin
       # .ctor
     end
   end
 
-  class Prato do
+  class Prato
     var Nome: String;
     var Descricao: String;
     var Preco: Float;
     
-    def Prato do
+    def Prato()
+    begin
       # .ctor
     end
   end
 
-  class ItemDoPedido do
+  class ItemDoPedido
     var Quantidade: Float;
     
-    def ItemDoPedido do
+    def ItemDoPedido()
+    begin
       # .ctor
     end
   end
 
-  class Pedido do
+  class Pedido
     var DataHora: DateTime;
     var FormaDePagamento: Integer;
     
-    def Pedido do
+    def Pedido()
+    begin
       # .ctor
     end
   end

@@ -35,11 +35,12 @@ YFLAGS=--defines=parser.h -v
 LEX=flex
 LFLAGS=
 
-BINARY=ares
-BINFLAGS=--verbose=2 -c
-MODULES=st.o stoql.o stmt.o parser.o scanner.o driver.o main.o
+BINARY=arc
+EXT=ar
+BINFLAGS=-c
+MODULES=parser.o scanner.o driver.o main.o
 CLEAN=parser.cpp parser.h scanner.cpp *.hh *.out* *.results *.diff
-TEST_MODULES=tests/*.$(BINARY)
+TEST_MODULES=tests/*.$(EXT)
 
 all: bin
 	@ echo "Compile done"

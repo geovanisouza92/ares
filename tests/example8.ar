@@ -4,11 +4,11 @@ var tweets = async # Execução assíncrona
   where tweet.fromUser("one_user")
   select tweet;
 # Percorre o vetor de tweets
-for tweet in tweets do
+for tweet in tweets do begin
   tweet.replyTo("another_user", "Message");
   WriteLn(tweet);
 end
-# "async" é aconselhado para execução assíncrona, melhorando desempenho
+# "async" é aconselhabegin para execução assíncrona, melhoranbegin desempenho
 var another_tweets = async from tweet in twitter.mentions()
 where (tweet.timestamp between Date.Now - 7 && Date.Now - 1)
 select tweet;

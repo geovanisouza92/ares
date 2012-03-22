@@ -1,8 +1,8 @@
-# inline doc "Esta é a descrição ou texto de ajuda para este objeto. Todos os objetos
-# podem ter este informativo embutido";
-module Clientes do
+# inline beginc "Esta é a descrição ou texto de ajuda para este objeto. Tobegins os objetos
+# podem ter este informativo embutibegin";
+module Clientes
 
-  class Base do
+  class Base
     var _id: Integer ;
   end
 
@@ -10,26 +10,27 @@ module Clientes do
   #   def TemBoaReputacao? : Boolean;
   # end
 
-  class Pessoa > Base, IPessoa do
-    def TemBoaReputacao? : Boolean do
+  class Pessoa > Base, IPessoa
+    def TemBoaReputacao?() : Boolean
+    begin
         # Retorna verdadeiro somente se a pessoa for de boa fé...
         Result = !Nome.IsEmpty?;
     end
     var Nome: String ;
   end
 
-  class PessoaFisica > Pessoa do
+  class PessoaFisica > Pessoa
     var CPF: String ;
   end
 
   class PessoaJuridica
-      > Pessoa do
+      > Pessoa
     var CNPJ: String ;
   end
 
-# inline doc "Lista todos os clientes ativos no sistema";
-  def ListarTodosOsClientes: Array
-  do
+# inline beginc "Lista tobegins os clientes ativos no sistema";
+  def ListarTobeginsOsClientes(): Array
+  begin
     Result = (from Cliente in DBO.Clientes
                where Cliente.TemBoaReputacao?);
   end

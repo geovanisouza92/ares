@@ -22,7 +22,7 @@ Driver::Driver()
       errors(0),
       warnings(0),
       hints(0) {
-    Env = new SyntaxTree::Environment(NULL);
+    // Env = new SyntaxTree::Environment(NULL);
 }
 
 Driver::~Driver(){
@@ -30,7 +30,7 @@ Driver::~Driver(){
 
 bool
 Driver::parse_stream(istream& in, const string& sname) {
-    Env->clear();
+    // Env->clear();
     origin = sname;
     // total_errors = total_warnings = total_hints = 0;
     bool result = false;
@@ -63,7 +63,7 @@ Driver::parse_string(const string& input, const string& sname) {
 bool
 Driver::parse_file(const string& filename) {
     fs::path file = fs::absolute(filename);
-    if (fs::exists(file) && file.extension() == string("." LANG_SHELL_NAME)) {
+    if (fs::exists(file) && file.extension() == string("." LANG_EXTENSION)) {
         if (verbose_mode >= VerboseMode::ErrorsWarningsAndHints)
             cout << "=> Start parsing: " << filename << endl;
         ifstream in(filename.c_str());
@@ -154,7 +154,7 @@ Driver::make_things_happen(FinallyAction::Action action, ostream& out) {
     case FinallyAction::PrintResults:
         if (errors == 0 && verbose_mode >= VerboseMode::ErrorsWarningsAndHints) {
             syntax_ok_for(origin);
-            Env->print_tree_using(out);
+            // Env->print_tree_using(out);
         }
         break;
     case FinallyAction::Execute:

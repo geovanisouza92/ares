@@ -1,0 +1,141 @@
+module Another
+# inline beginc "
+  # Description of this module...
+  # 
+  # Accessible by Another.__Description
+# ";
+  class Banco
+    var Nome: String ;
+    var Endereco: String ;
+    
+    def AtualizarContas()
+    begin
+    
+    end
+    
+    def GetNome(): String
+    begin
+    
+    end
+    
+    def GetEndereco(): String
+    begin
+    
+    end
+  end
+
+  class GerenciadorDeContas
+    def Adicionar()
+    begin
+    
+    end
+    
+    def Remover()
+    begin
+    
+    end
+    
+    def AtualizarContas()
+    begin
+    
+    end
+  end
+
+  class GerenciabeginrDeTransacoes
+    var VetorDeTransacoesEmExecucao: Array;
+    var VetorDeTransacoesEsperanbegin: Array;
+    
+    def EfetuarTransacao()
+    begin
+    
+    end
+    
+    def GetEstatisticas()
+    begin
+    
+    end
+    
+    def GetStatus()
+    begin
+    
+    end
+  end
+
+  class Transacao
+    def ProcessarTransacao(Valor: Float)
+    begin
+    
+    end
+    
+    def GetValor()
+    begin
+    
+    end
+  end
+
+  class Calendario
+    var DiasUteis: Array;
+    
+    def EhDiaUtil?(): Boolean
+    begin
+    
+    end
+  end
+
+  class GerenciadorDeClientes
+    def Adicionar()
+    begin
+    
+    end
+    
+    def Remover()
+    begin
+    
+    end
+  end
+
+  class Cliente
+    var Nome: String;
+    var Endereco: String;
+    
+    def Sacar(DaConta: Conta)
+    begin
+    
+    end
+    
+    def Transferir(ParaConta: Conta)
+    begin
+    
+    end
+    
+    def GetNome(): String
+    begin
+    
+    end
+    
+    def SetNome(Value: String)
+    begin
+    
+    end
+    
+    def GetEndereco(): String
+    begin
+    
+    end
+    
+    def SetEndereco(Value: String)
+    begin
+    
+    end
+  end
+
+  class Conta
+    var Salbegin: Float;
+     def Atualizar();
+  end
+  
+  class Poupanca > Conta;
+  
+  class ContaCorrente > Conta;
+
+end

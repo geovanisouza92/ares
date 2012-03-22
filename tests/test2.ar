@@ -2,5 +2,6 @@
 # comentário
 
 if true then
+begin
   # exit foo + 3;
 end

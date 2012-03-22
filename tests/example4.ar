@@ -1,111 +1,111 @@
-module Garage do
+module Garage
 
 import System.IO;
 
-  class Base do
-    def Base # Construtor
-    do
+  class Base
+    def Base() # Construtor
+    begin
       # Gerar código automático
     end
     var ID: Integer; # invariants not nil and > 0
   end
 
-  class RentalAgency > Base do
+  class RentalAgency > Base
     var Address: String;
     var PhoneNo: String;
     var Manager: Pessoa;
   end
   
-  class Person > Base do
+  class Person > Base
     var Name: String; # invariants not nil
     var Address: String;
   end
   
-  class CustomerRecord do
+  class CustomerRecord
     var CustomerID: Integer ;
     var RentalHistory: Strings ;
   private
-    def Initialize
-    do
+    def Initialize()
+    begin
       # Inicializa Histórico
     end
   end
   
-  class Customer > Base, Person do
-    def Reserve
-    do
+  class Customer > Base, Person
+    def Reserve()
+    begin
     
     end
     
-    def PicksUp
-    do
+    def PicksUp()
+    begin
     
     end
     
-    def Pays
-    do
+    def Pays()
+    begin
     
     end
     
-    def Returns
-    do
+    def Returns()
+    begin
     
     end
 
     var Phone: String ;
     var BirthDate: Date ;
-    var LicenseNo: String ; # like \[0-9]+\ # Validado com regex
+    var LicenseNo: String ; # like \[0-9]+\ # Validabegin com regex
   end
   
-  class Car > Base do
+  class Car > Base
     var FleetNo: Integer ;
     var Model: String ;
     var RegNo: String ;
     var Condition: String ;
     var Status: String ;
     
-    def Reserved?: Boolean
-    do
+    def Reserved?(): Boolean
+    begin
     
     end
     
-    def InService?: Boolean
-    do
+    def InService?(): Boolean
+    begin
     
     end
   end
   
-  class Employee > Person do
+  class Employee > Person
     var PhoneNo: String ;
     var DateHired: Date ;
   end
   
-  class RentalAgent > Employee do
+  class RentalAgent > Employee
     var CommissionRate: Float ;
     var Tar;
     
-    def Calculate
-    do
+    def Calculate()
+    begin
     
     end
   end
   
-  class Mechanic > Employee do
+  class Mechanic > Employee
     var Skills: Strings ;
     var Qualifications: String ;
   private
-    def Initialize
-    do
+    def Initialize()
+    begin
       # Initialize Skills & Qualifications
     end
   end
   
-  class ServiceLog > Base do
+  class ServiceLog > Base
     var ServiceHistory: String ;
     var ProgressHistory: Strings ;
   private
-    def Initialize
-    do
+    def Initialize()
+    begin
       # Initialize ProgressHistory
     end
   end

@@ -1,5 +1,5 @@
 __*
-ares
+arc
 *.o
 *.hh
 parser.h

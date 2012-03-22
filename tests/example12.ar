@@ -1,12 +1,11 @@
-module Fatorial do
+module Fatorial
 
   def fat(num: Integer): Integer
-  do
+  begin
     if 0 == num then
       Result = 1;
     else
       Result = num * fat(num - 1);
-    end
   end
 
 end

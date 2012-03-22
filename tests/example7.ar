@@ -1,251 +1,251 @@
-module Classes do
+module Classes
 
-   class Persistente do
+   class Persistente
     # Atributos
     var ObjectId: Integer ;
-    var Iter: RandomAccessFile ;
+    var Iter: RanbeginmAccessFile ;
 
     # Métodos abstratos
-     def AtualizarDados;
-     def Gravar;
-     def Ler;
+     def AtualizarDabegins();
+     def Gravar();
+     def Ler();
     
     # Métodos
-    def Persistente
-    do
+    def Persistente()
+    begin
       # Constructor
     end
     
-    def GetObjectId: Integer
-    do
-      # Do ;
+    def GetObjectId(): Integer
+    begin
+      # begin ;
     end
     
-    def GetObject: Object
-    do
-      # Do something
+    def GetObject(): Object
+    begin
+      # begin something
     end
     
-    def Armazenar
-    do
+    def Armazenar()
+    begin
       # Salvar em disco
     end
     
-    def Apagar
-    do
-      # Apagar do disco
+    def Apagar()
+    begin
+      # Apagar begin disco
     end
     
-    def StartObjectId: Integer
-    do
+    def StartObjectId(): Integer
+    begin
       # Inicializa a propriedade "ObjectId"
     end
   end
   
-  class Agencia > Persistente do
+  class Agencia > Persistente
     # Atributos
     var CodAgencia: String ;
     var NomeAgencia: String ;
     
-    # Métodos
-    def Agencia
-    do
+    # Métobegins
+    def Agencia()
+    begin
       # .ctor
     end
     
-    def AtualiarDados
-    do
+    def AtualiarDados()
+    begin
       # Implementação
     end
     
-    def Gravar
-    do
+    def Gravar()
+    begin
       # Implementação
     end
     
-    def Ler
-    do
+    def Ler()
+    begin
       # Implementação
     end
   end
   
-  class ContaCorrente > Persistente do
+  class ContaCorrente > Persistente
     var Cod: String;
-    var Saldo: Integer;
+    var Salbegin: Integer;
     var AplicPrefix: Array;
     var Historico: Array;
     var Agencia: ObjectId;
     
     def Depositar(Quantia: Float)
-    do
+    begin
       
     end
     
     def Debitar(Quantia: Float)
-    do
+    begin
     
     end
     
     def Transferir(Quantia: Float, ParaConta: ContaCorrente)
-    do
+    begin
     
     end
     
-    def ObterSaldo: Float
-    do
+    def ObterSaldo(): Float
+    begin
     
     end
     
-    def AplicarPrefix
-    do
+    def AplicarPrefix()
+    begin
     
     end
     
-    def ContaCorrente
-    do
+    def ContaCorrente()
+    begin
     
     end
     
-    def TirarExtrato: Strings # = Array<String>
-    do
+    def TirarExtrato(): Strings # = Array<String>
+    begin
     
     end
     
-    def RetirarAplicPrefix
-    do
+    def RetirarAplicPrefix()
+    begin
     
     end
     
-    def Localizar
-    do
+    def Localizar()
+    begin
     
     end
     
-    def Gravar
-    do
+    def Gravar()
+    begin
     
     end
     
-    def Ler
-    do
+    def Ler()
+    begin
     
     end
   end
 
-  class Historico > Persistente do
+  class Historico > Persistente
     var Date: Date;
     var Operacao: Array;
     var Valor: Float;
     
-    def Criar
-    do
+    def Criar()
+    begin
     
     end
     
-    def Destruir
-    do
+    def Destruir()
+    begin
     
     end
   end
   
-  class Operacao > Persistente do
-    var CodOperacao: String;
+  class Operacao > Persistente
+    var Cobeginperacao: String;
     var DescricaoOperacao: String;
     
-    def Operacao
-    do
+    def Operacao()
+    begin
     
     end
     
-    def AtualizarDados
-    do
+    def AtualizarDados()
+    begin
     
     end
     
-    def Gravar
-    do
+    def Gravar()
+    begin
     
     end
     
-    def Ler
-    do
+    def Ler()
+    begin
     
     end
   end
   
-  class Dependente > Persistente do
+  class Dependente > Persistente
     var Nome: String; # invariants not nil
     var CPF: String;
     var Parentesco: String;
     var Poupancas: Array;
     
-    def Dependente
-    do
+    def Dependente()
+    begin
     
     end
     
-    def Localizar
-    do
+    def Localizar()
+    begin
     
     end
     
-    def AbrirPoupanca
-    do
+    def AbrirPoupanca()
+    begin
     
     end
     
-    def FecharPoupanca
-    do
+    def FecharPoupanca()
+    begin
     
     end
     
-    def AtualizarDados
-    do
+    def AtualizarDados()
+    begin
     
     end
     
-    def Gravar
-    do
+    def Gravar()
+    begin
     
     end
     
-    def Ler
-    do
+    def Ler()
+    begin
     
     end
   end
   
-  class Poupanca > ContaCorrente do
+  class Poupanca > ContaCorrente
     var DataVencimento: Date;
     
-    def Poupanca
-    do
+    def Poupanca()
+    begin
     
     end
   end
   
-  class AplicacaoPreFixada > Persistente do
+  class AplicacaoPreFixada > Persistente
     var Valor: Float;
     var DataVencimento: Date;
     var Taxa: Float;
     
-    def AplicacaoPreFixada
-    do
+    def AplicacaoPreFixada()
+    begin
     
     end
     
-    def Gravar
-    do
+    def Gravar()
+    begin
     
     end
     
-    def Ler
-    do
+    def Ler()
+    begin
     
     end
   end
   
-  class Cliente > Persistente do
+  class Cliente > Persistente
     var Nome: String; # invariants not nil
     var CPF: String;
     var Rua: String;
@@ -253,63 +253,63 @@ module Classes do
     var Bairro: String;
     var Cidade: String;
     var CEP: String;
-    var Estado: String;
+    var Estabegin: String;
     var Dependentes: Array;
     var ContasCorrente: Array;
     var Poupancas: Array;
     
-    def Cliente
-    do
+    def Cliente()
+    begin
     
     end
     
-    def Gravar
-    do
+    def Gravar()
+    begin
     
     end
     
-    def Ler
-    do
+    def Ler()
+    begin
     
     end
     
-    def Localizar
-    do
+    def Localizar()
+    begin
     
     end
     
-    def AbrirContaCorrente
-    do
+    def AbrirContaCorrente()
+    begin
     
     end
     
-    def RemoverContaCorrente
-    do
+    def RemoverContaCorrente()
+    begin
     
     end
     
-    def AdicDependente
-    do
+    def AdicDependente()
+    begin
     
     end
     
-    def ExcluirDependente
-    do
+    def ExcluirDependente()
+    begin
     
     end
     
-    def AbrirPoupanca
-    do
+    def AbrirPoupanca()
+    begin
     
     end
     
-    def FecharPoupanca
-    do
+    def FecharPoupanca()
+    begin
     
     end
     
-    def AtualizarDados
-    do
+    def AtualizarDados()
+    begin
     
     end
   end

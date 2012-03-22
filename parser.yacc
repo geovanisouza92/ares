@@ -4,12 +4,7 @@
 
 using namespace std;
 
-#include "st.h"
-#include "stoql.h"
-#include "stmt.h"
 #include "driver.h"
-
-using namespace SyntaxTree;
 
 %}
 
@@ -33,8 +28,6 @@ using namespace SyntaxTree;
     int                             v_int;
     double                          v_flt;
     string *                        v_str;
-    class SyntaxTree::SyntaxNode *  v_node;
-    class SyntaxTree::VectorNode *  v_list;
 }
 
 %{
@@ -54,15 +47,19 @@ using namespace SyntaxTree;
 
 %token  kABSTRACT   "abstract"
 %token  kAFTER      "after"
+%token  kAND        "and"
 %token  kASYNC      "async"
 %token  kASC        "asc"
+%token  kATTR       "attr"
 %token  kBEFORE     "before"
+%token  kBEGIN      "begin"
 %token  kBETWEEN    "between"
 %token  kBREAK      "break"
 %token  kBY         "by"
 %token  kCASE       "case"
 %token  kCLASS      "class"
 %token  kCONST      "const"
+%token  kCONTINUE   "continue"
 %token  kDEF        "def"
 %token  kDESC       "desc"
 %token  kDO         "do"
@@ -79,6 +76,7 @@ using namespace SyntaxTree;
 %token  kGROUP      "group"
 %token  kHAS        "has"
 %token  kIF         "if"
+%token  kIMPLIES    "implies"
 %token  kIMPORT     "import"
 %token  kINCLUDE    "include"
 %token  kINVARIANTS "invariants"
@@ -90,14 +88,18 @@ using namespace SyntaxTree;
 %token  kMODULE     "module"
 %token  kNEW        "new"
 %token  kNIL        "nil"
+%token  kNOT        "not"
 %token  kON         "on"
 %token  kORDER      "order"
+%token  kOR         "or"
 %token  kPRIVATE    "private"
 %token  kPROTECTED  "protected"
 %token  kPUBLIC     "public"
 %token  kRAISE      "raise"
 %token  kREQUIRE    "require"
 %token  kRESCUE     "rescue"
+%token  kRETURN     "return"
+%token  kRETRY      "retry"
 %token  kRIGHT      "right"
 %token  kSEALED     "sealed"
 %token  kSELECT     "select"
@@ -115,7 +117,8 @@ using namespace SyntaxTree;
 %token  kWHEN       "when"
 %token  kWHERE      "where"
 %token  kWHILE      "while"
-%token  kYIELD      "yield"
+%token  kXOR        "xor"
+// %token  kYIELD      "yield"
 
 %token  '='     "="
 %token  sADE    "+="
@@ -125,32 +128,22 @@ using namespace SyntaxTree;
 
 %token  '?'     "?"
 %token  ':'     ":"
-%token  sAND    "&&"
-%token  sOR     "||"
-%token  sIMPLIES "=>"
 %token  sEQL    "=="
 %token  sIDE    "==="
-%token  sCMP    "<=>"
 %token  sNEQ    "!="
-%token  sMAT    "=~"
-%token  sNMA    "!~"
 %token  '<'     "<"
 %token  sLEE    "<="
 %token  '>'     ">"
 %token  sGEE    ">="
+%token  sMAT    "=~"
+%token  sNMA    "!~"
 %token  sDOT2   ".."
 %token  sDOT3   "..."
-%token  '&'     "&"
-%token  '|'     "|"
-%token  '^'     "^"
-%token  sSHL    "<<"
-%token  sSHR    ">>"
 %token  '+'     "+"
 %token  '-'     "-"
 %token  '*'     "*"
 %token  '/'     "/"
 %token  sPOW    "**"
-%token  '!'     "!"
 %token  UNARY
 
 %token  '('     "("
@@ -165,82 +158,10 @@ using namespace SyntaxTree;
 
 %nonassoc ID FLOAT INTEGER STRING REGEX kTRUE kFALSE
 
-%left   sAND sOR sIMPLIES sEQL sNEQ sIDE sCMP sMAT sNMA sLEE sGEE sSHL sSHR sPOW sDOT2 sDOT3 kIN kIS
-%left   '?' ':' '<' '>' '^' '+' '-' '*' '/' '%' '&' '|' ',' '.' '!'
-%right  UNARY sADE sSUE sMUE sDIE
-%right  '=' '(' '[' '{'
-
-%type   <v_node>    Identifier
-%type   <v_node>    QualifiedId
-%type   <v_node>    AccessMember
-%type   <v_node>    ArrayAccessInfo
-%type   <v_node>    String
-%type   <v_node>    Literal
-%type   <v_node>    Array
-%type   <v_node>    Hash
-%type   <v_node>    Value
-%type   <v_node>    FunctionCall
-%type   <v_node>    NamedExpr
-%type   <v_node>    SuffixExpr
-%type   <v_node>    PrefixExpr
-%type   <v_node>    PowerExpr
-%type   <v_node>    MultExpr
-%type   <v_node>    AddExpr
-%type   <v_node>    ShiftExpr
-%type   <v_node>    BitwiseExpr
-%type   <v_node>    RelatExpr
-%type   <v_node>    RangeExpr
-%type   <v_node>    LogicExpr
-%type   <v_node>    TernaryExpr
-%type   <v_node>    AssignExpr
-%type   <v_node>    AssignValue
-%type   <v_node>    QueryExpr
-%type   <v_node>    QueryOrigin
-%type   <v_node>    QueryBody
-%type   <v_node>    QueryBodyClause
-%type   <v_node>    WhereClause
-%type   <v_node>    JoinClause
-%type   <v_node>    OrderByClause
-%type   <v_node>    OrderingNode
-%type   <v_node>    RangeClause
-%type   <v_node>    SelectsORGroupClause
-%type   <v_node>    GroupByClause
-%type   <v_node>    SelectClause
-%type   <v_node>    Expression
-%type   <v_node>    Statement
-%type   <v_node>    IfStmt
-%type   <v_node>    ElifClause
-%type   <v_node>    UnlessStmt
-%type   <v_node>    CaseStmt
-%type   <v_node>    WhenClause
-%type   <v_node>    ForStmt
-%type   <v_node>    LoopStmt
-%type   <v_node>    AsyncStmt
-%type   <v_node>    RaiseStmt
-%type   <v_node>    ControlStmt
-%type   <v_node>    BlockStmt
-%type   <v_node>    Condition
-%type   <v_node>    VisibilityStmt
-%type   <v_node>    ImportStmt
-%type   <v_node>    IncludeStmt
-%type   <v_node>    Linkable
-
-%type   <v_list>    RealParams
-%type   <v_list>    ParamValueList
-%type   <v_list>    NamedExprList
-%type   <v_list>    QueryBodyClauses
-%type   <v_list>    OrderingNodes
-%type   <v_list>    ExpressionList
-%type   <v_list>    ThenClause
-%type   <v_list>    RepeatElifClause
-%type   <v_list>    ElseClause
-%type   <v_list>    RepeatWhenClause
-%type   <v_list>    Statements
-%type   <v_list>    RequireClause
-%type   <v_list>    Conditions
-%type   <v_list>    RescueClause
-%type   <v_list>    EnsureClause
-%type   <v_list>    LinkableList
+%left   sEQL sIDE sNEQ sLEE sGEE sDOT2 sDOT3 sPOW sADE sSUE sMUE sDIE
+%left   kAND kOR kXOR kIMPLIES
+%left   '=' '?' ':' '<' '>' '+' '-' '*' '/'
+%right  UNARY
 
 %%
 
@@ -249,915 +170,151 @@ Program
             driver.dec_lines();
             driver.warning("Nothing to do here.");
         }
-        | Statements {
-            driver.Env->put_cmds($1);
-        }
-        ;
-
-Identifier
-        : ID {
-            $$ = new IdentifierNode(*$1);
-        }
-        | kSELF {
-            $$ = new IdentifierNode("self");
-        }
-        ;
-
-QualifiedId
-        : Identifier {
-            $$ = $1;
-        }
-        | QualifiedId '.' Identifier {
-            $$ = new BinaryExprNode(Operation::BinaryAccess, $1, $3);
-        }
-        | QualifiedId '.' Identifier RealParams
-        | QualifiedId '.' kNEW RealParams
-        ;
-
-String
-        : STRING {
-            $$ = new StringNode(*$1);
-        }
-        | String STRING {
-            ((StringNode *) $$)->append(*$2);
-        }
-        ;
-
-Array
-        : '[' ExpressionList ']' {
-            $$ = new ArrayNode($2);
-        }
-        | '[' ']' {
-            $$ = new ArrayNode();
-        }
-        ;
-
-Hash
-        : '{' NamedExprList '}' {
-            $$ = new HashNode($2);
-        }
-        | '{' '}' {
-            $$ = new HashNode();
-        }
-        ;
-
-NamedExprList
-        : NamedExpr {
-            $$ = new VectorNode();
-            $$->push_back($1);
-        }
-        | NamedExprList ',' NamedExpr {
-            $$->push_back($3);
-        }
-        ;
-
-NamedExpr
-        : Identifier ':' Expression {
-            $$ = new HashPairNode($1, $3);
-        }
-        | String ':' Expression {
-            $$ = new HashPairNode($1, $3);
-        }
-        ;
-
-Literal
-        : REGEX {
-            $$ = new RegexNode(*$1);
-        }
-        | FLOAT {
-            $$ = new FloatNode($1);
-        }
-        | INTEGER {
-            $$ = new IntegerNode($1);
-        }
-        | kFALSE {
-            $$ = new BooleanNode(false);
-        }
-        | kTRUE {
-            $$ = new BooleanNode(true);
-        }
-        | String {
-            $$ = $1;
-        }
-        | Array {
-            $$ = $1;
-        }
-        | Hash {
-            $$ = $1;
-        }
-        ;
-
-Value
-        : Literal {
-            $$ = $1;
-        }
-        | QualifiedId {
-            $$ = $1;
-        }
-        | FunctionCall {
-            $$ = $1;
-        }
-        | '(' Expression ')' {
-            $$ = $2;
-        }
-        | kNIL {
-            // $$ = new IdentifierNode("nil");
-        }
-        ;
-
-FunctionCall
-        : Identifier RealParams {
-            $$ = new FunctionCallNode($1, $2);
-        }
-        | kNEW RealParams
-        ;
-
-RealParams
-        : '(' ')' {
-            $$ = new VectorNode();
-        }
-        | '(' ParamValueList ')' {
-            $$ = $2;
-        }
-        ;
-
-ParamValueList
-        : AssignValue {
-            $$ = new VectorNode();
-            $$->push_back($1);
-        }
-        | ParamValueList ',' AssignValue {
-            $$->push_back($3);
-        }
-        ;
-
-SuffixExpr
-        : Value {
-            $$ = $1;
-        }
-        | SuffixExpr AccessMember {
-            $$ = new BinaryExprNode(Operation::BinaryAccess, $1, $2);
-        }
-        ;
-
-AccessMember
-        : '.' FunctionCall
-        | '[' ArrayAccessInfo ']'
-        ;
-
-ArrayAccessInfo
-        : Expression {
-            $$ = new ArrayAccessNode($1);
-        }
-        | Expression ':' {
-            $$ = new ArrayAccessNode($1, NULL);
-        }
-        | Expression ':' Expression {
-            $$ = new ArrayAccessNode($1, $3);
-        }
-        | ':' Expression {
-            $$ = new ArrayAccessNode(NULL, $2);
-        }
-        ;
-
-PrefixExpr
-        : SuffixExpr {
-            $$ = $1;
-        }
-        | '!' PrefixExpr %prec UNARY {
-            $$ = new UnaryExprNode(Operation::UnaryNot, $2);
-        }
-        | '+' PrefixExpr %prec UNARY {
-            $$ = new UnaryExprNode(Operation::UnaryAdd, $2);
-        }
-        | '-' PrefixExpr %prec UNARY {
-            $$ = new UnaryExprNode(Operation::UnarySub, $2);
-        }
-        | '(' QualifiedId ')' PrefixExpr %prec UNARY {
-            $$ = new BinaryExprNode(Operation::BinaryCast, $4, $2);
-        }
-        | kNEW PrefixExpr %prec UNARY {
-            $$ = new UnaryExprNode(Operation::UnaryNew, $2);
-        }
-        | kNEW kCLASS '(' NamedExprList ')' %prec UNARY {
-            // $$ = new UnaryExprNode(Operation::UnaryNew, StdLib::Object);
-        }
-        ;
-
-PowerExpr
-        : PrefixExpr {
-            $$ = $1;
-        }
-        | PowerExpr sPOW PrefixExpr {
-            $$ = new BinaryExprNode(Operation::BinaryPow, $1, $3);
-        }
-        ;
-
-MultExpr
-        : PowerExpr {
-            $$ = $1;
-        }
-        | MultExpr '*' PowerExpr {
-            $$ = new BinaryExprNode(Operation::BinaryMul, $1, $3);
-        }
-        | MultExpr '/' PowerExpr {
-            $$ = new BinaryExprNode(Operation::BinaryDiv, $1, $3);
-        }
-        | MultExpr '%' PowerExpr {
-            $$ = new BinaryExprNode(Operation::BinaryMod, $1, $3);
-        }
-        ;
-
-AddExpr
-        : MultExpr {
-            $$ = $1;
-        }
-        | AddExpr '+' MultExpr {
-            $$ = new BinaryExprNode(Operation::BinaryAdd, $1, $3);
-        }
-        | AddExpr '-' MultExpr {
-            $$ = new BinaryExprNode(Operation::BinarySub, $1, $3);
-        }
-        ;
-
-ShiftExpr
-        : AddExpr {
-            $$ = $1;
-        }
-        | ShiftExpr sSHL AddExpr {
-            $$ = new BinaryExprNode(Operation::BinaryShl, $1, $3);
-        }
-        | ShiftExpr sSHR AddExpr {
-            $$ = new BinaryExprNode(Operation::BinaryShr, $1, $3);
-        }
-        ;
-
-BitwiseExpr
-        : ShiftExpr {
-            $$ = $1;
-        }
-        | BitwiseExpr '&' ShiftExpr {
-            $$ = new BinaryExprNode(Operation::BinaryBAnd, $1, $3);
-        }
-        | BitwiseExpr '|' ShiftExpr {
-            $$ = new BinaryExprNode(Operation::BinaryBOr, $1, $3);
-        }
-        | BitwiseExpr '^' ShiftExpr {
-            $$ = new BinaryExprNode(Operation::BinaryBXor, $1, $3);
-        }
-        ;
-
-RelatExpr
-        : BitwiseExpr {
-            $$ = $1;
-        }
-        | RelatExpr '<' BitwiseExpr {
-            $$ = new BinaryExprNode(Operation::BinaryLet, $1, $3);
-        }
-        | RelatExpr sLEE BitwiseExpr {
-            $$ = new BinaryExprNode(Operation::BinaryLee, $1, $3);
-        }
-        | RelatExpr '>' BitwiseExpr {
-            $$ = new BinaryExprNode(Operation::BinaryGet, $1, $3);
-        }
-        | RelatExpr sGEE BitwiseExpr {
-            $$ = new BinaryExprNode(Operation::BinaryGee, $1, $3);
-        }
-        | RelatExpr sEQL BitwiseExpr {
-            $$ = new BinaryExprNode(Operation::BinaryEql, $1, $3);
-        }
-        | RelatExpr sNEQ BitwiseExpr {
-            $$ = new BinaryExprNode(Operation::BinaryNeq, $1, $3);
-        }
-        | RelatExpr sIDE BitwiseExpr {
-            $$ = new BinaryExprNode(Operation::BinaryIde, $1, $3);
-        }
-        | RelatExpr sCMP BitwiseExpr {
-            $$ = new BinaryExprNode(Operation::BinaryCmp, $1, $3);
-        }
-        | RelatExpr sMAT BitwiseExpr {
-            $$ = new BinaryExprNode(Operation::BinaryMat, $1, $3);
-        }
-        | RelatExpr sNMA BitwiseExpr {
-            $$ = new BinaryExprNode(Operation::BinaryNma, $1, $3);
-        }
-        | RelatExpr kIS BitwiseExpr {
-            $$ = new BinaryExprNode(Operation::BinaryIs, $1, $3);
-        }
-        | RelatExpr kIN BitwiseExpr {
-            $$ = new BinaryExprNode(Operation::BinaryIn, $1, $3);
-        }
-        | RelatExpr kHAS BitwiseExpr {
-            $$ = new BinaryExprNode(Operation::BinaryHas, $3, $1);
-        }
-        ;
-
-LogicExpr
-        : RelatExpr {
-            $$ = $1;
-        }
-        | LogicExpr sAND RelatExpr {
-            $$ = new BinaryExprNode(Operation::BinaryLAnd, $1, $3);
-        }
-        | LogicExpr sOR RelatExpr {
-            $$ = new BinaryExprNode(Operation::BinaryLOr, $1, $3);
-        }
-        | LogicExpr sIMPLIES RelatExpr {
-            $$ = new BinaryExprNode(Operation::BinaryLImplies, $1, $3);
-        }
-        ;
-
-RangeExpr
-        : LogicExpr {
-            $$ = $1;
-        }
-        | RangeExpr sDOT2 LogicExpr {
-            $$ = new BinaryExprNode(Operation::BinaryDot2, $1, $3);
-        }
-        | RangeExpr sDOT3 LogicExpr {
-            $$ = new BinaryExprNode(Operation::BinaryDot3, $1, $3);
-        }
-        ;
-
-TernaryExpr
-        : RangeExpr {
-            $$ = $1;
-        }
-        | RangeExpr '?' Expression ':' Expression {
-            $$ = new TernaryExprNode(Operation::TernaryIf, $1, $3, $5);
-        }
-        | RangeExpr kBETWEEN RelatExpr sAND RelatExpr {
-            $$ = new TernaryExprNode(Operation::TernaryBetween, $1, $3, $5);
-        }
-        ;
-
-AssignExpr
-        : QualifiedId '=' AssignValue {
-            $$ = new BinaryExprNode(Operation::BinaryAssign, $1, $3);
-        }
-        | QualifiedId sADE  AssignValue {
-            $$ = new BinaryExprNode(Operation::BinaryAde, $1, $3);
-        }
-        | QualifiedId sSUE  AssignValue {
-            $$ = new BinaryExprNode(Operation::BinarySue, $1, $3);
-        }
-        | QualifiedId sMUE  AssignValue {
-            $$ = new BinaryExprNode(Operation::BinaryMue, $1, $3);
-        }
-        | QualifiedId sDIE  AssignValue {
-            $$ = new BinaryExprNode(Operation::BinaryDie, $1, $3);
-        }
-        ;
-
-AssignValue
-        : Expression {
-            $$ = $1;
-        }
-        | kASYNC Expression {
-            $$ = new AsyncStmtNode($2, AsyncType::Expression);
-        }
-        ;
-
-LambdaExpr
-        : kLAMBDA Expression
-        | kLAMBDA ':' QualifiedId Expression
-        | kLAMBDA FormalParams Expression
-        | kLAMBDA FormalParams ':' QualifiedId Expression
-        ;
-
-QueryExpr
-        : kFROM QueryOrigin QueryBody {
-            $$ = new QueryNode($2, $3);
-        }
-        | kFROM QueryOrigin {
-            $$ = new QueryNode($2, NULL);
-        }
-        ;
-
-QueryOrigin
-        : Identifier kIN Expression {
-            $$ = new QueryOriginNode($1, $3);
-        }
-        ;
-
-QueryBody
-        : QueryBodyClauses SelectsORGroupClause {
-            $$ = new QueryBodyNode();
-            ((QueryBodyNode *) $$)
-                ->set_body($1)
-                ->set_finally($2);
-        }
-        | QueryBodyClauses {
-            $$ = new QueryBodyNode();
-            ((QueryBodyNode *) $$)
-                ->set_body($1);
-        }
-        | SelectsORGroupClause {
-            $$ = new QueryBodyNode();
-            ((QueryBodyNode *) $$)
-                ->set_finally($1);
-        }
-        ;
-
-QueryBodyClauses
-        : QueryBodyClause {
-            $$ = new VectorNode();
-            $$->push_back($1);
-        }
-        | QueryBodyClauses QueryBodyClause {
-            $$->push_back($2);
-        }
-        ;
-
-QueryBodyClause
-        : WhereClause {
-            $$ = $1;
-        }
-        | JoinClause {
-            $$ = $1;
-        }
-        | OrderByClause {
-            $$ = $1;
-        }
-        | RangeClause {
-            $$ = $1;
-        }
-        ;
-
-WhereClause
-        : kWHERE LogicExpr {
-            $$ = new WhereNode($2);
-        }
-        ;
-
-JoinClause
-        : kJOIN QueryOrigin kON LogicExpr {
-            $$ = new JoinNode($2, $4, JoinDirection::None);
-        }
-        | kLEFT kJOIN QueryOrigin kON LogicExpr {
-            $$ = new JoinNode($3, $5, JoinDirection::Left);
-        }
-        | kRIGHT kJOIN QueryOrigin kON LogicExpr {
-            $$ = new JoinNode($3, $5, JoinDirection::Right);
-        }
-        ;
-
-OrderByClause
-        : kORDER kBY OrderingNodes {
-            $$ = new OrderByNode($3);
-        }
-        ;
-
-OrderingNodes
-        : OrderingNode {
-            $$ = new VectorNode();
-            $$->push_back($1);
-        }
-        | OrderingNodes ',' OrderingNode {
-            $$->push_back($3);
-        }
-        ;
-
-OrderingNode
-        : Expression {
-            $$ = new OrderingNode($1, OrderDirection::None);
-        }
-        | Expression kASC {
-            $$ = new OrderingNode($1, OrderDirection::Asc);
-        }
-        | Expression kDESC {
-            $$ = new OrderingNode($1, OrderDirection::Desc);
-        }
-        ;
-
-RangeClause
-        : kSKIP Expression {
-            $$ = new RangeNode(RangeType::Skip, $2);
-        }
-        | kSTEP Expression {
-            $$ = new RangeNode(RangeType::Step, $2);
-        }
-        | kTAKE Expression {
-            $$ = new RangeNode(RangeType::Take, $2);
-        }
-        ;
-
-SelectsORGroupClause
-        : GroupByClause {
-            $$ = $1;
-        }
-        | SelectClause {
-            $$ = $1;
-        }
-        ;
-
-GroupByClause
-        : kGROUP kBY Expression {
-            $$ = new GroupByNode($3);
-        }
-        ;
-
-SelectClause
-        : kSELECT ExpressionList {
-            $$ = new SelectNode($2);
-        }
-        ;
-
-Expression
-        : AssignExpr {
-            $$ = $1;
-        }
-        | TernaryExpr {
-            $$ = $1;
-        }
-        | LambdaExpr
-        | QueryExpr {
-            $$ = $1;
-        }
-        ;
-
-ExpressionList
-        : Expression {
-            $$ = new VectorNode();
-            $$->push_back($1);
-        }
-        | ExpressionList ',' Expression {
-            $$->push_back($3);
-        }
-        ;
-
-IfStmt
-        : kIF Expression ThenClause kEND {
-            $$ = new IfStmtNode($2, $3);
-        }
-        | kIF Expression ThenClause ElseClause kEND {
-            $$ = new IfStmtNode($2, $3);
-            ((IfStmtNode *) $$)
-              ->set_else($4);
-        }
-        | kIF Expression ThenClause RepeatElifClause kEND {
-            $$ = new IfStmtNode($2, $3);
-            ((IfStmtNode *) $$)
-              ->set_elif($4);
-        }
-        | kIF Expression ThenClause RepeatElifClause ElseClause kEND {
-            $$ = new IfStmtNode($2, $3);
-            ((IfStmtNode *) $$)
-              ->set_elif($4)
-              ->set_else($5);
-        }
-        ;
-
-ThenClause
-        : kTHEN {
-            $$ = new VectorNode();
-        }
-        | kTHEN Statements {
-            $$ = $2;
-        }
-        ;
-
-RepeatElifClause
-        : ElifClause {
-            $$ = new VectorNode();
-        }
-        | RepeatElifClause ElifClause {
-            $$->push_back($2);
-        }
-        ;
-
-ElifClause
-        : kELIF Expression ThenClause {
-            $$ = new IfStmtNode($2, $3);
-        }
-        ;
-
-ElseClause
-        : kELSE {
-            $$ = new VectorNode();
-        }
-        | kELSE Statements {
-            $$ = $2;
-        }
-        ;
-
-UnlessStmt
-        : kUNLESS Expression ThenClause kEND {
-            $$ = new UnlessStmtNode($2, $3);
-        }
-        | kUNLESS Expression ThenClause ElseClause kEND {
-            $$ = new UnlessStmtNode($2, $3);
-            ((UnlessStmtNode *) $$)
-              ->set_else($4);
-        }
-        ;
-
-CaseStmt
-        : kCASE Expression kEND {
-            $$ = new CaseStmtNode($2);
-        }
-        | kCASE Expression ElseClause kEND {
-            $$ = new CaseStmtNode($2);
-            ((CaseStmtNode *) $$)
-              ->set_else($3);
-        }
-        | kCASE Expression RepeatWhenClause kEND {
-            $$ = new CaseStmtNode($2);
-            ((CaseStmtNode *) $$)
-              ->set_when($3);
-        }
-        | kCASE Expression RepeatWhenClause ElseClause kEND {
-            $$ = new CaseStmtNode($2);
-            ((CaseStmtNode *) $$)
-              ->set_when($3)
-              ->set_else($4);
-        }
-        ;
-
-RepeatWhenClause
-        : WhenClause {
-            $$ = new VectorNode();
-            $$->push_back($1);
-        }
-        | RepeatWhenClause WhenClause {
-            $$->push_back($2);
-        }
-        ;
-
-WhenClause
-        : kWHEN Expression BlockStmt {
-            $$ = new WhenClauseNode($2, $3);
-        }
-        ;
-
-ForStmt
-        : kFOR   Expression kASC Expression BlockStmt {
-            $$ = new ForStmtNode($2, $4, Loop::Ascending, $5);
-        }
-        | kFOR Expression kASC Expression kSTEP Expression BlockStmt {
-            $$ = new ForStmtNode($2, $4, Loop::Ascending, $7);
-            ((ForStmtNode *) $$)
-              ->set_step($6);
-        }
-        | kFOR Expression kDESC Expression BlockStmt {
-            $$ = new ForStmtNode($2, $4, Loop::Descending, $5);
-        }
-        | kFOR Expression kDESC Expression kSTEP Expression BlockStmt {
-            $$ = new ForStmtNode($2, $4, Loop::Descending, $7);
-            ((ForStmtNode *) $$)
-              ->set_step($6);
-        }
-        | kFOR Identifier kIN Expression BlockStmt {
-            $$ = new ForStmtNode($2, $4, Loop::Iteration, $5);
-        }
-        ;
-
-LoopStmt
-        : kWHILE Expression BlockStmt {
-            $$ = new LoopStmtNode($2, $3, Loop::While);
-        }
-        | kUNTIL Expression BlockStmt {
-            $$ = new LoopStmtNode($2, $3, Loop::Until);
-        }
-        ;
-
-AsyncStmt
-        : kASYNC Statement {
-            $$ = new AsyncStmtNode($2, AsyncType::Statement);
-        }
-        ;
-
-RaiseStmt
-        : kRAISE {
-            $$ = new RaiseStmtNode(NULL);
-        }
-        | kRAISE String {
-            $$ = new RaiseStmtNode($2);
-        }
-        | kRAISE kNEW PrefixExpr {
-            $$ = new RaiseStmtNode(new UnaryExprNode(Operation::UnaryNew, $3));
-        }
-        ;
-
-ControlStmt
-        : kBREAK {
-            $$ = new ControlStmtNode(Control::Break, NULL);
-        }
-        | kEXIT {
-            $$ = new ControlStmtNode(Control::Exit, NULL);
-        }
-        | kEXIT AssignValue {
-            $$ = new ControlStmtNode(Control::Exit, $2);
-        }
-        | kYIELD {
-            $$ = new ControlStmtNode(Control::Yield, NULL);
-        }
-        | kYIELD AssignValue {
-            $$ = new ControlStmtNode(Control::Yield, $2);
-        }
-        ;
-
-BlockStmt
-        : kDO kEND {
-            $$ = new BlockStmtNode(new VectorNode());
-        }
-        | kDO Statements kEND {
-            $$ = new BlockStmtNode($2);
-        }
-        | kDO Statements RescueClause kEND {
-            $$ = new BlockStmtNode($2);
-            ((BlockStmtNode *) $$)
-              ->set_rescue($3);
-        }
-        | RequireClause kDO Statements kEND {
-            $$ = new BlockStmtNode($3);
-            ((BlockStmtNode *) $$)
-              ->set_require($1);
-        }
-        | RequireClause kDO Statements RescueClause kEND {
-            $$ = new BlockStmtNode($3);
-            ((BlockStmtNode *) $$)
-              ->set_require($1)
-              ->set_rescue($4);
-        }
-        | kDO Statements EnsureClause kEND {
-            $$ = new BlockStmtNode($2);
-            ((BlockStmtNode *) $$)
-              ->set_ensure($3);
-        }
-        | kDO Statements RescueClause EnsureClause kEND {
-            $$ = new BlockStmtNode($2);
-            ((BlockStmtNode *) $$)
-              ->set_rescue($3)
-              ->set_ensure($4);
-        }
-        | RequireClause kDO Statements EnsureClause kEND {
-            $$ = new BlockStmtNode($3);
-            ((BlockStmtNode *) $$)
-              ->set_require($1)
-              ->set_ensure($4);
-        }
-        | RequireClause kDO Statements RescueClause EnsureClause kEND {
-            $$ = new BlockStmtNode($3);
-            ((BlockStmtNode *) $$)
-              ->set_require($1)
-              ->set_rescue($4)
-              ->set_ensure($5);
-        }
-        ;
-
-RequireClause
-        : kREQUIRE Conditions {
-            $$ = $2;
-        }
-        ;
-
-Conditions
-        : Condition {
-            $$ = new VectorNode();
-            $$->push_back($1);
-        }
-        | Conditions Condition {
-            $$->push_back($2);
-        }
-        ;
-
-Condition
-        : LogicExpr ';' {
-            $$ = new ConditionNode($1, new RaiseStmtNode(NULL));
-        }
-        | LogicExpr ':' String ';' {
-            $$ = new ConditionNode($1, new RaiseStmtNode($3));
-        }
-        ;
-
-EnsureClause
-        : kENSURE Statements {
-            $$ = $2;
-        }
-        ;
-
-RescueClause
-        : kRESCUE RepeatWhenClause {
-            $$ = $2;
-        }
-        | kRESCUE {
-            $$ = NULL;
-        }
-        ;
-
-VisibilityStmt
-        : kPRIVATE {
-            $$ = new ControlStmtNode(Control::Private, NULL);
-        }
-        | kPROTECTED {
-            $$ = new ControlStmtNode(Control::Protected, NULL);
-        }
-        | kPUBLIC {
-            $$ = new ControlStmtNode(Control::Public, NULL);
-        }
-        ;
-
-ImportStmt
-        : kIMPORT LinkableList {
-            $$ = new InlineNode(Inline::Import, $2);
-        }
-        | kFROM QualifiedId kIMPORT LinkableList {
-            $$ = new InlineNode(Inline::Import, $4, $2);
-        }
-        ;
-
-IncludeStmt
-        : kINCLUDE LinkableList {
-            $$ = new InlineNode(Inline::Include, $2);
-        }
-        ;
-
-LinkableList
-        : Linkable {
-            $$ = new VectorNode();
-            $$->push_back($1);
-        }
-        | LinkableList ',' Linkable {
-            $$->push_back($3);
-        }
-        ;
-
-Linkable
-        : QualifiedId {
-            $$ = $1;
-        }
-        | String {
-            $$ = $1;
-        }
-        ;
-
-VarStmt
-        : kVAR Identifier
-        | kVAR Identifier InvariantsClause
-        | kVAR Identifier Setter
-        | kVAR Identifier Setter InvariantsClause
-        | kVAR Identifier Getter
-        | kVAR Identifier Getter InvariantsClause
-        | kVAR Identifier Getter Setter
-        | kVAR Identifier Getter Setter InvariantsClause
-        | kVAR Identifier '=' AssignValue
-        | kVAR Identifier '=' AssignValue InvariantsClause
-        | kVAR Identifier '=' AssignValue Setter
-        | kVAR Identifier '=' AssignValue Setter InvariantsClause
-        | kVAR Identifier '=' AssignValue Getter
-        | kVAR Identifier '=' AssignValue Getter InvariantsClause
-        | kVAR Identifier '=' AssignValue Getter Setter
-        | kVAR Identifier '=' AssignValue Getter Setter InvariantsClause
-        | kVAR Identifier ':' QualifiedId
-        | kVAR Identifier ':' QualifiedId InvariantsClause
-        | kVAR Identifier ':' QualifiedId Setter
-        | kVAR Identifier ':' QualifiedId Setter InvariantsClause
-        | kVAR Identifier ':' QualifiedId Getter
-        | kVAR Identifier ':' QualifiedId Getter InvariantsClause
-        | kVAR Identifier ':' QualifiedId Getter Setter
-        | kVAR Identifier ':' QualifiedId Getter Setter InvariantsClause
-        | kVAR Identifier ':' QualifiedId '=' AssignValue
-        | kVAR Identifier ':' QualifiedId '=' AssignValue InvariantsClause
-        | kVAR Identifier ':' QualifiedId '=' AssignValue Setter
-        | kVAR Identifier ':' QualifiedId '=' AssignValue Setter InvariantsClause
-        | kVAR Identifier ':' QualifiedId '=' AssignValue Getter
-        | kVAR Identifier ':' QualifiedId '=' AssignValue Getter InvariantsClause
-        | kVAR Identifier ':' QualifiedId '=' AssignValue Getter Setter
-        | kVAR Identifier ':' QualifiedId '=' AssignValue Getter Setter InvariantsClause
+        | TopStatements
+        ;
+
+TopStatements
+        : TopStatement
+        | TopStatements TopStatement
+        ;
+
+TopStatement
+        : Statement
+        | ModuleDecl
+        | ImportStatement ';'
+        | ClassDecl ';'
+        | ClassDecl StatementsForClass kEND
+        | FunctionDecl ';'
+        | FunctionDecl StatementBlock
+        ;
+
+// Statements
+//         : Statement
+//         | Statements Statement
+//         ;
+
+Statement
+        : VariableDecl ';'
+        | ConstantDecl ';'
+        | StatementBlock
+        | IfStatement
+        | UnlessStatement
+        | CaseStatement
+        | ForStatement
+        | LoopStatement
+        | AsyncStatement
+        | RaiseStatement ';'
+        | ReturnStatement ';'
+        | Expression ';'
+        ;
+
+ModuleDecl
+        : kMODULE QualifiedId kEND
+        | kMODULE QualifiedId TopStatements kEND
+        ;
+
+ImportStatement
+        : kIMPORT IdentifierList
+        | kFROM String kIMPORT IdentifierList
+        | kFROM QualifiedId kIMPORT IdentifierList
+        ;
+
+IncludeStatement
+        : kINCLUDE QualifiedId
+        ;
+
+ClassDecl
+        : kCLASS Identifier
+        | kCLASS Identifier '>' IdentifierList
+        | kABSTRACT kCLASS Identifier
+        | kSEALED kCLASS Identifier
+        | kABSTRACT kCLASS Identifier '>' IdentifierList
+        | kSEALED kCLASS Identifier '>' IdentifierList
+        ;
+
+StatementsForClass
+        : StatementForClass
+        | StatementsForClass StatementForClass
+        ;
+
+StatementForClass
+        : TopStatement
+        | VisibilityStatement
+        | AttributeDecl ';'
+        | EventDecl ';'
+        ;
+
+VisibilityStatement
+        : kPRIVATE
+        | kPROTECTED
+        | kPUBLIC
+        ;
+
+AttributeDecl
+        : kATTR Identifier ReturnType
+        | kATTR Identifier ReturnType InvariantsClause
+        | kATTR Identifier ReturnType Setter
+        | kATTR Identifier ReturnType Setter InvariantsClause
+        | kATTR Identifier ReturnType Getter
+        | kATTR Identifier ReturnType Getter InvariantsClause
+        | kATTR Identifier ReturnType Getter Setter
+        | kATTR Identifier ReturnType Getter Setter InvariantsClause
+        | kATTR Identifier ReturnType '=' AssignValue
+        | kATTR Identifier ReturnType '=' AssignValue InvariantsClause
+        | kATTR Identifier ReturnType '=' AssignValue Setter
+        | kATTR Identifier ReturnType '=' AssignValue Setter InvariantsClause
+        | kATTR Identifier ReturnType '=' AssignValue Getter
+        | kATTR Identifier ReturnType '=' AssignValue Getter InvariantsClause
+        | kATTR Identifier ReturnType '=' AssignValue Getter Setter
+        | kATTR Identifier ReturnType '=' AssignValue Getter Setter InvariantsClause
+        ;
+
+InvariantsClause
+        : kINVARIANTS Condition
         ;
 
 Getter
         : kGET
-        | kGET Identifier
-        | kGET LambdaExpr
+        | kGET QualifiedId
         ;
 
 Setter
         : kSET
-        | kSET Identifier
-        | kSET LambdaExpr
+        | kSET QualifiedId
         ;
 
-InvariantsClause
-        : kINVARIANTS LogicExpr
-        | kINVARIANTS LogicExpr ':' String
-        ;
-
-ConstStmt
-        : kCONST Identifier '=' AssignValue
-        | kCONST Identifier ':' QualifiedId '=' AssignValue
-        ;
-
-EventStmt
+EventDecl
         : kEVENT Identifier
-        | kEVENT Identifier '=' AssignValue
+        | kEVENT Identifier '=' StatementBlock
+        | kEVENT Identifier '=' QualifiedId
         | kEVENT Identifier InterceptClause
-        | kEVENT Identifier InterceptClause '=' AssignValue
-        | kEVENT Identifier ':' QualifiedId
-        | kEVENT Identifier ':' QualifiedId '=' AssignValue
-        | kEVENT Identifier ':' QualifiedId InterceptClause
-        | kEVENT Identifier ':' QualifiedId InterceptClause '=' AssignValue
+        | kEVENT Identifier InterceptClause '=' StatementBlock
+        | kEVENT Identifier InterceptClause '=' QualifiedId
+        ;
+
+FunctionDecl
+        : kDEF QualifiedId FormalParams ReturnType
+        | kDEF QualifiedId FormalParams ReturnType InterceptClause
+        ;
+
+FormalParams
+        : '(' ')'
+        | '(' VariableList ')'
+        ;
+
+ReturnType
+        : ':' QualifiedId
+        | ':' QualifiedId ArrayTails
+        ;
+
+ArrayTails
+        : ArrayTail
+        | ArrayTails ArrayTail
+        ;
+
+ArrayTail
+        : '[' ']'
+        | '[' INTEGER ']'
         ;
 
 InterceptClause
@@ -1171,95 +328,423 @@ IdentifierList
         | IdentifierList ',' QualifiedId
         ;
 
-FunctionStmt
-        : kDEF Identifier
-        | kDEF Identifier InterceptClause
-        | kDEF Identifier ':' QualifiedId
-        | kDEF Identifier ':' QualifiedId InterceptClause
-        | kDEF Identifier FormalParams
-        | kDEF Identifier FormalParams InterceptClause
-        | kDEF Identifier FormalParams ':' QualifiedId
-        | kDEF Identifier FormalParams ':' QualifiedId InterceptClause
+VariableDecl
+        : kVAR VariableList
         ;
 
-FormalParams
-        : '(' ')'
-        | '(' FormalParamList ')'
+VariableList
+        : Variable
+        | VariableList ',' Variable
         ;
 
-FormalParamList
-        : FormalParam
-        | FormalParamList ',' FormalParam
+Variable
+        : Identifier
+        | Identifier InvariantsClause
+        | Identifier '=' AssignValue
+        | Identifier '=' AssignValue InvariantsClause
+        | Identifier ReturnType
+        | Identifier ReturnType InvariantsClause
+        | Identifier ReturnType '=' AssignValue
+        | Identifier ReturnType '=' AssignValue InvariantsClause
         ;
 
-FormalParam
-        : Identifier ':' QualifiedId
-        | Identifier ':' QualifiedId InvariantsClause
-        | Identifier ':' QualifiedId '=' AssignValue
-        | Identifier ':' QualifiedId '=' AssignValue InvariantsClause
+ConstantDecl
+        : kCONST ConstantList
         ;
 
-ClassStmt
-        : kCLASS Identifier
-        | kABSTRACT kCLASS Identifier
-        | kSEALED kCLASS Identifier
-        | kABSTRACT kSEALED kCLASS Identifier
-        | kCLASS Identifier Heritance
-        | kABSTRACT kCLASS Identifier Heritance
-        | kSEALED kCLASS Identifier Heritance
-        | kABSTRACT kSEALED kCLASS Identifier Heritance
+ConstantList
+        : Constant
+        | ConstantList ',' Constant
         ;
 
-Heritance
-        : '>' IdentifierList
+Constant
+        : Identifier '=' AssignValue
+        | Identifier ReturnType '=' AssignValue
         ;
 
-ModuleStmt
-        : kMODULE QualifiedId BlockStmt
+StatementBlock
+        : kBEGIN kEND
+        | kBEGIN StatementsForBlock kEND
+        | kBEGIN StatementsForBlock EnsureClause kEND
+        | kBEGIN StatementsForBlock RescueClause kEND
+        | kBEGIN StatementsForBlock RescueClause EnsureClause kEND
+        | RequireClause kBEGIN StatementsForBlock kEND
+        | RequireClause kBEGIN StatementsForBlock EnsureClause kEND
+        | RequireClause kBEGIN StatementsForBlock RescueClause kEND
+        | RequireClause kBEGIN StatementsForBlock RescueClause EnsureClause kEND
         ;
 
-TypeStmt
-        : VisibilityStmt
-        | ImportStmt ';'
-        | IncludeStmt ';'
-        | VarStmt ';'
-        | ConstStmt ';'
-        | EventStmt ';'
-        | FunctionStmt ';'
-        | FunctionStmt BlockStmt
-        | ClassStmt BlockStmt
-        | ModuleStmt
+StatementsForBlock
+        : StatementForBlock
+        | StatementsForBlock StatementForBlock
         ;
 
-AnnotationStmt
-        : '@' Identifier
-        | '@' Identifier RealParams
+StatementForBlock
+        : Statement
+        | IncludeStatement ';'
+        | ExitStatement ';'
         ;
 
-Statement
-        : IfStmt {
-            $$ = $1;
-        }
-        | UnlessStmt
-        | CaseStmt
-        | ForStmt
-        | LoopStmt
-        | BlockStmt
-        | AsyncStmt
-        | RaiseStmt ';'
-        | ControlStmt ';'
-        | Expression ';'
-        | AnnotationStmt
-        | TypeStmt
+RequireClause
+        : kREQUIRE
+        | kREQUIRE Conditions
         ;
 
-Statements
-        : Statement {
-            $$ = new VectorNode();
-        }
-        | Statements Statement {
-            $$->push_back($2);
-        }
+Conditions
+        : Condition ';'
+        | Conditions Condition ';'
+        ;
+
+Condition
+        : LogicExpr
+        | LogicExpr RaiseStatement
+        ;
+
+EnsureClause
+        : kENSURE
+        | kENSURE StatementsForBlock
+        ;
+
+RescueClause
+        : kRESCUE
+        | kRESCUE WhenRescueRepeat
+        ;
+
+WhenRescueRepeat
+        : WhenRescue
+        | WhenRescueRepeat WhenRescue
+        ;
+
+WhenRescue
+        : kWHEN Expression kDO StatementsForRescue
+        ;
+
+StatementsForRescue
+        : StatementForRescue
+        | StatementsForRescue StatementForRescue
+        ;
+
+StatementForRescue
+        : Statement
+        | RetryStatement ';'
+        ;
+
+RetryStatement
+        : kRETRY
+        | kRETRY INTEGER
+        ;
+
+IfStatement
+        : kIF Expression kTHEN Statement
+        | kIF Expression kTHEN Statement ElifStatementRepeat
+        | kIF Expression kTHEN Statement kELSE Statement
+        ;
+
+ElifStatementRepeat
+        : ElifStatement
+        | ElifStatementRepeat ElifStatement
+        ;
+
+ElifStatement
+        : kELIF Expression kTHEN Statement
+        | kELIF Expression kTHEN Statement kELSE Statement
+        ;
+
+UnlessStatement
+        : kUNLESS Expression kTHEN Statement
+        | kUNLESS Expression kTHEN Statement kELSE Statement
+        ;
+
+CaseStatement
+        : kCASE Expression WhenExpressionRepeat kEND
+        ;
+
+WhenExpressionRepeat
+        : WhenExpression
+        | WhenExpressionRepeat WhenExpression
+        ;
+
+WhenExpression
+        : kWHEN Expression kDO Statement
+        ;
+
+ForStatement
+        : kFOR Expression kASC Expression kDO StatementForLoop
+        | kFOR Expression kASC Expression kSTEP Expression kDO StatementForLoop
+        | kFOR Expression kDESC Expression kDO StatementForLoop
+        | kFOR Expression kDESC Expression kSTEP Expression kDO StatementForLoop
+        | kFOR QueryOrigin kDO StatementForLoop
+        // | kFOREACH QueryOrigin kDO StatementForLoop
+        ;
+
+StatementForLoop
+        : Statement
+        | kBREAK ';'
+        | kCONTINUE ';'
+        ;
+
+LoopStatement
+        : kWHILE Expression kDO StatementForLoop
+        | kUNTIL Expression kDO StatementForLoop
+        ;
+
+AsyncStatement
+        : kASYNC Statement
+        ;
+
+RaiseStatement
+        : kRAISE
+        | kRAISE String
+        | kRAISE FunctionCall
+        ;
+
+ExitStatement
+        : kEXIT
+        | kEXIT Expression
+        ;
+
+ReturnStatement
+        : kRETURN
+        | kRETURN Expression
+        ;
+
+Expression
+        : LambdaExpr
+        | AssignExpr
+        | TernaryExpr
+        | QueryExpr
+        ;
+
+LambdaExpr
+        : kLAMBDA FormalParams Expression
+        ;
+
+AssignExpr
+        : QualifiedId '=' AssignValue
+        | QualifiedId sADE AssignValue
+        | QualifiedId sSUE AssignValue
+        | QualifiedId sMUE AssignValue
+        | QualifiedId sDIE AssignValue
+        ;
+
+AssignValue
+        : Expression
+        | kASYNC Expression
+        ;
+
+TernaryExpr
+        : RangeExpr
+        | RangeExpr '?' Expression ':' Expression
+        | RangeExpr kBETWEEN RelationalExpr kAND RelationalExpr
+        ;
+
+RangeExpr
+        : LogicExpr
+        | RangeExpr sDOT2 LogicExpr
+        | RangeExpr sDOT3 LogicExpr
+        ;
+
+LogicExpr
+        : RelationalExpr
+        | LogicExpr kAND RelationalExpr
+        | LogicExpr kOR RelationalExpr
+        | LogicExpr kXOR RelationalExpr
+        | LogicExpr kIMPLIES RelationalExpr
+        ;
+
+RelationalExpr
+        : AddExpr
+        | AddExpr '<' AddExpr
+        | AddExpr sLEE AddExpr
+        | AddExpr '>' AddExpr
+        | AddExpr sGEE AddExpr
+        | AddExpr sEQL AddExpr
+        | AddExpr sNEQ AddExpr
+        | AddExpr sIDE AddExpr
+        | AddExpr sMAT AddExpr
+        | AddExpr sNMA AddExpr
+        | AddExpr kIN AddExpr
+        | AddExpr kIS AddExpr
+        | AddExpr kHAS AddExpr
+        ;
+
+AddExpr
+        : MultExpr
+        | AddExpr '+' MultExpr
+        | AddExpr '-' MultExpr
+        ;
+
+MultExpr
+        : PowerExpr
+        | MultExpr '*' PowerExpr
+        | MultExpr '/' PowerExpr
+        | MultExpr '%' PowerExpr
+        ;
+
+PowerExpr
+        : PrefixExpr
+        | PowerExpr sPOW PrefixExpr
+        ;
+
+PrefixExpr
+        : SuffixExpr
+        | kNOT PrefixExpr %prec UNARY
+        | '+' PrefixExpr %prec UNARY
+        | '-' PrefixExpr %prec UNARY
+        | '(' QualifiedId ')' PrefixExpr %prec UNARY
+        | kNEW FunctionCall %prec UNARY
+        ;
+
+SuffixExpr
+        : Value
+        | SuffixExpr '.' FunctionCall
+        | SuffixExpr '.' QualifiedId
+        | SuffixExpr '[' Expression ']'
+        | SuffixExpr '[' Expression ':' ']'
+        | SuffixExpr '[' Expression ':' Expression ']'
+        | SuffixExpr '[' ':' Expression ']'
+        ;
+
+Value
+        : kNIL
+        | kSELF
+        | FLOAT
+        | INTEGER
+        | REGEX
+        | kFALSE
+        | kTRUE
+        | String
+        | Array
+        | Map
+        | QualifiedId
+        | FunctionCall
+        | '(' Expression ')'
+        ;
+
+String
+        : STRING
+        | String STRING
+        ;
+
+Array
+        : '[' ExpressionList ']'
+        // | '[' NamedExpressionList ']'
+        | '[' ']'
+        ;
+
+ExpressionList
+        : Expression
+        | ExpressionList ',' Expression
+        ;
+
+Map
+        : '{' NamedExpressionList '}'
+        | '{' '}'
+        ;
+
+NamedExpressionList
+        : NamedExpression
+        | NamedExpressionList ',' NamedExpression
+        ;
+
+NamedExpression
+        : Identifier ':' Expression
+        | String ':' Expression
+        ;
+
+QualifiedId
+        : Identifier
+        | QualifiedId '.' Identifier
+        ;
+
+Identifier
+        : ID
+        ;
+
+FunctionCall
+        : QualifiedId '(' ')'
+        | QualifiedId '(' ParamValueList ')'
+        ;
+
+ParamValueList
+        : ParamValue
+        | ParamValueList ',' ParamValue
+        ;
+
+ParamValue
+        : Expression
+        | StatementBlock
+        ;
+
+QueryExpr
+        : kFROM QueryOrigin QueryBody
+        | kFROM QueryOrigin
+        ;
+
+QueryOrigin
+        : Identifier kIN Expression
+        ;
+
+QueryBody
+        : QueryBodyClauses SelectsORGroupClause
+        | QueryBodyClauses
+        | SelectsORGroupClause
+        ;
+
+QueryBodyClauses
+        : QueryBodyClause
+        | QueryBodyClauses QueryBodyClause
+        ;
+
+QueryBodyClause
+        : WhereClause
+        | JoinClause
+        | OrderByClause
+        | RangeClause
+        ;
+
+WhereClause
+        : kWHERE LogicExpr
+        ;
+
+JoinClause
+        : kJOIN QueryOrigin kON LogicExpr
+        | kLEFT kJOIN QueryOrigin kON LogicExpr
+        | kRIGHT kJOIN QueryOrigin kON LogicExpr
+        ;
+
+OrderByClause
+        : kORDER kBY OrderingItems
+        ;
+
+OrderingItems
+        : OrderingItem
+        | OrderingItems ',' OrderingItem
+        ;
+
+OrderingItem
+        : Expression
+        | Expression kASC
+        | Expression kDESC
+        ;
+
+RangeClause
+        : kSKIP Expression
+        | kSTEP Expression
+        | kTAKE Expression
+        ;
+
+SelectsORGroupClause
+        : GroupByClause
+        | SelectClause
+        ;
+
+GroupByClause
+        : kGROUP kBY Expression
+        ;
+
+SelectClause
+        : kSELECT ExpressionList
         ;
 
 %%
@@ -1271,3 +756,4 @@ void Parser::error(const Parser::location_type& l, const std::string& m) {
 }
 
 } // LANG_NAMESPACE
+

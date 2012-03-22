@@ -1,6 +1,6 @@
 
-#ifndef ARES_CONSOLE_H
-#define ARES_CONSOLE_H
+#ifndef LANG_CONSOLE_H
+#define LANG_CONSOLE_H
 
 #include <string>
 #include <iostream>
@@ -10,7 +10,7 @@
 using namespace std;
 
 #include "colorcon.h"
-#include "version.h"
+#include "langconfig.h"
 
 #define DEBUG
 

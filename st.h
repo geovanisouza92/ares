@@ -9,7 +9,7 @@
 
 using namespace std;
 
-#include "version.h"
+#include "langconfig.h"
 #include "console.h"
 
 namespace LANG_NAMESPACE {

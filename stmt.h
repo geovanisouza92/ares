@@ -3,7 +3,7 @@
 #define ARES_STMT_H
 
 #include "st.h"
-#include "version.h"
+#include "langconfig.h"
 
 namespace LANG_NAMESPACE {
 namespace SyntaxTree {

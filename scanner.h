@@ -6,7 +6,7 @@
 
 using namespace std;
 
-#include "version.h"
+#include "langconfig.h"
 #include "driver.h"
 #include "parser.h"
 

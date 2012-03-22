@@ -1,6 +1,6 @@
 
-#ifndef ARES_DRIVER_H
-#define ARES_DRIVER_H
+#ifndef LANG_DRIVER_H
+#define LANG_DRIVER_H
 
 #include <string>
 #include <vector>
@@ -13,7 +13,7 @@ using namespace std;
 
 namespace fs = boost::filesystem3;
 
-#include "version.h"
+#include "langconfig.h"
 #include "st.h"
 #include "console.h"
 #include "scanner.h"
@@ -38,7 +38,7 @@ class Driver {
 public:
     string origin;
     class Scanner * lexer;
-    class SyntaxTree::Environment * Env;
+    // class SyntaxTree::Environment * Env;
     VerboseMode::Mode verbose_mode;
     unsigned lines, total_lines;
     unsigned errors, warnings, hints;

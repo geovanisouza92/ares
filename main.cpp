@@ -35,21 +35,24 @@ trim(string str, char c) {
     return str;
 }
 
+// #define CSTYLE
+
+#ifdef CSTYLE
 #define TRAIT_END \
 line = trim(line, ' '); \
 line = trim(line, '\t'); \
 line = trim(line, '\n'); \
-if (!line.empty()) { \
-    if (line.length() > 3) { \
-        if (line.substr(line.length() - 3, 3) == "end") { \
-            \
-        } else { \
-            if (line[line.length() - 1] != ';') line += ';'; \
-        } \
-    } else { \
-        if (line[line.length() - 1] != ';') line += ';'; \
-    } \
-}
+if (line[line.length() - 1] != ';' && line[line.length() - 1] != '}') line += ';';
+#else
+#define TRAIT_END \
+line = trim(line, ' '); \
+line = trim(line, '\t'); \
+line = trim(line, '\n'); \
+if (!line.empty()) \
+    if (line.length() > 3) \
+        if (line[line.length() - 1] != ';' && line.substr(line.length() - 3, 3) != "end") line += ';'; \
+    else if (line[line.length() - 1] != ';') line += ';';
+#endif
 
 #define STATS \
 if (driver.verbose_mode >= VerboseMode::ErrorsOnly) { \
@@ -174,9 +177,10 @@ int main(int argc, char** argv) {
             if (!line.empty()) {
                 TRAIT_END
                 bool parse_ok = driver.parse_string(line, LANG_SHELL_NAME);
-                if (parse_ok)
+                if (parse_ok) {
                     if (driver.errors > max_errors) return 1;
                     driver.make_things_happen((check_only ? FinallyAction::None : FinallyAction::PrintResults), cout);
+                }
                 blanks = 0; line.clear();
             } else if (++blanks && blanks >= 3) return 0;
     }
