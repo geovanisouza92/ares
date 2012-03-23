@@ -8,7 +8,7 @@ module IdeaCloud.Vistem
     public
         var Id: Integer ;
     private
-        def SetId(Value: Integer) # the order beginesn't matter...
+        def SetId(Value: Integer) # the order doesn't matter...
         begin
            # begin setter
         end ## Comment block

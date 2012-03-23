@@ -83,7 +83,7 @@ using namespace std;
 %token  kIN         "in"
 %token  kIS         "is"
 %token  kJOIN       "join"
-%token  kLAMBDA     "lambda"
+// %token  kLAMBDA     "lambda"
 %token  kLEFT       "left"
 %token  kMODULE     "module"
 %token  kNEW        "new"
@@ -188,10 +188,10 @@ TopStatement
         | FunctionDecl StatementBlock
         ;
 
-// Statements
-//         : Statement
-//         | Statements Statement
-//         ;
+Statements
+        : Statement
+        | Statements Statement
+        ;
 
 Statement
         : VariableDecl ';'
@@ -204,7 +204,9 @@ Statement
         | LoopStatement
         | AsyncStatement
         | RaiseStatement ';'
+        | ExitStatement ';'
         | ReturnStatement ';'
+        | IncludeStatement ';'
         | Expression ';'
         ;
 
@@ -293,13 +295,17 @@ EventDecl
         ;
 
 FunctionDecl
-        : kDEF QualifiedId FormalParams ReturnType
+        : kDEF QualifiedId FormalParams
+        | kDEF QualifiedId FormalParams ReturnType
+        | kDEF QualifiedId FormalParams InterceptClause
         | kDEF QualifiedId FormalParams ReturnType InterceptClause
         ;
 
 FormalParams
         : '(' ')'
+        | '(' sDOT3 ')'
         | '(' VariableList ')'
+        | '(' VariableList ',' sDOT3 ')'
         ;
 
 ReturnType
@@ -364,25 +370,14 @@ Constant
 
 StatementBlock
         : kBEGIN kEND
-        | kBEGIN StatementsForBlock kEND
-        | kBEGIN StatementsForBlock EnsureClause kEND
-        | kBEGIN StatementsForBlock RescueClause kEND
-        | kBEGIN StatementsForBlock RescueClause EnsureClause kEND
-        | RequireClause kBEGIN StatementsForBlock kEND
-        | RequireClause kBEGIN StatementsForBlock EnsureClause kEND
-        | RequireClause kBEGIN StatementsForBlock RescueClause kEND
-        | RequireClause kBEGIN StatementsForBlock RescueClause EnsureClause kEND
-        ;
-
-StatementsForBlock
-        : StatementForBlock
-        | StatementsForBlock StatementForBlock
-        ;
-
-StatementForBlock
-        : Statement
-        | IncludeStatement ';'
-        | ExitStatement ';'
+        | kBEGIN Statements kEND
+        | kBEGIN Statements EnsureClause kEND
+        | kBEGIN Statements RescueClause kEND
+        | kBEGIN Statements RescueClause EnsureClause kEND
+        | RequireClause kBEGIN Statements kEND
+        | RequireClause kBEGIN Statements EnsureClause kEND
+        | RequireClause kBEGIN Statements RescueClause kEND
+        | RequireClause kBEGIN Statements RescueClause EnsureClause kEND
         ;
 
 RequireClause
@@ -402,7 +397,7 @@ Condition
 
 EnsureClause
         : kENSURE
-        | kENSURE StatementsForBlock
+        | kENSURE Statements
         ;
 
 RescueClause
@@ -437,6 +432,7 @@ RetryStatement
 IfStatement
         : kIF Expression kTHEN Statement
         | kIF Expression kTHEN Statement ElifStatementRepeat
+        | kIF Expression kTHEN Statement ElifStatementRepeat kELSE Statement
         | kIF Expression kTHEN Statement kELSE Statement
         ;
 
@@ -456,7 +452,10 @@ UnlessStatement
         ;
 
 CaseStatement
-        : kCASE Expression WhenExpressionRepeat kEND
+        : kCASE Expression kEND
+        | kCASE Expression kELSE Statement kEND
+        | kCASE Expression WhenExpressionRepeat kEND
+        | kCASE Expression WhenExpressionRepeat kELSE Statement kEND
         ;
 
 WhenExpressionRepeat
@@ -516,7 +515,7 @@ Expression
         ;
 
 LambdaExpr
-        : kLAMBDA FormalParams Expression
+        : kDEF FormalParams Expression
         ;
 
 AssignExpr
@@ -593,6 +592,7 @@ PrefixExpr
         | '-' PrefixExpr %prec UNARY
         | '(' QualifiedId ')' PrefixExpr %prec UNARY
         | kNEW FunctionCall %prec UNARY
+        | kNEW kCLASS '(' NamedExpressionList ')' %prec UNARY
         ;
 
 SuffixExpr
@@ -608,14 +608,14 @@ SuffixExpr
 Value
         : kNIL
         | kSELF
+        | kFALSE
+        | kTRUE
         | FLOAT
         | INTEGER
         | REGEX
-        | kFALSE
-        | kTRUE
         | String
         | Array
-        | Map
+        | Hash
         | QualifiedId
         | FunctionCall
         | '(' Expression ')'
@@ -637,7 +637,7 @@ ExpressionList
         | ExpressionList ',' Expression
         ;
 
-Map
+Hash
         : '{' NamedExpressionList '}'
         | '{' '}'
         ;

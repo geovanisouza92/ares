@@ -84,7 +84,6 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*[?!]?
 "in"            return token::kIN;
 "is"            return token::kIS;
 "join"          return token::kJOIN;
-"lambda"        return token::kLAMBDA;
 "left"          return token::kLEFT;
 "module"        return token::kMODULE;
 "new"           return token::kNEW;
@@ -93,6 +92,9 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*[?!]?
 "on"            return token::kON;
 "order"         return token::kORDER;
 "or"|"||"       return token::kOR;
+"private"       return token::kPRIVATE;
+"protected"     return token::kPROTECTED;
+"public"        return token::kPUBLIC;
 "raise"         return token::kRAISE;
 "require"       return token::kREQUIRE;
 "rescue"        return token::kRESCUE;

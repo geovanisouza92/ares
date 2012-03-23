@@ -173,7 +173,7 @@ int main(int argc, char** argv) {
     if (mode == InteractionMode::Shell) {
         string guide(">>> ");
         int blanks = 0; cout << endl;
-        while (cout << COLOR_BGREEN << LANG_SHELL_NAME << COLOR_RESET << guide && getline(cin, line))
+        while (cout << COLOR_BGREEN << LANG_SHELL_NAME << COLOR_RESET << ':' << guide && getline(cin, line))
             if (!line.empty()) {
                 TRAIT_END
                 bool parse_ok = driver.parse_string(line, LANG_SHELL_NAME);

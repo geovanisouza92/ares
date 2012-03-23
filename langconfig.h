@@ -21,7 +21,7 @@
 
 #define LANG_VERSION_MAJOR      0
 #define LANG_VERSION_MINOR      2
-#define LANG_VERSION_PATCH      1
+#define LANG_VERSION_PATCH      2
 #define LANG_VERSION_COMMENT    "proto"
 
 #if   defined(_WIN32) || defined(MSWIN) || defined(MSWINDOWS)
