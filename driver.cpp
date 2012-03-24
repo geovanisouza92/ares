@@ -15,7 +15,8 @@ namespace fs = boost::filesystem3;
 namespace LANG_NAMESPACE {
 
 Driver::Driver()
-    : origin(LANG_SHELL_NAME),
+    : check_only(false),
+      origin(LANG_SHELL_NAME),
       verbose_mode(VerboseMode::ErrorsAndWarnings),
       lines(0),
       total_lines(0),

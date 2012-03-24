@@ -1,6 +1,6 @@
 
-#ifndef COLOR_CONSOLE_H
-#define COLOR_CONSOLE_H
+#ifndef LANG_COLORCON_H
+#define LANG_COLORCON_H
 
 /*  Coloring console syntax:
 

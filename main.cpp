@@ -48,24 +48,24 @@ if (line[line.length() - 1] != ';' && line[line.length() - 1] != '}') line += ';
 line = trim(line, ' '); \
 line = trim(line, '\t'); \
 line = trim(line, '\n'); \
-if (!line.empty()) \
-    if (line.length() > 3) \
+if (!line.empty()) { \
+    if (line.length() > 3) { \
         if (line[line.length() - 1] != ';' && line.substr(line.length() - 3, 3) != "end") line += ';'; \
-    else if (line[line.length() - 1] != ';') line += ';';
+    } else if (line[line.length() - 1] != ';') line += ';'; \
+}
 #endif
 
-#define STATS \
+#define STATS(x) \
 if (driver.verbose_mode >= VerboseMode::ErrorsOnly) { \
     string errors = driver.resume_messages(); \
-    if (!errors.empty()) { \
+    if (!errors.empty()) \
         cout << "=> " << errors; \
-    } \
-    cout << Util::resume_statistics(files_processed, driver.total_lines); \
+    cout << Util::resume_statistics(files_processed, driver.total_lines, x); \
 }
 
 int main(int argc, char** argv) {
     
-    bool printed = false, check_only = false;
+    bool printed = false;
     int max_errors = 3, files_processed = 0;
     InteractionMode::Mode mode = InteractionMode::None;
     vector<string> files, messages;
@@ -104,7 +104,7 @@ int main(int argc, char** argv) {
     }
 
     if (options.count("check-only")) {
-        check_only = true;
+        driver.check_only = true;
     }
 
     if (options.count("eval")) {
@@ -119,9 +119,9 @@ int main(int argc, char** argv) {
             bool parse_result = driver.parse_string(line, "line eval");
             if (parse_result) {
                 if (driver.errors > max_errors) return 1;
-                driver.make_things_happen((check_only ? FinallyAction::None : FinallyAction::PrintResults), cout);
+                driver.make_things_happen((driver.check_only ? FinallyAction::None : FinallyAction::PrintResults), cout);
             }
-            STATS
+            STATS(false)
         }
     }
 
@@ -164,10 +164,10 @@ int main(int argc, char** argv) {
             if (parse_ok) {
                 files_processed++;
                 if (driver.errors > max_errors) return 1;
-                driver.make_things_happen((check_only ? FinallyAction::None : FinallyAction::PrintResults), cout);
+                driver.make_things_happen((driver.check_only ? FinallyAction::None : FinallyAction::PrintResults), cout);
             } else break;
         }
-        STATS
+        STATS(true)
     } else if (mode == InteractionMode::None) mode = InteractionMode::Shell;
 
     if (mode == InteractionMode::Shell) {
@@ -178,11 +178,12 @@ int main(int argc, char** argv) {
                 TRAIT_END
                 bool parse_ok = driver.parse_string(line, LANG_SHELL_NAME);
                 if (parse_ok) {
-                    if (driver.errors > max_errors) return 1;
-                    driver.make_things_happen((check_only ? FinallyAction::None : FinallyAction::PrintResults), cout);
+                    if (driver.errors > max_errors) break;
+                    driver.make_things_happen((driver.check_only ? FinallyAction::None : FinallyAction::PrintResults), cout);
                 }
                 blanks = 0; line.clear();
-            } else if (++blanks && blanks >= 3) return 0;
+            } else if (++blanks && blanks >= 3) break;
+        STATS(false)
     }
 
     return 0;

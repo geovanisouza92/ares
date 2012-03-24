@@ -3,9 +3,9 @@ module Fatorial
   method fat(num: Integer): Integer
   begin
     if 0 == num then
-      Result = 1;
+      return 1;
     else
-      Result = num * fat(num - 1);
+      return num * fat(num - 1);
   end
 
 end

@@ -1,6 +1,6 @@
 
-#ifndef ARES_SCANNER_H
-#define ARES_SCANNER_H
+#ifndef LANG_SCANNER_H
+#define LANG_SCANNER_H
 
 #include <iostream>
 

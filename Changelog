@@ -1,19 +1,24 @@
 
 TODO
 
-    - Generate semantical rules
-    - Generate LLVM-IR
-    - Generate Standard Library
-    - Generate bundle's
-    - Enable parallel assignment's like "a, b = b, c"
-    - Create context messages for errors from input
-    - Add operator overloading
-    - Add Unicode support
+    . Generate AST for productions
+    . Print AST
+    . Generate semantical rules
+    . Generate LLVM-IR
+    . Generate Standard Library
+    . Generate bundle's
+    . Enable parallel assignment's like "a, b = b, c"
+    . Create context messages for errors from input
+    . Add operator overloading
+    . Add Unicode support
 
 Changelog
 
 [0.2.2]
     + New grammar
+    + Grammar updated
+    - Two ways to create new object
+    + Performance appears only in file processing
 
 [0.2.1]
     + Correct some operators
@@ -21,8 +26,6 @@ Changelog
     + Two ways to create new object:
         new Object();
         Object.new();
-    - Generate AST for productions
-    - Print AST
 
 [0.2.0]
     + Query expressions

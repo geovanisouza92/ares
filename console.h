@@ -30,30 +30,6 @@ using namespace std;
 #define DEBUG_HINT(x)
 #endif
 
-#define DECLARE_ENUM_START(n,e) \
-namespace n { \
-  enum e { \
-    FIRST = -1,
-#define DECLARE_ENUM_MEMBER(x) \
-    x,
-#define DECLARE_ENUM_END \
-    LAST \
-  }; \
-}
-
-#define DECLARE_ENUM_NAMES_START(n) \
-namespace n { \
-  static string EnumNames[LAST + 1] = {
-#define DECLARE_ENUM_MEMBER_NAME(x) \
-    x,
-#define DECLARE_ENUM_NAMES_END(e) \
-    "LAST" \
-  }; \
-  static string get_enum_name(e value) { \
-    return EnumNames[value]; \
-  } \
-}
-
 namespace LANG_NAMESPACE {
 namespace Util {
 
@@ -77,7 +53,7 @@ format_number_fixed(int n, int w, char c = ' ') {
 }
 
 static inline string
-resume_statistics(unsigned total_files, unsigned total_lines) {
+resume_statistics(unsigned total_files, unsigned total_lines, bool print_time = false) {
     clock_t stop = clock();
     double elapsed = (double) ( ( (stop - start) / (CLOCKS_PER_SEC / 1000)) ) / 1000;
     stringstream s;
@@ -94,7 +70,7 @@ resume_statistics(unsigned total_files, unsigned total_lines) {
       << elapsed
       << COLOR_RESET
       << (elapsed <= 1 ? " second" : " seconds");
-    if (total_lines > 0) {
+    if (print_time) {
         s << ( elapsed <= 1 ? " / " : " / =~ " )
           << COLOR_BGREEN
           << format_number((elapsed >= 1 ? (int) ( total_lines / elapsed ) : total_lines))

@@ -1,6 +1,6 @@
 
-#ifndef ARES_STMT_H
-#define ARES_STMT_H
+#ifndef LANG_STMT_H
+#define LANG_STMT_H
 
 #include "st.h"
 #include "langconfig.h"

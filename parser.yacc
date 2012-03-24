@@ -5,6 +5,9 @@
 using namespace std;
 
 #include "driver.h"
+#include "st.h"
+
+using namespace SyntaxTree;
 
 %}
 
@@ -28,6 +31,8 @@ using namespace std;
     int                             v_int;
     double                          v_flt;
     string *                        v_str;
+    SyntaxTree::SyntaxNode *        v_node;
+    SyntaxTree::VectorNode *        v_list;
 }
 
 %{
@@ -163,6 +168,20 @@ using namespace std;
 %left   kAND kOR kXOR kIMPLIES
 %left   '=' '?' ':' '<' '>' '+' '-' '*' '/'
 %right  UNARY
+
+%type   <v_node>    Value
+%type   <v_node>    String
+%type   <v_node>    Identifier
+%type   <v_node>    Array
+%type   <v_node>    Hash
+%type   <v_node>    NamedExpression
+
+%type   <v_node>    Expression
+
+
+
+%type   <v_list>    ExpressionList
+%type   <v_list>    NamedExpressionList
 
 %%
 
@@ -607,50 +626,141 @@ SuffixExpr
         ;
 
 Value
-        : kNIL
-        | kSELF
-        | kFALSE
-        | kTRUE
-        | FLOAT
-        | INTEGER
-        | REGEX
-        | String
-        | Array
-        | Hash
+        : kNIL {
+            if (!driver.check_only) {
+                $$ = new NilNode();
+            }
+        }
+        | kSELF {
+            if (!driver.check_only) {
+                $$ = new IdentifierNode("self");
+            }
+        }
+        | kFALSE {
+            if (!driver.check_only) {
+                $$ = new BooleanNode(false);
+            }
+        }
+        | kTRUE {
+            if (!driver.check_only) {
+                $$ = new BooleanNode(true);
+            }
+        }
+        | FLOAT {
+            if (!driver.check_only) {
+                $$ = new FloatNode($1);
+            }
+        }
+        | INTEGER {
+            if (!driver.check_only) {
+                $$ = new IntegerNode($1);
+            }
+        }
+        | REGEX {
+            if (!driver.check_only) {
+                $$ = new RegexNode(*$1);
+            }
+        }
+        | String {
+            if (!driver.check_only) {
+                $$ = $1;
+            }
+        }
+        | Array {
+            if (!driver.check_only) {
+                $$ = $1;
+            }
+        }
+        | Hash  {
+            if (!driver.check_only) {
+                $$ = $1;
+            }
+        }
         | QualifiedId
         | FunctionCall
         | '(' Expression ')'
         ;
 
 String
-        : STRING
-        | String STRING
+        : STRING {
+            if (!driver.check_only) {
+                $$ = new StringNode(*$1);
+            }
+        }
+        | String STRING {
+            if (!driver.check_only) {
+                ((StringNode *) $$)
+                  ->append(*$2);
+            }
+        }
         ;
 
 Array
-        : '[' ExpressionList ']'
+        : '[' ExpressionList ']' {
+            if (!driver.check_only) {
+                $$ = new ArrayNode($2);
+            }
+        }
         // | '[' NamedExpressionList ']'
-        | '[' ']'
+        | '[' ']' {
+            if (!driver.check_only) {
+                $$ = new ArrayNode();
+            }
+        }
         ;
 
 ExpressionList
-        : Expression
-        | ExpressionList ',' Expression
+        : Expression {
+            if (!driver.check_only) {
+                $$ = new VectorNode();
+                $$->push_back($1);
+            }
+        }
+        | ExpressionList ',' Expression {
+            if (!driver.check_only) {
+                $$->push_back($3);
+            }
+        }
         ;
 
 Hash
-        : '{' NamedExpressionList '}'
-        | '{' '}'
+        : '{' NamedExpressionList '}' {
+            if (!driver.check_only) {
+                $$ = new HashNode($2);
+            }
+        }
+        | '{' '}' {
+            if (!driver.check_only) {
+                $$ = new HashNode();
+            }
+        }
         ;
 
 NamedExpressionList
-        : NamedExpression
-        | NamedExpressionList ',' NamedExpression
+        : NamedExpression {
+            if (!driver.check_only) {
+                $$ = new VectorNode();
+                $$->push_back($1);
+            }
+        }
+        | NamedExpressionList ',' NamedExpression {
+            if (!driver.check_only) {
+                $$->push_back($3);
+            }
+        }
         ;
 
 NamedExpression
-        : Identifier ':' Expression
-        | String ':' Expression
+        : Identifier ':' Expression {
+            if (!driver.check_only) {
+                $$ = new HashPairNode($1, $3);
+            }
+        }
+        | String ':' Expression {
+            if (!driver.check_only) {
+                $$ = new HashPairNode($1, $3);
+            }
+        }
         ;
 
 QualifiedId
@@ -659,7 +769,11 @@ QualifiedId
         ;
 
 Identifier
-        : ID
+        : ID {
+            if (!driver.check_only) {
+                $$ = new IdentifierNode(*$1);
+            }
+        }
         ;
 
 FunctionCall

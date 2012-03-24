@@ -37,6 +37,7 @@ DECLARE_ENUM_END
 class Driver {
 public:
     string origin;
+    bool check_only;
     class Scanner * lexer;
     // class SyntaxTree::Environment * Env;
     VerboseMode::Mode verbose_mode;

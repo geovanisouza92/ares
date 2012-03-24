@@ -17,9 +17,9 @@ for file in $files; do
     done
 done
 cd ..
-make test
-make test
-make test
+for i in 0 1 2 3 4 5 6 7 8 9; do
+	make test
+done
 cd tests
 echo "Removing temporary test files ..."
 rm [0-9]*.$EXT

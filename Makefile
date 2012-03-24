@@ -38,12 +38,12 @@ LFLAGS=
 BINARY=arc
 EXT=ar
 BINFLAGS=-c
-MODULES=parser.o scanner.o driver.o main.o
+MODULES=st.o parser.o scanner.o driver.o main.o
 CLEAN=parser.cpp parser.h scanner.cpp *.hh *.out* *.results *.diff
 TEST_MODULES=tests/*.$(EXT)
 
 all: bin
-	@ echo "Compile done"
+	@ echo "Compile done."
 
 parser.cpp:
 	@ $(YACC) $(YFLAGS) -o $@ parser.yacc 2> $@.results
@@ -52,42 +52,37 @@ scanner.cpp:
 	@ $(LEX) $(LFLAGS) -o$@ scanner.lex
 
 %.o: %.cpp
-	@ echo "Preparing dependency:" $@
+	@ echo "Preparing dependency:" $@ "..."
 	@ $(CXX) $(CXXFLAGS) -c -o $@ $<
 
 bin: $(MODULES)
-	@ echo "Linking binary"
+	@ echo "Linking binary ..."
 	@ $(CXX) $(LDFLAGS) $(MODULES) -o $(BINARY)
 
 check:
-	@ echo "Checking for binary"
+	@ echo "Checking for binary ..."
 	@ if !([ -e ./$(BINARY) ]); then make bin; fi
 
 test: check
-	@ echo "Starting test"
+	@ echo "Starting test ..."
 	@ ./$(BINARY) $(BINFLAGS) $(TEST_MODULES)
-	@ echo "Test succeed"
+	@ echo "Test succeed."
 
 stress:
 	@ echo "Starting stress test mode ..."
 	@ bash ./stress.sh
 	@ echo "Stress test done."
 
-verbose: check
-	@ echo "Starting verbose test"
-	@ ./$(BINARY) --verbose=3 $(TEST_MODULES) 2> $@.results
-	@ echo "Verbose test succeed"
-
 debug: check
-	@ echo "Starting debug"
+	@ echo "Starting debug ..."
 	@ gdb ./$(BINARY)
 
 ifeq ($(DEBUG_MODE),1)
 ifeq ($(USE_CLANG),0)
 profile: clear stress
-	@ echo "Performance analysis"
+	@ echo "Performance analysis ..."
 	@ gprof ./$(BINARY) ./gmon.out > $@.results
-	@ echo "Profile done"
+	@ echo "Profile done."
 endif
 endif
 

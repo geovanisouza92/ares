@@ -1,6 +1,6 @@
 
-#ifndef ARES_STOQL_H
-#define ARES_STOQL_H
+#ifndef LANG_STOQL_H
+#define LANG_STOQL_H
 
 #include "st.h"
 #include "langconfig.h"

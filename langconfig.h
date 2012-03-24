@@ -34,4 +34,28 @@
 #define LANG_PLATFORM "Unknown"
 #endif
 
+#define DECLARE_ENUM_START(n,e) \
+namespace n { \
+  enum e { \
+    FIRST = -1,
+#define DECLARE_ENUM_MEMBER(x) \
+    x,
+#define DECLARE_ENUM_END \
+    LAST \
+  }; \
+}
+
+#define DECLARE_ENUM_NAMES_START(n) \
+namespace n { \
+  static string EnumNames[LAST + 1] = {
+#define DECLARE_ENUM_MEMBER_NAME(x) \
+    x,
+#define DECLARE_ENUM_NAMES_END(e) \
+    "LAST" \
+  }; \
+  static string get_enum_name(e value) { \
+    return EnumNames[value]; \
+  } \
+}
+
 #endif
