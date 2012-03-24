@@ -107,17 +107,6 @@ DECLARE_ENUM_END
         virtual void print_using(ostream &, unsigned);
     };
 
-    class ArrayAccessNode : public SyntaxNode {
-    protected:
-        SyntaxNode * single;
-        SyntaxNode * start;
-        SyntaxNode * end;
-    public:
-        ArrayAccessNode(SyntaxNode *);
-        ArrayAccessNode(SyntaxNode *, SyntaxNode *);
-        virtual void print_using(ostream &, unsigned);
-    };
-
     class ArrayNode : public SyntaxNode {
     protected:
         VectorNode * value;
@@ -157,8 +146,10 @@ DECLARE_ENUM_END
     protected:
         Operation::Operator operation;
         SyntaxNode * member1;
+        VectorNode * member1_alt;
     public:
         UnaryExprNode(Operation::Operator op, SyntaxNode * m1) : operation(op), member1(m1) { set_type(NodeType::Nil); }
+        UnaryExprNode(Operation::Operator op, VectorNode * m1) : operation(op), member1_alt(m1) { set_type(NodeType::Nil); }
         virtual void print_using(ostream &, unsigned);
     };
 
@@ -190,6 +181,23 @@ DECLARE_ENUM_END
     public:
         FunctionCallNode(SyntaxNode *);
         FunctionCallNode(SyntaxNode *, VectorNode *);
+        virtual void print_using(ostream &, unsigned);
+    };
+
+    class AsyncNode : public SyntaxNode {
+    protected:
+        SyntaxNode * item;
+    public:
+        AsyncNode(SyntaxNode *);
+        virtual void print_using(ostream &, unsigned);
+    };
+
+    class LambdaExprNode : public SyntaxNode {
+    protected:
+        VectorNode * args;
+        SyntaxNode * expr;
+    public:
+        LambdaExprNode(VectorNode *, SyntaxNode *);
         virtual void print_using(ostream &, unsigned);
     };
 

@@ -10,7 +10,7 @@ module Clientes
   #   method TemBoaReputacao? : Boolean;
   # end
 
-  class Pessoa > Base, IPessoa
+  class Pessoa > Base # , IPessoa
     method TemBoaReputacao?() : Boolean
     begin
         # Retorna verdadeiro somente se a pessoa for de boa fé...

@@ -60,7 +60,8 @@ if (driver.verbose_mode >= VerboseMode::ErrorsOnly) { \
     string errors = driver.resume_messages(); \
     if (!errors.empty()) \
         cout << "=> " << errors; \
-    cout << Util::resume_statistics(files_processed, driver.total_lines, x); \
+    if (driver.total_lines > 0) \
+        cout << Util::resume_statistics(files_processed, driver.total_lines, x); \
 }
 
 int main(int argc, char** argv) {

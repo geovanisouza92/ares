@@ -39,12 +39,14 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*[?!]?
 ".."    return token::sDOT2;
 "**"    return token::sPOW;
 "==="   return token::sIDE;
+"!=="   return token::sNID;
 "=="    return token::sEQL;
 "!="    return token::sNEQ;
 "<="    return token::sLEE;
 ">="    return token::sGEE;
 "=~"    return token::sMAT;
 "!~"    return token::sNMA;
+"=>"    return token::sDEF;
 
 "abstract"      return token::kABSTRACT;
 "after"         return token::kAFTER;

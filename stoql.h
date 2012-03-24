@@ -14,7 +14,7 @@ namespace SyntaxTree {
         SyntaxNode * body;
     public:
         QueryNode(SyntaxNode *, SyntaxNode *);
-        virtual void print_using(ostream &, unsigned, bool nl = true);
+        virtual void print_using(ostream &, unsigned);
     };
 
     class QueryOriginNode : public SyntaxNode {
@@ -23,7 +23,7 @@ namespace SyntaxTree {
         SyntaxNode * expr;
     public:
         QueryOriginNode(SyntaxNode *, SyntaxNode *);
-        virtual void print_using(ostream &, unsigned, bool nl = true);
+        virtual void print_using(ostream &, unsigned);
     };
 
     class QueryBodyNode : public SyntaxNode {
@@ -34,7 +34,7 @@ namespace SyntaxTree {
         QueryBodyNode();
         virtual QueryBodyNode * set_body(VectorNode *);
         virtual QueryBodyNode * set_finally(SyntaxNode *);
-        virtual void print_using(ostream &, unsigned, bool nl = true);
+        virtual void print_using(ostream &, unsigned);
     };
 
     class WhereNode : public SyntaxNode {
@@ -42,7 +42,7 @@ namespace SyntaxTree {
         SyntaxNode * expr;
     public:
         WhereNode(SyntaxNode *);
-        virtual void print_using(ostream &, unsigned, bool nl = true);
+        virtual void print_using(ostream &, unsigned);
     };
 
 DECLARE_ENUM_START(JoinDirection,Direction)
@@ -58,7 +58,7 @@ DECLARE_ENUM_END
         SyntaxNode * expr;
     public:
         JoinNode(SyntaxNode *, SyntaxNode *, JoinDirection::Direction);
-        virtual void print_using(ostream &, unsigned, bool nl = true);
+        virtual void print_using(ostream &, unsigned);
     };
 
 DECLARE_ENUM_START(OrderDirection,Direction)
@@ -73,7 +73,7 @@ DECLARE_ENUM_END
         OrderDirection::Direction direction;
     public:
         OrderingNode(SyntaxNode *, OrderDirection::Direction);
-        virtual void print_using(ostream &, unsigned, bool nl = true);
+        virtual void print_using(ostream &, unsigned);
     };
 
     class OrderByNode : public SyntaxNode {
@@ -81,7 +81,7 @@ DECLARE_ENUM_END
         VectorNode * orders;
     public:
         OrderByNode(VectorNode *);
-        virtual void print_using(ostream &, unsigned, bool nl = true);
+        virtual void print_using(ostream &, unsigned);
     };
 
     class GroupByNode : public SyntaxNode {
@@ -89,7 +89,7 @@ DECLARE_ENUM_END
         SyntaxNode * expr;
     public:
         GroupByNode(SyntaxNode *);
-        virtual void print_using(ostream &, unsigned, bool nl = true);
+        virtual void print_using(ostream &, unsigned);
     };
 
 DECLARE_ENUM_START(RangeType,Type)
@@ -104,7 +104,7 @@ DECLARE_ENUM_END
         SyntaxNode * range;
     public:
         RangeNode(RangeType::Type, SyntaxNode *);
-        virtual void print_using(ostream &, unsigned, bool nl = true);
+        virtual void print_using(ostream &, unsigned);
     };
 
     class SelectNode : public SyntaxNode {
@@ -112,7 +112,7 @@ DECLARE_ENUM_END
         VectorNode * selection;
     public:
         SelectNode(VectorNode *);
-        virtual void print_using(ostream &, unsigned, bool nl = true);
+        virtual void print_using(ostream &, unsigned);
     };
 
 } // SyntaxTree

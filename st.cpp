@@ -87,29 +87,6 @@ BooleanNode::print_using(ostream & out, unsigned d) {
     out << string(d * 2, ' ') << "Boolean => " << ( value ? "True" : "False" ) << endl;
 }
 
-ArrayAccessNode::ArrayAccessNode(SyntaxNode * s) : single(s) { }
-
-ArrayAccessNode::ArrayAccessNode(SyntaxNode * s, SyntaxNode * e) : start(s), end(e) { }
-
-void
-ArrayAccessNode::print_using(ostream & out, unsigned d) {
-    // out << " Array access => ";
-    // if (single) {
-    //     out << "Single => ";
-    //     single->print_using(out, 0, false);
-    // } else {
-    //     if (start) {
-    //         out << "Start in => ";
-    //         start->print_using(out, 0, false);
-    //     }
-    //     if (end) {
-    //         out << "End in => ";
-    //         end->print_using(out, 0, false);
-    //     }
-    // }
-    // out << endl;
-}
-
 ArrayNode::ArrayNode() : value(new VectorNode()) { set_type(NodeType::Array); }
 
 ArrayNode::ArrayNode(VectorNode * v) : value(v) { set_type(NodeType::Array); }
@@ -188,6 +165,20 @@ FunctionCallNode::print_using(ostream & out, unsigned d) {
     //     }
     // }
     // out << ")" << endl;
+}
+
+AsyncNode::AsyncNode(SyntaxNode * i) : item(i) { }
+
+void
+AsyncNode::print_using(ostream & out, unsigned d) {
+    // TODO
+}
+
+LambdaExprNode::LambdaExprNode(VectorNode * a, SyntaxNode * e) : args(a), expr(e) { }
+
+void
+LambdaExprNode::print_using(ostream & out, unsigned d) {
+    // TODO
 }
 
 } // SyntaxTree

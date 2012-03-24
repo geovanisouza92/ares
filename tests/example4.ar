@@ -31,7 +31,9 @@ import System.IO;
     end
   end
   
-  class Customer > Base, Person
+  # TODO Rever a questão de heranças múltiplas
+  class Customer > Base # , Person
+    include Person;
     method Reserve()
     begin
     
