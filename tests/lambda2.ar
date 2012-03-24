@@ -1,5 +1,5 @@
 a = [10, "10", 10.0];
-a.sort(def (x, y) cmp(x.classname, y.classname));
+a.sort(lambda (x, y) (cmp(x.classname, y.classname)));
 a;
 # => [10.0, 10, "10"]
 

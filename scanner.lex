@@ -48,7 +48,7 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*[?!]?
 
 "abstract"      return token::kABSTRACT;
 "after"         return token::kAFTER;
-"and"|"&&"      return token::kAND;
+"and"           return token::kAND;
 "asc"           return token::kASC;
 "async"         return token::kASYNC;
 "attr"          return token::kATTR;
@@ -61,7 +61,6 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*[?!]?
 "class"         return token::kCLASS;
 "const"         return token::kCONST;
 "continue"      return token::kCONTINUE;
-"def"           return token::kDEF;
 "desc"          return token::kDESC;
 "do"            return token::kDO;
 "elif"          return token::kELIF;
@@ -84,14 +83,16 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*[?!]?
 "in"            return token::kIN;
 "is"            return token::kIS;
 "join"          return token::kJOIN;
+"lambda"        return token::kLAMBDA;
 "left"          return token::kLEFT;
+"method"        return token::kMETHOD;
 "module"        return token::kMODULE;
 "new"           return token::kNEW;
 "nil"           return token::kNIL;
-"not"|"!"       return token::kNOT;
+"not"           return token::kNOT;
 "on"            return token::kON;
 "order"         return token::kORDER;
-"or"|"||"       return token::kOR;
+"or"            return token::kOR;
 "private"       return token::kPRIVATE;
 "protected"     return token::kPROTECTED;
 "public"        return token::kPUBLIC;
@@ -117,14 +118,14 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*[?!]?
 "when"          return token::kWHEN;
 "where"         return token::kWHERE;
 "while"         return token::kWHILE;
-"xor"|"^"       return token::kXOR;
+"xor"           return token::kXOR;
 
 [0-9]*"."[0-9]+([Ee][\+\-]?[0-9]+)? {
     yylval->v_flt = atof(yytext);
     return token::FLOAT;
 }
 
-[0-9]+ {
+[0-9]+([Ee][\+\-]?[0-9]+)? {
     yylval->v_int = atoi(yytext);
     return token::INTEGER;
 }

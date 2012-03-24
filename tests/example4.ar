@@ -3,7 +3,7 @@ module Garage
 import System.IO;
 
   class Base
-    def Base() # Construtor
+    method Base() # Construtor
     begin
       # Gerar código automático
     end
@@ -25,29 +25,29 @@ import System.IO;
     var CustomerID: Integer ;
     var RentalHistory: Strings ;
   private
-    def Initialize()
+    method Initialize()
     begin
       # Inicializa Histórico
     end
   end
   
   class Customer > Base, Person
-    def Reserve()
+    method Reserve()
     begin
     
     end
     
-    def PicksUp()
+    method PicksUp()
     begin
     
     end
     
-    def Pays()
+    method Pays()
     begin
     
     end
     
-    def Returns()
+    method Returns()
     begin
     
     end
@@ -64,12 +64,12 @@ import System.IO;
     var Condition: String ;
     var Status: String ;
     
-    def Reserved?(): Boolean
+    method Reserved?(): Boolean
     begin
     
     end
     
-    def InService?(): Boolean
+    method InService?(): Boolean
     begin
     
     end
@@ -84,7 +84,7 @@ import System.IO;
     var CommissionRate: Float ;
     var Tar;
     
-    def Calculate()
+    method Calculate()
     begin
     
     end
@@ -94,7 +94,7 @@ import System.IO;
     var Skills: Strings ;
     var Qualifications: String ;
   private
-    def Initialize()
+    method Initialize()
     begin
       # Initialize Skills & Qualifications
     end
@@ -104,7 +104,7 @@ import System.IO;
     var ServiceHistory: String ;
     var ProgressHistory: Strings ;
   private
-    def Initialize()
+    method Initialize()
     begin
       # Initialize ProgressHistory
     end

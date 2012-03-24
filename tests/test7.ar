@@ -1,0 +1,30 @@
+v = (2 ** 4 - 4); e = 2.71828;
+
+4 * 1.5 + 3 * v;
+
+6 * (2 * 2) ** 2 / 2;
+
+a > b;
+a.b >= c;
+# comment
+_method + 3 == 0;
+
+a = a implies b;
+
+a and b;
+
+1 between 0 and 2 ? true : false ;
+1.0 between 0.0 and 2.0 ? true : false ;
+
+from item in [a, b, c];
+from item in [a, b, c] join sub in [d, e, f] on true;
+from f in foo join b in bar on "true" =~ ~/true/;
+from f in foo where foo.x == 0 select f;
+from fb in foo.bar take 5 order by fb asc select fb;
+
+"expressão sem ponto-e-vírgula";
+
+# fim
+
+[a, b, c];
+{a:b, c:d, "abc":[1, 2, 3]};

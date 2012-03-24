@@ -1,5 +1,5 @@
 #! /bin/sh
-EXT=ares
+EXT=ar
 
 cd tests
 echo "Removing provious temporary test files ..."
@@ -17,6 +17,8 @@ for file in $files; do
     done
 done
 cd ..
+make test
+make test
 make test
 cd tests
 echo "Removing temporary test files ..."

@@ -6,37 +6,37 @@ module Classes
     var Iter: RanbeginmAccessFile ;
 
     # Métodos abstratos
-     def AtualizarDabegins();
-     def Gravar();
-     def Ler();
+     method AtualizarDabegins();
+     method Gravar();
+     method Ler();
     
     # Métodos
-    def Persistente()
+    method Persistente()
     begin
       # Constructor
     end
     
-    def GetObjectId(): Integer
+    method GetObjectId(): Integer
     begin
       # begin ;
     end
     
-    def GetObject(): Object
+    method GetObject(): Object
     begin
       # begin something
     end
     
-    def Armazenar()
+    method Armazenar()
     begin
       # Salvar em disco
     end
     
-    def Apagar()
+    method Apagar()
     begin
       # Apagar begin disco
     end
     
-    def StartObjectId(): Integer
+    method StartObjectId(): Integer
     begin
       # Inicializa a propriedade "ObjectId"
     end
@@ -48,22 +48,22 @@ module Classes
     var NomeAgencia: String ;
     
     # Métobegins
-    def Agencia()
+    method Agencia()
     begin
       # .ctor
     end
     
-    def AtualiarDados()
+    method AtualiarDados()
     begin
       # Implementação
     end
     
-    def Gravar()
+    method Gravar()
     begin
       # Implementação
     end
     
-    def Ler()
+    method Ler()
     begin
       # Implementação
     end
@@ -76,57 +76,57 @@ module Classes
     var Historico: Array;
     var Agencia: ObjectId;
     
-    def Depositar(Quantia: Float)
+    method Depositar(Quantia: Float)
     begin
       
     end
     
-    def Debitar(Quantia: Float)
+    method Debitar(Quantia: Float)
     begin
     
     end
     
-    def Transferir(Quantia: Float, ParaConta: ContaCorrente)
+    method Transferir(Quantia: Float, ParaConta: ContaCorrente)
     begin
     
     end
     
-    def ObterSaldo(): Float
+    method ObterSaldo(): Float
     begin
     
     end
     
-    def AplicarPrefix()
+    method AplicarPrefix()
     begin
     
     end
     
-    def ContaCorrente()
+    method ContaCorrente()
     begin
     
     end
     
-    def TirarExtrato(): Strings # = Array<String>
+    method TirarExtrato(): Strings # = Array<String>
     begin
     
     end
     
-    def RetirarAplicPrefix()
+    method RetirarAplicPrefix()
     begin
     
     end
     
-    def Localizar()
+    method Localizar()
     begin
     
     end
     
-    def Gravar()
+    method Gravar()
     begin
     
     end
     
-    def Ler()
+    method Ler()
     begin
     
     end
@@ -137,12 +137,12 @@ module Classes
     var Operacao: Array;
     var Valor: Float;
     
-    def Criar()
+    method Criar()
     begin
     
     end
     
-    def Destruir()
+    method Destruir()
     begin
     
     end
@@ -152,22 +152,22 @@ module Classes
     var Cobeginperacao: String;
     var DescricaoOperacao: String;
     
-    def Operacao()
+    method Operacao()
     begin
     
     end
     
-    def AtualizarDados()
+    method AtualizarDados()
     begin
     
     end
     
-    def Gravar()
+    method Gravar()
     begin
     
     end
     
-    def Ler()
+    method Ler()
     begin
     
     end
@@ -179,37 +179,37 @@ module Classes
     var Parentesco: String;
     var Poupancas: Array;
     
-    def Dependente()
+    method Dependente()
     begin
     
     end
     
-    def Localizar()
+    method Localizar()
     begin
     
     end
     
-    def AbrirPoupanca()
+    method AbrirPoupanca()
     begin
     
     end
     
-    def FecharPoupanca()
+    method FecharPoupanca()
     begin
     
     end
     
-    def AtualizarDados()
+    method AtualizarDados()
     begin
     
     end
     
-    def Gravar()
+    method Gravar()
     begin
     
     end
     
-    def Ler()
+    method Ler()
     begin
     
     end
@@ -218,7 +218,7 @@ module Classes
   class Poupanca > ContaCorrente
     var DataVencimento: Date;
     
-    def Poupanca()
+    method Poupanca()
     begin
     
     end
@@ -229,17 +229,17 @@ module Classes
     var DataVencimento: Date;
     var Taxa: Float;
     
-    def AplicacaoPreFixada()
+    method AplicacaoPreFixada()
     begin
     
     end
     
-    def Gravar()
+    method Gravar()
     begin
     
     end
     
-    def Ler()
+    method Ler()
     begin
     
     end
@@ -258,57 +258,57 @@ module Classes
     var ContasCorrente: Array;
     var Poupancas: Array;
     
-    def Cliente()
+    method Cliente()
     begin
     
     end
     
-    def Gravar()
+    method Gravar()
     begin
     
     end
     
-    def Ler()
+    method Ler()
     begin
     
     end
     
-    def Localizar()
+    method Localizar()
     begin
     
     end
     
-    def AbrirContaCorrente()
+    method AbrirContaCorrente()
     begin
     
     end
     
-    def RemoverContaCorrente()
+    method RemoverContaCorrente()
     begin
     
     end
     
-    def AdicDependente()
+    method AdicDependente()
     begin
     
     end
     
-    def ExcluirDependente()
+    method ExcluirDependente()
     begin
     
     end
     
-    def AbrirPoupanca()
+    method AbrirPoupanca()
     begin
     
     end
     
-    def FecharPoupanca()
+    method FecharPoupanca()
     begin
     
     end
     
-    def AtualizarDados()
+    method AtualizarDados()
     begin
     
     end

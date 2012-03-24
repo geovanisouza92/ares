@@ -60,7 +60,7 @@ using namespace std;
 %token  kCLASS      "class"
 %token  kCONST      "const"
 %token  kCONTINUE   "continue"
-%token  kDEF        "def"
+// %token  kDEF        "def"
 %token  kDESC       "desc"
 %token  kDO         "do"
 %token  kELIF       "elif"
@@ -83,8 +83,9 @@ using namespace std;
 %token  kIN         "in"
 %token  kIS         "is"
 %token  kJOIN       "join"
-// %token  kLAMBDA     "lambda"
+%token  kLAMBDA     "lambda"
 %token  kLEFT       "left"
+%token  kMETHOD     "method"
 %token  kMODULE     "module"
 %token  kNEW        "new"
 %token  kNIL        "nil"
@@ -295,10 +296,10 @@ EventDecl
         ;
 
 FunctionDecl
-        : kDEF QualifiedId FormalParams
-        | kDEF QualifiedId FormalParams ReturnType
-        | kDEF QualifiedId FormalParams InterceptClause
-        | kDEF QualifiedId FormalParams ReturnType InterceptClause
+        : kMETHOD QualifiedId FormalParams
+        | kMETHOD QualifiedId FormalParams ReturnType
+        | kMETHOD QualifiedId FormalParams InterceptClause
+        | kMETHOD QualifiedId FormalParams ReturnType InterceptClause
         ;
 
 FormalParams
@@ -515,7 +516,7 @@ Expression
         ;
 
 LambdaExpr
-        : kDEF FormalParams Expression
+        : kLAMBDA FormalParams '(' Expression ')'
         ;
 
 AssignExpr
@@ -533,8 +534,8 @@ AssignValue
 
 TernaryExpr
         : RangeExpr
-        | RangeExpr '?' Expression ':' Expression
-        | RangeExpr kBETWEEN RelationalExpr kAND RelationalExpr
+        | TernaryExpr '?' Expression ':' Expression
+        | TernaryExpr kBETWEEN ComparisonExpr kAND ComparisonExpr
         ;
 
 RangeExpr
@@ -544,14 +545,14 @@ RangeExpr
         ;
 
 LogicExpr
-        : RelationalExpr
-        | LogicExpr kAND RelationalExpr
-        | LogicExpr kOR RelationalExpr
-        | LogicExpr kXOR RelationalExpr
-        | LogicExpr kIMPLIES RelationalExpr
+        : ComparisonExpr
+        | LogicExpr kAND ComparisonExpr
+        | LogicExpr kOR ComparisonExpr
+        | LogicExpr kXOR ComparisonExpr
+        | LogicExpr kIMPLIES ComparisonExpr
         ;
 
-RelationalExpr
+ComparisonExpr
         : AddExpr
         | AddExpr '<' AddExpr
         | AddExpr sLEE AddExpr

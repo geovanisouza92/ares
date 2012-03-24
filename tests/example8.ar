@@ -10,6 +10,6 @@ for tweet in tweets do begin
 end
 # "async" é aconselhabegin para execução assíncrona, melhoranbegin desempenho
 var another_tweets = async from tweet in twitter.mentions()
-where (tweet.timestamp between Date.Now - 7 && Date.Now - 1)
+where (tweet.timestamp between Date.Now - 7 and Date.Now - 1)
 select tweet;
 # variável "another_tweets" não é usada e será removida ;)

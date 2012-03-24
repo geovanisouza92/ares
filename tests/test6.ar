@@ -1,7 +1,7 @@
 # Exemplo de Object Query Language
 var x =
   from n in CurrentFoodDescriptio.Nutrients
-  join nd in SterlingService.Current.Database.Query(FoodDatabase.NUTR_DEFINITION_UNITS_DESC) on n.NutrientDefinitionId == nd.Key
-  join nd2 in SterlingService.Current.Database.Query(FoodDatabase.NUTR_DEFINITION_SORT) on nd.Key == nd2.Key
+  join nd in SterlingService.Current.Database.Query(FoodDatabase.NUTR_methodINITION_UNITS_DESC) on n.NutrientmethodinitionId == nd.Key
+  join nd2 in SterlingService.Current.Database.Query(FoodDatabase.NUTR_methodINITION_SORT) on nd.Key == nd2.Key
   order by nd2.Index
   select new class (Amount: n.AmountPerHundredGrams, Description: nd.Index.Item2, UnitOfMeasure: nd.Index.Item1);

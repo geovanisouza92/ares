@@ -3,7 +3,7 @@ var repos = updateUsing({git : "E:\\Repos\\GIT", hg : "E:\\Repos\\HG", svn : "E:
 WriteLn(repos);
 System("PAUSE");
 
-def updateUsing(args: Array)
+method updateUsing(args: Array)
 begin
   var dirs = new Array();
   for pair in args do
