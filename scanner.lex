@@ -1,4 +1,7 @@
+
 %{
+
+/* Ares Programming Language */
 
 using namespace std;
 
@@ -16,7 +19,6 @@ typedef Parser::token_type token_type;
 #define YY_NO_UNISTD_H
 %}
 
-%option debug
 %option c++ prefix="arc" batch yywrap nounput stack
 
 %{
@@ -24,6 +26,8 @@ typedef Parser::token_type token_type;
 %}
 
 id  [a-zA-Z_][a-zA-Z_\-0-9]*[?!]?
+str \"(\\.|[^\"])*\"
+rgx \~\/(\\.|[^\/])*\/
 
 %%
 
@@ -35,8 +39,8 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*[?!]?
 "-="    return token::sSUE;
 "*="    return token::sMUE;
 "/="    return token::sDIE;
-"..."   return token::sDOT3;
-".."    return token::sDOT2;
+"..."   return token::sRGI;
+".."    return token::sRGO;
 "**"    return token::sPOW;
 "==="   return token::sIDE;
 "!=="   return token::sNID;
@@ -46,7 +50,6 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*[?!]?
 ">="    return token::sGEE;
 "=~"    return token::sMAT;
 "!~"    return token::sNMA;
-"=>"    return token::sDEF;
 
 "abstract"      return token::kABSTRACT;
 "after"         return token::kAFTER;
@@ -63,6 +66,7 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*[?!]?
 "class"         return token::kCLASS;
 "const"         return token::kCONST;
 "continue"      return token::kCONTINUE;
+"def"           return token::kDEF;
 "desc"          return token::kDESC;
 "do"            return token::kDO;
 "elif"          return token::kELIF;
@@ -70,7 +74,6 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*[?!]?
 "end"           return token::kEND;
 "ensure"        return token::kENSURE;
 "event"         return token::kEVENT;
-"exit"          return token::kEXIT;
 "false"         return token::kFALSE;
 "for"           return token::kFOR;
 "from"          return token::kFROM;
@@ -83,11 +86,8 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*[?!]?
 "include"       return token::kINCLUDE;
 "invariants"    return token::kINVARIANTS;
 "in"            return token::kIN;
-"is"            return token::kIS;
 "join"          return token::kJOIN;
-"lambda"        return token::kLAMBDA;
 "left"          return token::kLEFT;
-"method"        return token::kMETHOD;
 "module"        return token::kMODULE;
 "new"           return token::kNEW;
 "nil"           return token::kNIL;
@@ -137,12 +137,12 @@ id  [a-zA-Z_][a-zA-Z_\-0-9]*[?!]?
     return token::ID;
 }
 
-\"[^\"]*\" {
+{str} {
     yylval->v_str = new std::string(yytext, yyleng);
     return token::STRING;
 }
 
-\~\/[^\/]*\/[imx]* {
+{rgx}[imx]* {
     yylval->v_str = new std::string(yytext, yyleng);
     return token::REGEX;
 }
@@ -196,6 +196,9 @@ int arcFlexLexer::yylex() {
 }
 
 int arcFlexLexer::yywrap() {
+    // TODO Retornando 0 ele continua esperando mais entradas...
+    // Basicamente, o lexer chama o driver esperando mais entrada,
+    //   em seguida este recebe uma linha, insere na entrada e retorna 0
     return 1;
 }
 

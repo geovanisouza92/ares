@@ -1,6 +1,8 @@
 __*
 arc
 *.o
+*.bc
+*.s
 *.hh
 parser.h
 parser.cpp

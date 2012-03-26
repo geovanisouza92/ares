@@ -7,11 +7,11 @@ module Clientes
   end
 
   # interface IPessoa
-  #   method TemBoaReputacao? : Boolean;
+  #   def TemBoaReputacao? : Boolean;
   # end
 
   class Pessoa > Base # , IPessoa
-    method TemBoaReputacao?() : Boolean
+    def TemBoaReputacao?() : Boolean
     begin
         # Retorna verdadeiro somente se a pessoa for de boa fé...
         Result = not Nome.IsEmpty?;
@@ -29,7 +29,7 @@ module Clientes
   end
 
 # inline beginc "Lista tobegins os clientes ativos no sistema";
-  method ListarTobeginsOsClientes(): Array
+  def ListarTobeginsOsClientes(): Array
   begin
     Result = (from Cliente in DBO.Clientes
                where Cliente.TemBoaReputacao?);

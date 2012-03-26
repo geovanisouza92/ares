@@ -8,34 +8,34 @@ module Another
     var Nome: String ;
     var Endereco: String ;
     
-    method AtualizarContas()
+    def AtualizarContas()
     begin
     
     end
     
-    method GetNome(): String
+    def GetNome(): String
     begin
     
     end
     
-    method GetEndereco(): String
+    def GetEndereco(): String
     begin
     
     end
   end
 
   class GerenciadorDeContas
-    method Adicionar()
+    def Adicionar()
     begin
     
     end
     
-    method Remover()
+    def Remover()
     begin
     
     end
     
-    method AtualizarContas()
+    def AtualizarContas()
     begin
     
     end
@@ -45,29 +45,29 @@ module Another
     var VetorDeTransacoesEmExecucao: Array;
     var VetorDeTransacoesEsperanbegin: Array;
     
-    method EfetuarTransacao()
+    def EfetuarTransacao()
     begin
     
     end
     
-    method GetEstatisticas()
+    def GetEstatisticas()
     begin
     
     end
     
-    method GetStatus()
+    def GetStatus()
     begin
     
     end
   end
 
   class Transacao
-    method ProcessarTransacao(Valor: Float)
+    def ProcessarTransacao(Valor: Float)
     begin
     
     end
     
-    method GetValor()
+    def GetValor()
     begin
     
     end
@@ -76,19 +76,19 @@ module Another
   class Calendario
     var DiasUteis: Array;
     
-    method EhDiaUtil?(): Boolean
+    def EhDiaUtil?(): Boolean
     begin
     
     end
   end
 
   class GerenciadorDeClientes
-    method Adicionar()
+    def Adicionar()
     begin
     
     end
     
-    method Remover()
+    def Remover()
     begin
     
     end
@@ -98,32 +98,32 @@ module Another
     var Nome: String;
     var Endereco: String;
     
-    method Sacar(DaConta: Conta)
+    def Sacar(DaConta: Conta)
     begin
     
     end
     
-    method Transferir(ParaConta: Conta)
+    def Transferir(ParaConta: Conta)
     begin
     
     end
     
-    method GetNome(): String
+    def GetNome(): String
     begin
     
     end
     
-    method SetNome(Value: String)
+    def SetNome(Value: String)
     begin
     
     end
     
-    method GetEndereco(): String
+    def GetEndereco(): String
     begin
     
     end
     
-    method SetEndereco(Value: String)
+    def SetEndereco(Value: String)
     begin
     
     end
@@ -131,7 +131,7 @@ module Another
 
   class Conta
     var Salbegin: Float;
-     method Atualizar();
+     def Atualizar();
   end
   
   class Poupanca > Conta;

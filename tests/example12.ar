@@ -1,6 +1,6 @@
 module Fatorial
 
-  method fat(num: Integer): Integer
+  def fat(num: Integer): Integer
   begin
     if 0 == num then
       return 1;

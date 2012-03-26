@@ -3,5 +3,5 @@
 
 if true then
 begin
-  # exit foo + 3;
+  # return foo + 3;
 end

@@ -1,6 +1,9 @@
+/* Ares Programming Language */
 
 #ifndef LANG_CONFIG_H
 #define LANG_CONFIG_H
+
+//#define LANG_DEBUG
 
 #define LANG_NAME               "Ares"
 #define LANG_SHELL_NAME         "ash"
@@ -17,11 +20,11 @@
 
 #define LANG_RELEASE_YEAR       2012
 #define LANG_RELEASE_MONTH      3
-#define LANG_RELEASE_DAY        22
+#define LANG_RELEASE_DAY        26
 
 #define LANG_VERSION_MAJOR      0
 #define LANG_VERSION_MINOR      2
-#define LANG_VERSION_PATCH      2
+#define LANG_VERSION_PATCH      3
 #define LANG_VERSION_COMMENT    "proto"
 
 #if   defined(_WIN32) || defined(MSWIN) || defined(MSWINDOWS)
@@ -47,11 +50,10 @@ namespace n { \
 
 #define DECLARE_ENUM_NAMES_START(n) \
 namespace n { \
-  static string EnumNames[LAST + 1] = {
+  static string EnumNames[LAST] = {
 #define DECLARE_ENUM_MEMBER_NAME(x) \
     x,
 #define DECLARE_ENUM_NAMES_END(e) \
-    "LAST" \
   }; \
   static string get_enum_name(e value) { \
     return EnumNames[value]; \

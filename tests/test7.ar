@@ -7,7 +7,7 @@ v = (2 ** 4 - 4); e = 2.71828;
 a > b;
 a.b >= c;
 # comment
-_method + 3 == 0;
+_def + 3 == 0;
 
 a = a implies b;
 

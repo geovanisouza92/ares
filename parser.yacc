@@ -1,5 +1,8 @@
 
 %{
+
+/* Ares Programming Language */
+
 #include <vector>
 
 using namespace std;
@@ -7,12 +10,11 @@ using namespace std;
 #include "driver.h"
 #include "st.h"
 #include "stoql.h"
+#include "stmt.h"
 
 using namespace SyntaxTree;
 
 %}
-
-%debug
 
 %require "2.3"
 %start Program
@@ -43,6 +45,8 @@ using namespace SyntaxTree;
 #define yylex driver.lexer->lex
 %}
 
+// TODO Reorder items
+
 %token          sEOF    0   "end of file"
 
 %token  <v_str> ID         "identifier"
@@ -66,7 +70,7 @@ using namespace SyntaxTree;
 %token  kCLASS      "class"
 %token  kCONST      "const"
 %token  kCONTINUE   "continue"
-// %token  kDEF        "def"
+%token  kDEF        "def"
 %token  kDESC       "desc"
 %token  kDO         "do"
 %token  kELIF       "elif"
@@ -74,7 +78,7 @@ using namespace SyntaxTree;
 %token  kEND        "end"
 %token  kENSURE     "ensure"
 %token  kEVENT      "event"
-%token  kEXIT       "exit"
+// %token  kEXIT       "exit"
 %token  kFALSE      "false"
 %token  kFOR        "for"
 %token  kFROM       "from"
@@ -87,11 +91,11 @@ using namespace SyntaxTree;
 %token  kINCLUDE    "include"
 %token  kINVARIANTS "invariants"
 %token  kIN         "in"
-%token  kIS         "is"
+// %token  kIS         "is"
 %token  kJOIN       "join"
-%token  kLAMBDA     "lambda"
+// %token  kLAMBDA     "lambda"
 %token  kLEFT       "left"
-%token  kMETHOD     "method"
+// %token  kMETHOD     "method"
 %token  kMODULE     "module"
 %token  kNEW        "new"
 %token  kNIL        "nil"
@@ -133,7 +137,7 @@ using namespace SyntaxTree;
 %token  sMUE    "*="
 %token  sDIE    "/="
 
-%token  sDEF    "=>"
+// %token  sDEF    "=>"
 %token  '?'     "?"
 %token  ':'     ":"
 %token  sEQL    "=="
@@ -146,8 +150,8 @@ using namespace SyntaxTree;
 %token  sGEE    ">="
 %token  sMAT    "=~"
 %token  sNMA    "!~"
-%token  sDOT2   ".."
-%token  sDOT3   "..."
+%token  sRGO    ".."
+%token  sRGI    "..."
 %token  '+'     "+"
 %token  '-'     "-"
 %token  '*'     "*"
@@ -167,9 +171,9 @@ using namespace SyntaxTree;
 
 %nonassoc ID FLOAT INTEGER STRING REGEX kTRUE kFALSE
 
-%left   sEQL sIDE sNID sNEQ sLEE sGEE sDOT2 sDOT3 sPOW sADE sSUE sMUE sDIE sDEF
+%left   sEQL sIDE sNID sNEQ sLEE sGEE sRGO sRGI sPOW sADE sSUE sMUE sDIE // sDEF
 %left   kAND kOR kXOR kIMPLIES
-%left   '=' '?' ':' '<' '>' '+' '-' '*' '/' '|'
+%left   '=' '?' ':' '<' '>' '+' '-' '*' '/' // '|'
 %right  UNARY
 
 %type   <v_node>    Value
@@ -193,9 +197,6 @@ using namespace SyntaxTree;
 %type   <v_node>    AssignValue
 %type   <v_node>    AssignExpr
 %type   <v_node>    LambdaExpr
-
-%type   <v_node>    Expression
-
 %type   <v_node>    QueryExpr
 %type   <v_node>    QueryBody
 %type   <v_node>    QueryOrigin
@@ -208,16 +209,59 @@ using namespace SyntaxTree;
 %type   <v_node>    SelectsOrGroupClause
 %type   <v_node>    GroupByClause
 %type   <v_node>    SelectClause
+%type   <v_node>    Expression
+%type   <v_node>    LoopStatement
+%type   <v_node>    RetryStatement
+%type   <v_node>    YieldStatement
+%type   <v_node>    AsyncStatement
+%type   <v_node>    RaiseStatement
+%type   <v_node>    ReturnStatement
+%type   <v_node>    ForStatement
+%type   <v_node>    CaseStatement
+%type   <v_node>    WhenClause
+%type   <v_node>    ConditionalStatement
+%type   <v_node>    ElifStatement
+%type   <v_node>    WhenRescueClause
+%type   <v_node>    Condition
+%type   <v_node>    StatementBlock
+%type   <v_node>    Constant
+%type   <v_node>    ConstantDecl
+%type   <v_node>    Variable
+%type   <v_node>    VariableDecl
+%type   <v_node>    InitialValue
+%type   <v_node>    ReturnType
+%type   <v_node>    InvariantsClause
+%type   <v_node>    InterceptClause
+%type   <v_node>    RealFunctionDecl
+%type   <v_node>    FunctionDecl
+%type   <v_node>    EventDecl
+%type   <v_node>    AttributeDecl
+%type   <v_node>    Getter
+%type   <v_node>    Setter
+%type   <v_node>    VisibilityStatement
+%type   <v_node>    IncludeStatement
+%type   <v_node>    ClassDecl
+%type   <v_node>    ImportStatement
+%type   <v_node>    ModuleDecl
+%type   <v_node>    Statement
 
 %type   <v_list>    ExpressionList
 %type   <v_list>    NamedExpressionList
 %type   <v_list>    ParamValueList
 %type   <v_list>    FormalParamList
 %type   <v_list>    VariableList
-
 %type   <v_list>    QueryBodyClauseRepeat
 %type   <v_list>    OrderingItemList
-
+%type   <v_list>    WhenClauseRepeat
+%type   <v_list>    ElifStatementRepeat
+%type   <v_list>    WhenRescueClauseRepeat
+%type   <v_list>    RequireClause
+%type   <v_list>    RescueClause
+%type   <v_list>    EnsureClause
+%type   <v_list>    Conditions
+%type   <v_list>    ConstantList
+%type   <v_list>    IdentifierList
+%type   <v_list>    Statements
 
 %%
 
@@ -226,136 +270,646 @@ Program
             driver.dec_lines();
             driver.warning("Nothing to do here.");
         }
-        | TopStatements
-        ;
-
-TopStatements
-        : TopStatement
-        | TopStatements TopStatement
-        ;
-
-TopStatement
-        : Statement
-        | ModuleDecl
-        | ImportStatement ';'
-        | ClassDecl ';'
-        | ClassDecl StatementsForClass kEND
-        | FunctionDecl ';'
-        | FunctionDecl StatementBlock
+        | Statements {
+            if (!driver.check_only) {
+                driver.Env->put_stmts($1);
+            }
+        }
         ;
 
 Statements
-        : Statement
-        | Statements Statement
+        : Statement {
+            if (!driver.check_only) {
+                $$ = new VectorNode();
+                $$->push_back($1);
+            }
+        }
+        | Statements Statement {
+            if (!driver.check_only) {
+                $$->push_back($2);
+            }
+        }
         ;
 
 Statement
-        : VariableDecl ';'
-        | ConstantDecl ';'
-        | StatementBlock
-        | ConditionalStatement
-        | CaseStatement
-        | ForStatement
-        | LoopStatement
-        | AsyncStatement
-        | RaiseStatement ';'
-        | ExitStatement ';'
-        | ReturnStatement ';'
-        | IncludeStatement ';'
-        | Expression ';'
+        : Expression ';' {
+            if (!driver.check_only) {
+                $$ = $1;
+            }
+        }
+        | VariableDecl ';' {
+            if (!driver.check_only) {
+                $$ = $1;
+            }
+        }
+        | ConstantDecl ';' {
+            if (!driver.check_only) {
+                $$ = $1;
+            }
+        }
+        | StatementBlock {
+            if (!driver.check_only) {
+                $$ = $1;
+            }
+        }
+        | ConditionalStatement {
+            if (!driver.check_only) {
+                $$ = $1;
+            }
+        }
+        | CaseStatement {
+            if (!driver.check_only) {
+                $$ = $1;
+            }
+        }
+        | ForStatement {
+            if (!driver.check_only) {
+                $$ = $1;
+            }
+        }
+        | LoopStatement {
+            if (!driver.check_only) {
+                $$ = $1;
+            }
+        }
+        | AsyncStatement {
+            if (!driver.check_only) {
+                $$ = $1;
+            }
+        }
+        | YieldStatement ';' {
+            if (!driver.check_only) {
+                $$ = $1;
+            }
+        }
+        | kBREAK ';' {
+            if (!driver.check_only) {
+                $$ = new ControlStmtNode(Control::Break);
+            }
+        }
+        | kCONTINUE ';' {
+            if (!driver.check_only) {
+                $$ = new ControlStmtNode(Control::Continue);
+            }
+        }
+        | RetryStatement ';' {
+            if (!driver.check_only) {
+                $$ = $1;
+            }
+        }
+        | RaiseStatement ';' {
+            if (!driver.check_only) {
+                $$ = $1;
+            }
+        }
+        | ReturnStatement ';' {
+            if (!driver.check_only) {
+                $$ = $1;
+            }
+        }
+        | IncludeStatement ';' {
+            if (!driver.check_only) {
+                $$ = $1;
+            }
+        }
+        | VisibilityStatement {
+            if (!driver.check_only) {
+                $$ = $1;
+            }
+        }
+        | AttributeDecl ';' {
+            if (!driver.check_only) {
+                $$ = $1;
+            }
+        }
+        | EventDecl ';' {
+            if (!driver.check_only) {
+                $$ = $1;
+            }
+        }
+        | ModuleDecl {
+            if (!driver.check_only) {
+                $$ = $1;
+            }
+        }
+        | ImportStatement ';' {
+            if (!driver.check_only) {
+                $$ = $1;
+            }
+        }
+        | ClassDecl ';' {
+            if (!driver.check_only) {
+                $$ = $1;
+            }
+        }
+        | ClassDecl Statements kEND {
+            if (!driver.check_only) {
+                ((ClassDeclNode *) $1)
+                  ->add_stmts($2);
+                $$ = $1;
+            }
+        }
+        | FunctionDecl ';' {
+            if (!driver.check_only) {
+                $$ = $1;
+            }
+        }
+        | RealFunctionDecl StatementBlock {
+            if (!driver.check_only) {
+                ((FunctionDeclNode *) $1)
+                  ->add_stmt($2);
+                $$ = $1;
+            }
+        }
         ;
 
 ModuleDecl
-        : kMODULE QualifiedId kEND
-        | kMODULE QualifiedId TopStatements kEND
+        : kMODULE QualifiedId kEND {
+            if (!driver.check_only) {
+                $$ = new ModuleNode($2);
+            }
+        }
+        | kMODULE QualifiedId Statements kEND {
+            if (!driver.check_only) {
+                $$ = new ModuleNode($2);
+                ((ModuleNode *) $$)
+                  ->add_stmts($3);
+            }
+        }
         ;
 
 ImportStatement
-        : kIMPORT IdentifierList
-        | kFROM String kIMPORT IdentifierList
-        | kFROM QualifiedId kIMPORT IdentifierList
+        : kIMPORT IdentifierList {
+            if (!driver.check_only) {
+                $$ = new ImportStmtNode($2);
+            }
+        }
+        | kFROM String kIMPORT IdentifierList {
+            if (!driver.check_only) {
+                $$ = new ImportStmtNode($4);
+                ((ImportStmtNode *) $$)
+                  ->set_origin($2);
+            }
+        }
+        | kFROM QualifiedId kIMPORT IdentifierList {
+            if (!driver.check_only) {
+                $$ = new ImportStmtNode($4);
+                ((ImportStmtNode *) $$)
+                  ->set_origin($2);
+            }
+        }
         ;
 
 IncludeStatement
-        : kINCLUDE QualifiedId
+        : kINCLUDE QualifiedId {
+            if (!driver.check_only) {
+                $$ = new IncludeStmtNode($2);
+            }
+        }
         ;
 
 ClassDecl
-        : kCLASS Identifier
-        | kCLASS Identifier '>' QualifiedId // IdentifierList
-        | kABSTRACT kCLASS Identifier
-        | kSEALED kCLASS Identifier
-        | kABSTRACT kCLASS Identifier '>' QualifiedId // IdentifierList
-        | kSEALED kCLASS Identifier '>' QualifiedId // IdentifierList
-        | kABSTRACT kSEALED kCLASS Identifier
-        | kABSTRACT kSEALED kCLASS Identifier '>' QualifiedId // IdentifierList
-        ;
-
-StatementsForClass
-        : StatementForClass
-        | StatementsForClass StatementForClass
-        ;
-
-StatementForClass
-        : TopStatement
-        | VisibilityStatement
-        | AttributeDecl ';'
-        | EventDecl ';'
+        : kCLASS Identifier {
+            if (!driver.check_only) {
+                $$ = new ClassDeclNode($2);
+            }
+        }
+        | kCLASS Identifier '>' QualifiedId { // IdentifierList
+            if (!driver.check_only) {
+                $$ = new ClassDeclNode($2);
+                ((ClassDeclNode *) $$)
+                  ->set_heritance($4);
+            }
+        }
+        | kABSTRACT kCLASS Identifier {
+            if (!driver.check_only) {
+                $$ = new ClassDeclNode($3);
+                ((ClassDeclNode *) $$)
+                  ->add_specifier(Specifier::Abstract);
+            }
+        }
+        | kSEALED kCLASS Identifier {
+            if (!driver.check_only) {
+                $$ = new ClassDeclNode($3);
+                ((ClassDeclNode *) $$)
+                  ->add_specifier(Specifier::Sealed);
+            }
+        }
+        | kABSTRACT kCLASS Identifier '>' QualifiedId { // IdentifierList
+            if (!driver.check_only) {
+                $$ = new ClassDeclNode($3);
+                ((ClassDeclNode *) $$)
+                  ->set_heritance($5)
+                  ->add_specifier(Specifier::Abstract);
+            }
+        }
+        | kSEALED kCLASS Identifier '>' QualifiedId { // IdentifierList
+            if (!driver.check_only) {
+                $$ = new ClassDeclNode($3);
+                ((ClassDeclNode *) $$)
+                  ->set_heritance($5)
+                  ->add_specifier(Specifier::Sealed);
+            }
+        }
+        | kABSTRACT kSEALED kCLASS Identifier {
+            if (!driver.check_only) {
+                $$ = new ClassDeclNode($4);
+                ((ClassDeclNode *) $$)
+                  ->add_specifier(Specifier::Abstract)
+                  ->add_specifier(Specifier::Sealed);
+            }
+        }
+        | kABSTRACT kSEALED kCLASS Identifier '>' QualifiedId { // IdentifierList
+            if (!driver.check_only) {
+                $$ = new ClassDeclNode($4);
+                ((ClassDeclNode *) $$)
+                  ->set_heritance($6)
+                  ->add_specifier(Specifier::Abstract)
+                  ->add_specifier(Specifier::Sealed);
+            }
+        }
         ;
 
 VisibilityStatement
-        : kPRIVATE
-        | kPROTECTED
-        | kPUBLIC
+        : kPRIVATE {
+            if (!driver.check_only) {
+                $$ = new ControlStmtNode(Control::Private);
+            }
+        }
+        | kPROTECTED {
+            if (!driver.check_only) {
+                $$ = new ControlStmtNode(Control::Protected);
+            }
+        }
+        | kPUBLIC {
+            if (!driver.check_only) {
+                $$ = new ControlStmtNode(Control::Public);
+            }
+        }
         ;
 
 AttributeDecl
-        : kATTR Identifier ReturnType
-        | kATTR Identifier ReturnType InvariantsClause
-        | kATTR Identifier ReturnType Setter
-        | kATTR Identifier ReturnType Setter InvariantsClause
-        | kATTR Identifier ReturnType Getter
-        | kATTR Identifier ReturnType Getter InvariantsClause
-        | kATTR Identifier ReturnType Getter Setter
-        | kATTR Identifier ReturnType Getter Setter InvariantsClause
-        | kATTR Identifier ReturnType InitialValue
-        | kATTR Identifier ReturnType InitialValue InvariantsClause
-        | kATTR Identifier ReturnType InitialValue Setter
-        | kATTR Identifier ReturnType InitialValue Setter InvariantsClause
-        | kATTR Identifier ReturnType InitialValue Getter
-        | kATTR Identifier ReturnType InitialValue Getter InvariantsClause
-        | kATTR Identifier ReturnType InitialValue Getter Setter
-        | kATTR Identifier ReturnType InitialValue Getter Setter InvariantsClause
+        : kATTR Identifier ReturnType {
+            if (!driver.check_only) {
+                $$ = new AttrDeclNode($2);
+                ((AttrDeclNode *) $$)
+                  ->set_return_type($3);
+            }
+        }
+        | kATTR Identifier ReturnType InvariantsClause {
+            if (!driver.check_only) {
+                $$ = new AttrDeclNode($2);
+                ((AttrDeclNode *) $$)
+                  ->set_return_type($3)
+                  ->set_invariants($4);
+            }
+        }
+        | kATTR Identifier ReturnType Setter {
+            if (!driver.check_only) {
+                $$ = new AttrDeclNode($2);
+                ((AttrDeclNode *) $$)
+                  ->set_return_type($3)
+                  ->set_setter($4);
+            }
+        }
+        | kATTR Identifier ReturnType Setter InvariantsClause {
+            if (!driver.check_only) {
+                $$ = new AttrDeclNode($2);
+                ((AttrDeclNode *) $$)
+                  ->set_return_type($3)
+                  ->set_setter($4)
+                  ->set_invariants($5);
+            }
+        }
+        | kATTR Identifier ReturnType Getter {
+            if (!driver.check_only) {
+                $$ = new AttrDeclNode($2);
+                ((AttrDeclNode *) $$)
+                  ->set_return_type($3)
+                  ->set_getter($4);
+            }
+        }
+        | kATTR Identifier ReturnType Getter InvariantsClause {
+            if (!driver.check_only) {
+                $$ = new AttrDeclNode($2);
+                ((AttrDeclNode *) $$)
+                  ->set_return_type($3)
+                  ->set_getter($4)
+                  ->set_invariants($5);
+            }
+        }
+        | kATTR Identifier ReturnType Getter Setter {
+            if (!driver.check_only) {
+                $$ = new AttrDeclNode($2);
+                ((AttrDeclNode *) $$)
+                  ->set_return_type($3)
+                  ->set_getter($4)
+                  ->set_setter($5);
+            }
+        }
+        | kATTR Identifier ReturnType Getter Setter InvariantsClause {
+            if (!driver.check_only) {
+                $$ = new AttrDeclNode($2);
+                ((AttrDeclNode *) $$)
+                  ->set_return_type($3)
+                  ->set_getter($4)
+                  ->set_setter($5)
+                  ->set_invariants($6);
+            }
+        }
+        | kATTR Identifier ReturnType InitialValue {
+            if (!driver.check_only) {
+                $$ = new AttrDeclNode($2);
+                ((AttrDeclNode *) $$)
+                  ->set_return_type($3)
+                  ->set_initial_value($4);
+            }
+        }
+        | kATTR Identifier ReturnType InitialValue InvariantsClause {
+            if (!driver.check_only) {
+                $$ = new AttrDeclNode($2);
+                ((AttrDeclNode *) $$)
+                  ->set_return_type($3)
+                  ->set_initial_value($4)
+                  ->set_invariants($5);
+            }
+        }
+        | kATTR Identifier ReturnType InitialValue Setter {
+            if (!driver.check_only) {
+                $$ = new AttrDeclNode($2);
+                ((AttrDeclNode *) $$)
+                  ->set_return_type($3)
+                  ->set_initial_value($4)
+                  ->set_setter($5);
+            }
+        }
+        | kATTR Identifier ReturnType InitialValue Setter InvariantsClause {
+            if (!driver.check_only) {
+                $$ = new AttrDeclNode($2);
+                ((AttrDeclNode *) $$)
+                  ->set_return_type($3)
+                  ->set_initial_value($4)
+                  ->set_setter($5)
+                  ->set_invariants($6);
+            }
+        }
+        | kATTR Identifier ReturnType InitialValue Getter {
+            if (!driver.check_only) {
+                $$ = new AttrDeclNode($2);
+                ((AttrDeclNode *) $$)
+                  ->set_return_type($3)
+                  ->set_initial_value($4)
+                  ->set_getter($5);
+            }
+        }
+        | kATTR Identifier ReturnType InitialValue Getter InvariantsClause {
+            if (!driver.check_only) {
+                $$ = new AttrDeclNode($2);
+                ((AttrDeclNode *) $$)
+                  ->set_return_type($3)
+                  ->set_initial_value($4)
+                  ->set_getter($5)
+                  ->set_invariants($6);
+            }
+        }
+        | kATTR Identifier ReturnType InitialValue Getter Setter {
+            if (!driver.check_only) {
+                $$ = new AttrDeclNode($2);
+                ((AttrDeclNode *) $$)
+                  ->set_return_type($3)
+                  ->set_initial_value($4)
+                  ->set_getter($5)
+                  ->set_setter($6);
+            }
+        }
+        | kATTR Identifier ReturnType InitialValue Getter Setter InvariantsClause {
+            if (!driver.check_only) {
+                $$ = new AttrDeclNode($2);
+                ((AttrDeclNode *) $$)
+                  ->set_return_type($3)
+                  ->set_initial_value($4)
+                  ->set_getter($5)
+                  ->set_setter($6)
+                  ->set_invariants($7);
+            }
+        }
         ;
 
 InvariantsClause
-        : kINVARIANTS Condition
+        : kINVARIANTS Condition {
+            if (!driver.check_only) {
+                $$ = $2;
+            }
+        }
         ;
 
 Getter
-        : kGET
-        | kGET QualifiedId
+        : kGET {
+            if (!driver.check_only) {
+                $$ = new IdentifierNode("default");
+            }
+        }
+        | kGET QualifiedId {
+            if (!driver.check_only) {
+                $$ = $2;
+            }
+        }
         ;
 
 Setter
-        : kSET
-        | kSET QualifiedId
+        : kSET {
+            if (!driver.check_only) {
+                $$ = new IdentifierNode("default");
+            }
+        }
+        | kSET QualifiedId {
+            if (!driver.check_only) {
+                $$ = $2;
+            }
+        }
         ;
 
 EventDecl
-        : kEVENT Identifier
-        | kEVENT Identifier '=' StatementBlock
-        | kEVENT Identifier '=' QualifiedId
-        | kEVENT Identifier InterceptClause
-        | kEVENT Identifier InterceptClause '=' StatementBlock
-        | kEVENT Identifier InterceptClause '=' QualifiedId
+        : kEVENT Identifier {
+            if (!driver.check_only) {
+                $$ = new EventDeclNode($2);
+            }
+        }
+        | kEVENT Identifier '=' StatementBlock {
+            if (!driver.check_only) {
+                $$ = new EventDeclNode($2);
+                ((EventDeclNode *) $$)
+                  ->set_initial_value($4);
+            }
+        }
+        | kEVENT Identifier '=' QualifiedId {
+            if (!driver.check_only) {
+                $$ = new EventDeclNode($2);
+                ((EventDeclNode *) $$)
+                  ->set_initial_value($4);
+            }
+        }
+        | kEVENT Identifier InterceptClause {
+            if (!driver.check_only) {
+                $$ = new EventDeclNode($2);
+                ((EventDeclNode *) $$)
+                  ->set_intercept($3);
+            }
+        }
+        | kEVENT Identifier InterceptClause '=' StatementBlock {
+            if (!driver.check_only) {
+                $$ = new EventDeclNode($2);
+                ((EventDeclNode *) $$)
+                  ->set_intercept($3)
+                  ->set_initial_value($5);
+            }
+        }
+        | kEVENT Identifier InterceptClause '=' QualifiedId {
+            if (!driver.check_only) {
+                $$ = new EventDeclNode($2);
+                ((EventDeclNode *) $$)
+                  ->set_intercept($3)
+                  ->set_initial_value($5);
+            }
+        }
         ;
 
 FunctionDecl
-        : kMETHOD QualifiedId FormalParamList
-        | kMETHOD QualifiedId FormalParamList ReturnType
-        | kMETHOD QualifiedId FormalParamList InterceptClause
-        | kMETHOD QualifiedId FormalParamList ReturnType InterceptClause
+        : RealFunctionDecl {
+            if (!driver.check_only) {
+                $$ = $1;
+            }
+        }
+        | kABSTRACT kDEF QualifiedId FormalParamList {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($3, $4);
+                ((FunctionDeclNode *) $$)
+                  ->add_specifier(Specifier::Abstract);
+            }
+        }
+        | kABSTRACT kDEF QualifiedId FormalParamList InterceptClause {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($3, $4);
+                ((FunctionDeclNode *) $$)
+                  ->set_intercept($5)
+                  ->add_specifier(Specifier::Abstract);
+            }
+        }
+        | kABSTRACT kDEF QualifiedId FormalParamList ReturnType {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($3, $4);
+                ((FunctionDeclNode *) $$)
+                  ->set_return($5)
+                  ->add_specifier(Specifier::Abstract);
+            }
+        }
+        | kABSTRACT kDEF QualifiedId FormalParamList ReturnType InterceptClause {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($3, $4);
+                ((FunctionDeclNode *) $$)
+                  ->set_return($5)
+                  ->set_intercept($6)
+                  ->add_specifier(Specifier::Abstract);
+            }
+        }
+        | kABSTRACT kCLASS kDEF QualifiedId FormalParamList {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($4, $5);
+                ((FunctionDeclNode *) $$)
+                  ->add_specifier(Specifier::Abstract)
+                  ->add_specifier(Specifier::Class);
+            }
+        }
+        | kABSTRACT kCLASS kDEF QualifiedId FormalParamList InterceptClause {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($4, $5);
+                ((FunctionDeclNode *) $$)
+                  ->set_intercept($6)
+                  ->add_specifier(Specifier::Abstract)
+                  ->add_specifier(Specifier::Class);
+            }
+        }
+        | kABSTRACT kCLASS kDEF QualifiedId FormalParamList ReturnType {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($4, $5);
+                ((FunctionDeclNode *) $$)
+                  ->set_return($6)
+                  ->add_specifier(Specifier::Abstract)
+                  ->add_specifier(Specifier::Class);
+            }
+        }
+        | kABSTRACT kCLASS kDEF QualifiedId FormalParamList ReturnType InterceptClause {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($4, $5);
+                ((FunctionDeclNode *) $$)
+                  ->set_return($6)
+                  ->set_intercept($7)
+                  ->add_specifier(Specifier::Abstract)
+                  ->add_specifier(Specifier::Class);
+            }
+        }
+        ;
+
+RealFunctionDecl
+        : kDEF QualifiedId FormalParamList {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($2, $3);
+            }
+        }
+        | kDEF QualifiedId FormalParamList InterceptClause {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($2, $3);
+                ((FunctionDeclNode *) $$)
+                  ->set_intercept($4);
+            }
+        }
+        | kDEF QualifiedId FormalParamList ReturnType {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($2, $3);
+                ((FunctionDeclNode *) $$)
+                  ->set_return($4);
+            }
+        }
+        | kDEF QualifiedId FormalParamList ReturnType InterceptClause {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($2, $3);
+                ((FunctionDeclNode *) $$)
+                  ->set_return($4)
+                  ->set_intercept($5);
+            }
+        }
+        | kCLASS kDEF QualifiedId FormalParamList {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($3, $4);
+                ((FunctionDeclNode *) $$)
+                  ->add_specifier(Specifier::Class);
+            }
+        }
+        | kCLASS kDEF QualifiedId FormalParamList InterceptClause {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($3, $4);
+                ((FunctionDeclNode *) $$)
+                  ->set_intercept($5)
+                  ->add_specifier(Specifier::Class);
+            }
+        }
+        | kCLASS kDEF QualifiedId FormalParamList ReturnType {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($3, $4);
+                ((FunctionDeclNode *) $$)
+                  ->set_return($5)
+                  ->add_specifier(Specifier::Class);
+            }
+        }
+        | kCLASS kDEF QualifiedId FormalParamList ReturnType InterceptClause {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($3, $4);
+                ((FunctionDeclNode *) $$)
+                  ->set_return($5)
+                  ->set_intercept($6)
+                  ->add_specifier(Specifier::Class);
+            }
+        }
         ;
 
 FormalParamList
@@ -364,240 +918,629 @@ FormalParamList
                 $$ = new VectorNode();
             }
         }
-        // | '(' sDOT3 ')'
+        // | '(' sRGI ')'
         | '(' VariableList ')' {
             if (!driver.check_only) {
                 $$ = $2;
             }
         }
-        // | '(' VariableList ',' sDOT3 ')'
+        // | '(' VariableList ',' sRGI ')'
         ;
 
 ReturnType
-        : ':' QualifiedId
-        | ':' QualifiedId ArrayTails
+        : ':' QualifiedId {
+            if (!driver.check_only) {
+                $$ = $2;
+            }
+        }
+//         | ':' QualifiedId ArrayTails
         ;
 
-ArrayTails
-        : ArrayTail
-        | ArrayTails ArrayTail
-        ;
+// ArrayTails
+//         : ArrayTail
+//         | ArrayTails ArrayTail
+//         ;
 
-ArrayTail
-        : '[' ']'
-        | '[' INTEGER ']'
-        ;
+// ArrayTail
+//         : '[' ']'
+//         | '[' INTEGER ']'
+//         ;
 
 InterceptClause
-        : kAFTER IdentifierList
-        | kBEFORE IdentifierList
-        | kSIGNAL IdentifierList
+        : kAFTER IdentifierList {
+            if (!driver.check_only) {
+                $$ = new InterceptNode(Intercept::After, $2);
+            }
+        }
+        | kBEFORE IdentifierList {
+            if (!driver.check_only) {
+                $$ = new InterceptNode(Intercept::Before, $2);
+            }
+        }
+        | kSIGNAL IdentifierList {
+            if (!driver.check_only) {
+                $$ = new InterceptNode(Intercept::Signal, $2);
+            }
+        }
         ;
 
 IdentifierList
-        : QualifiedId
-        | IdentifierList ',' QualifiedId
+        : QualifiedId {
+            if (!driver.check_only) {
+                $$ = new VectorNode();
+                $$->push_back($1);
+            }
+        }
+        | IdentifierList ',' QualifiedId {
+            if (!driver.check_only) {
+                $$->push_back($3);
+            }
+        }
         ;
 
 VariableDecl
-        : kVAR VariableList
+        : kVAR VariableList {
+            if (!driver.check_only) {
+                $$ = new VarDeclNode($2);
+            }
+        }
         ;
 
 VariableList
-        : Variable
-        | VariableList ',' Variable
+        : Variable {
+            if (!driver.check_only) {
+                $$ = new VectorNode();
+                $$->push_back($1);
+            }
+        }
+        | VariableList ',' Variable {
+            if (!driver.check_only) {
+                $$->push_back($3);
+            }
+        }
         ;
 
 Variable
-        : Identifier
-        | Identifier InvariantsClause
-        | Identifier InitialValue
-        | Identifier InitialValue InvariantsClause
-        | Identifier ReturnType
-        | Identifier ReturnType InvariantsClause
-        | Identifier ReturnType InitialValue
-        | Identifier ReturnType InitialValue InvariantsClause
+        : Identifier {
+            if (!driver.check_only) {
+                $$ = new VariableNode($1);
+            }
+        }
+        | Identifier InvariantsClause {
+            if (!driver.check_only) {
+                $$ = new VariableNode($1);
+                ((VariableNode *) $$)
+                  ->set_invariants($2);
+            }
+        }
+        | Identifier InitialValue {
+            if (!driver.check_only) {
+                $$ = new VariableNode($1);
+                ((VariableNode *) $$)
+                  ->set_initial_value($2);
+            }
+        }
+        | Identifier InitialValue InvariantsClause {
+            if (!driver.check_only) {
+                $$ = new VariableNode($1);
+                ((VariableNode *) $$)
+                  ->set_initial_value($2)
+                  ->set_invariants($3);
+            }
+        }
+        | Identifier ReturnType {
+            if (!driver.check_only) {
+                $$ = new VariableNode($1);
+                ((VariableNode *) $$)
+                  ->set_type($2);
+            }
+        }
+        | Identifier ReturnType InvariantsClause {
+            if (!driver.check_only) {
+                $$ = new VariableNode($1);
+                ((VariableNode *) $$)
+                  ->set_type($2)
+                  ->set_invariants($3);
+            }
+        }
+        | Identifier ReturnType InitialValue {
+            if (!driver.check_only) {
+                $$ = new VariableNode($1);
+                ((VariableNode *) $$)
+                  ->set_type($2)
+                  ->set_initial_value($3);
+            }
+        }
+        | Identifier ReturnType InitialValue InvariantsClause {
+            if (!driver.check_only) {
+                $$ = new VariableNode($1);
+                ((VariableNode *) $$)
+                  ->set_type($2)
+                  ->set_initial_value($3)
+                  ->set_invariants($4);
+            }
+        }
         ;
 
 InitialValue
-        : '=' AssignValue
-        | '=' AssignValue ControlExpr
+        : '=' AssignValue {
+            if (!driver.check_only) {
+                $$ = $2;
+            }
+        }
+//         | '=' AssignValue ControlExpr {
+//             if (!driver.check_only) {
+//                 $$ = new ConditionStmtNode(
+//             }
+//         }
         ;
 
+// ControlExpr
+//        : kIF Expression
+//         | kUNLESS Expression
+//         // | kFOR QueryOrigin kWHERE Expression
+//         ;
+
 ConstantDecl
-        : kCONST ConstantList
+        : kCONST ConstantList {
+            if (!driver.check_only) {
+                $$ = new ConstDeclNode($2);
+            }
+        }
         ;
 
 ConstantList
-        : Constant
-        | ConstantList ',' Constant
+        : Constant {
+            if (!driver.check_only) {
+                $$ = new VectorNode();
+                $$->push_back($1);
+            }
+        }
+        | ConstantList ',' Constant {
+            if (!driver.check_only) {
+                $$->push_back($3);
+            }
+        }
         ;
 
 Constant
-        : Identifier InitialValue
-        | Identifier ReturnType InitialValue
+        : Identifier InitialValue {
+            if (!driver.check_only) {
+                $$ = new VariableNode($1);
+                ((VariableNode *) $$)
+                  ->set_initial_value($2);
+            }
+        }
+        | Identifier ReturnType InitialValue {
+            if (!driver.check_only) {
+                $$ = new VariableNode($1);
+                ((VariableNode *) $$)
+                  ->set_type($2)
+                  ->set_initial_value($3);
+            }
+        }
         ;
 
 StatementBlock
-        : kBEGIN kEND
-        | kBEGIN Statements kEND
-        | kBEGIN Statements EnsureClause kEND
-        | kBEGIN Statements RescueClause kEND
-        | kBEGIN Statements RescueClause EnsureClause kEND
-        | RequireClause kBEGIN Statements kEND
-        | RequireClause kBEGIN Statements EnsureClause kEND
-        | RequireClause kBEGIN Statements RescueClause kEND
-        | RequireClause kBEGIN Statements RescueClause EnsureClause kEND
+        : kBEGIN kEND {
+            if (!driver.check_only) {
+                $$ = new BlockStmtNode(0);
+            }
+        }
+        | kBEGIN Statements kEND {
+            if (!driver.check_only) {
+                $$ = new BlockStmtNode($2);
+            }
+        }
+        | kBEGIN Statements EnsureClause kEND {
+            if (!driver.check_only) {
+                $$ = new BlockStmtNode($2);
+                ((BlockStmtNode *) $$)
+                  ->set_ensure($3);
+            }
+        }
+        | kBEGIN Statements RescueClause kEND {
+            if (!driver.check_only) {
+                $$ = new BlockStmtNode($2);
+                ((BlockStmtNode *) $$)
+                  ->set_rescue($3);
+            }
+        }
+        | kBEGIN Statements RescueClause EnsureClause kEND {
+            if (!driver.check_only) {
+                $$ = new BlockStmtNode($2);
+                ((BlockStmtNode *) $$)
+                  ->set_rescue($3)
+                  ->set_ensure($4);
+            }
+        }
+        | RequireClause kBEGIN Statements kEND {
+            if (!driver.check_only) {
+                $$ = new BlockStmtNode($3);
+                ((BlockStmtNode *) $$)
+                  ->set_require($1);
+            }
+        }
+        | RequireClause kBEGIN Statements EnsureClause kEND {
+            if (!driver.check_only) {
+                $$ = new BlockStmtNode($3);
+                ((BlockStmtNode *) $$)
+                  ->set_require($1)
+                  ->set_ensure($4);
+            }
+        }
+        | RequireClause kBEGIN Statements RescueClause kEND {
+            if (!driver.check_only) {
+                $$ = new BlockStmtNode($3);
+                ((BlockStmtNode *) $$)
+                  ->set_require($1)
+                  ->set_rescue($4);
+            }
+        }
+        | RequireClause kBEGIN Statements RescueClause EnsureClause kEND {
+            if (!driver.check_only) {
+                $$ = new BlockStmtNode($3);
+                ((BlockStmtNode *) $$)
+                  ->set_require($1)
+                  ->set_rescue($4)
+                  ->set_ensure($5);
+            }
+        }
         ;
 
 RequireClause
-        : kREQUIRE
-        | kREQUIRE Conditions
+        : kREQUIRE {
+            if (!driver.check_only) {
+                $$ = 0;
+            }
+        }
+        | kREQUIRE Conditions {
+            if (!driver.check_only) {
+                $$ = $2;
+            }
+        }
         ;
 
 Conditions
-        : Condition ';'
-        | Conditions Condition ';'
+        : Condition ';' {
+            if (!driver.check_only) {
+                $$ = new VectorNode();
+                $$->push_back($1);
+            }
+        }
+        | Conditions Condition ';' {
+            if (!driver.check_only) {
+                $$->push_back($2);
+            }
+        }
         ;
 
 Condition
-        : LogicExpr
-        | LogicExpr RaiseStatement
+        : LogicExpr {
+            if (!driver.check_only) {
+                $$ = new ValidationNode($1, 0);
+            }
+        }
+        | LogicExpr RaiseStatement {
+            if (!driver.check_only) {
+                $$ = new ValidationNode($1, $2);
+            }
+        }
         ;
 
 EnsureClause
-        : kENSURE
-        | kENSURE Statements
+        : kENSURE {
+            if (!driver.check_only) {
+                $$ = 0;
+            }
+        }
+        | kENSURE Statements {
+            if (!driver.check_only) {
+                $$ = $2;
+            }
+        }
         ;
 
 RescueClause
-        : kRESCUE
-        | kRESCUE WhenRescueRepeat
+        : kRESCUE {
+            if (!driver.check_only) {
+                $$ = new VectorNode();
+            }
+        }
+        | kRESCUE WhenRescueClauseRepeat {
+            if (!driver.check_only) {
+                $$ = $2;
+            }
+        }
         ;
 
-WhenRescueRepeat
-        : WhenRescue
-        | WhenRescueRepeat WhenRescue
+WhenRescueClauseRepeat
+        : WhenRescueClause {
+            if (!driver.check_only) {
+                $$ = new VectorNode();
+                $$->push_back($1);
+            }
+        }
+        | WhenRescueClauseRepeat WhenRescueClause {
+            if (!driver.check_only) {
+                $$->push_back($2);
+            }
+        }
         ;
 
-WhenRescue
-        : kWHEN Expression kDO StatementsForRescue
-        ;
-
-StatementsForRescue
-        : StatementForRescue
-        | StatementsForRescue StatementForRescue
-        ;
-
-StatementForRescue
-        : Statement
-        | RetryStatement ';'
+WhenRescueClause
+        : kWHEN Expression kDO Statement {
+            if (!driver.check_only) {
+                $$ = new WhenClauseNode($2, $4);
+            }
+        }
         ;
 
 RetryStatement
-        : kRETRY
-        | kRETRY INTEGER
+        : kRETRY {
+            if (!driver.check_only) {
+                $$ = new ControlStmtNode(Control::Retry);
+            }
+        }
+        | kRETRY QualifiedId {
+            if (!driver.check_only) {
+                $$ = new ControlStmtNode(Control::Retry, $2);
+            }
+        }
+        | kRETRY INTEGER {
+            if (!driver.check_only) {
+                $$ = new ControlStmtNode(Control::Retry, new IntegerNode($2));
+            }
+        }
         ;
 
 ConditionalStatement
-        : IfClause ThenClause
-        | IfClause ThenClause ElseClause
-        | IfClause ThenClause ElifStatementRepeat
-        | IfClause ThenClause ElifStatementRepeat ElseClause
-        | UnlessClause ThenClause
-        | UnlessClause ThenClause ElseClause
-        | UnlessClause ThenClause ElifStatementRepeat
-        | UnlessClause ThenClause ElifStatementRepeat ElseClause
-        ;
-
-IfClause
-        : kIF Expression
-        | kIF Expression WhereClause
-        ;
-
-UnlessClause
-        : kUNLESS Expression
-        | kUNLESS Expression WhereClause
-        ;
-
-ThenClause
-        : kTHEN Statement
+        : kIF Expression kTHEN Statement {
+            if (!driver.check_only) {
+                $$ = new ConditionStmtNode(Condition::If, $2, $4);
+            }
+        }
+        | kIF Expression kTHEN Statement kELSE Statement {
+            if (!driver.check_only) {
+                $$ = new ConditionStmtNode(Condition::If, $2, $4);
+                ((ConditionStmtNode *) $$)
+                  ->set_else($6);
+            }
+        }
+        | kIF Expression kTHEN Statement ElifStatementRepeat {
+            if (!driver.check_only) {
+                $$ = new ConditionStmtNode(Condition::If, $2, $4);
+                ((ConditionStmtNode *) $$)
+                  ->set_elif($5);
+            }
+        }
+        | kIF Expression kTHEN Statement ElifStatementRepeat kELSE Statement {
+            if (!driver.check_only) {
+                $$ = new ConditionStmtNode(Condition::If, $2, $4);
+                ((ConditionStmtNode *) $$)
+                  ->set_elif($5)
+                  ->set_else($7);
+            }
+        }
+        | kUNLESS Expression kTHEN Statement {
+            if (!driver.check_only) {
+                $$ = new ConditionStmtNode(Condition::Unless, $2, $4);
+            }
+        }
+        | kUNLESS Expression kTHEN Statement kELSE Statement {
+            if (!driver.check_only) {
+                $$ = new ConditionStmtNode(Condition::Unless, $2, $4);
+                ((ConditionStmtNode *) $$)
+                  ->set_else($6);
+            }
+        }
+        | kUNLESS Expression kTHEN Statement ElifStatementRepeat {
+            if (!driver.check_only) {
+                $$ = new ConditionStmtNode(Condition::If, $2, $4);
+                ((ConditionStmtNode *) $$)
+                  ->set_elif($5);
+            }
+        }
+        | kUNLESS Expression kTHEN Statement ElifStatementRepeat kELSE Statement {
+            if (!driver.check_only) {
+                $$ = new ConditionStmtNode(Condition::If, $2, $4);
+                ((ConditionStmtNode *) $$)
+                  ->set_elif($5)
+                  ->set_else($7);
+            }
+        }
         ;
 
 ElifStatementRepeat
-        : ElifStatement
-        | ElifStatementRepeat ElifStatement
+        : ElifStatement {
+            if (!driver.check_only) {
+                $$ = new VectorNode();
+                $$->push_back($1);
+            }
+        }
+        | ElifStatementRepeat ElifStatement {
+            if (!driver.check_only) {
+                $$->push_back($2);
+            }
+        }
         ;
 
 ElifStatement
-        : kELIF Expression kTHEN Statement
-        | kELIF Expression kTHEN Statement kELSE Statement
-        ;
-
-ElseClause
-        : kELSE Statement
+        : kELIF Expression kTHEN Statement {
+            if (!driver.check_only) {
+                $$ = new ConditionStmtNode(Condition::If, $2, $4);
+            }
+        }
+        | kELIF Expression kTHEN Statement kELSE Statement {
+            if (!driver.check_only) {
+                $$ = new ConditionStmtNode(Condition::If, $2, $4);
+                ((ConditionStmtNode *) $$)
+                  ->set_else($6);
+            }
+        }
         ;
 
 CaseStatement
-        : kCASE Expression kEND
-        | kCASE Expression kELSE Statement kEND
-        | kCASE Expression WhenExpressionRepeat kEND
-        | kCASE Expression WhenExpressionRepeat kELSE Statement kEND
+        : kCASE Expression kEND {
+            if (!driver.check_only) {
+                $$ = new CaseStmtNode($2);
+            }
+        }
+        | kCASE Expression kELSE Statement kEND {
+            if (!driver.check_only) {
+                $$ = new CaseStmtNode($2);
+                ((CaseStmtNode *) $$)
+                  ->set_else($4);
+            }
+        }
+        | kCASE Expression WhenClauseRepeat kEND {
+            if (!driver.check_only) {
+                $$ = new CaseStmtNode($2);
+                ((CaseStmtNode *) $$)
+                  ->set_when($3);
+            }
+        }
+        | kCASE Expression WhenClauseRepeat kELSE Statement kEND {
+            if (!driver.check_only) {
+                $$ = new CaseStmtNode($2);
+                ((CaseStmtNode *) $$)
+                  ->set_when($3)
+                  ->set_else($5);
+            }
+        }
         ;
 
-WhenExpressionRepeat
-        : WhenExpression
-        | WhenExpressionRepeat WhenExpression
+WhenClauseRepeat
+        : WhenClause {
+            if (!driver.check_only) {
+                $$ = new VectorNode();
+                $$->push_back($1);
+            }
+        }
+        | WhenClauseRepeat WhenClause {
+            if (!driver.check_only) {
+                $$->push_back($2);
+            }
+        }
         ;
 
-WhenExpression
-        : kWHEN Expression kDO Statement
+WhenClause
+        : kWHEN Expression kDO Statement {
+            if (!driver.check_only) {
+                $$ = new WhenClauseNode($2, $4);
+            }
+        }
         ;
 
 ForStatement
-        : kFOR Expression kASC Expression kDO StatementForLoop
-        | kFOR Expression kASC Expression kSTEP Expression kDO StatementForLoop
-        | kFOR Expression kDESC Expression kDO StatementForLoop
-        | kFOR Expression kDESC Expression kSTEP Expression kDO StatementForLoop
-        | kFOR QueryOrigin kDO StatementForLoop
-        // | kFOREACH QueryOrigin kDO StatementForLoop
-        ;
-
-StatementForLoop
-        : Statement
-        | YieldStatement ';'
-        | kBREAK ';'
-        | kCONTINUE ';'
+        : kFOR Expression kASC Expression kDO Statement {
+            if (!driver.check_only) {
+                $$ = new ForStmtNode($2, $4, Loop::Ascending, $6);
+            }
+        }
+        | kFOR Expression kASC Expression kSTEP Expression kDO Statement {
+            if (!driver.check_only) {
+                $$ = new ForStmtNode($2, $4, Loop::Ascending, $8);
+                ((ForStmtNode *) $$)
+                  ->set_step($6);
+            }
+        }
+        | kFOR Expression kDESC Expression kDO Statement {
+            if (!driver.check_only) {
+                $$ = new ForStmtNode($2, $4, Loop::Descending, $6);
+            }
+        }
+        | kFOR Expression kDESC Expression kSTEP Expression kDO Statement {
+            if (!driver.check_only) {
+                $$ = new ForStmtNode($2, $4, Loop::Descending, $8);
+                ((ForStmtNode *) $$)
+                  ->set_step($6);
+            }
+        }
+        | kFOR QueryOrigin kDO Statement {
+            if (!driver.check_only) {
+                $$ = new ForStmtNode($2, 0, Loop::Iteration, $4);
+            }
+        }
+        // | kFOREACH QueryOrigin kDO Statement
         ;
 
 YieldStatement
-        : kYIELD
-        | kYIELD Expression
+        : kYIELD {
+            if (!driver.check_only) {
+                $$ = new ControlStmtNode(Control::Yield);
+            }
+        }
+        | kYIELD Expression {
+            if (!driver.check_only) {
+                $$ = new ControlStmtNode(Control::Yield, $2);
+            }
+        }
         ;
 
 LoopStatement
-        : kWHILE Expression kDO StatementForLoop
-        | kUNTIL Expression kDO StatementForLoop
+        : kWHILE Expression kDO Statement {
+            if (!driver.check_only) {
+                $$ = new LoopStmtNode($2, $4, Loop::While);
+            }
+        }
+        | kUNTIL Expression kDO Statement {
+            if (!driver.check_only) {
+                $$ = new LoopStmtNode($2, $4, Loop::Until);
+            }
+        }
         ;
 
 AsyncStatement
-        : kASYNC Statement
+        : kASYNC Statement {
+            if (!driver.check_only) {
+                $$ = new AsyncNode(AsyncType::Statement, $2);
+            }
+        }
         ;
 
 RaiseStatement
-        : kRAISE
-        | kRAISE String
-        | kRAISE FunctionCall
+        : kRAISE {
+            if (!driver.check_only) {
+                $$ = new ControlStmtNode(Control::Raise);
+            }
+        }
+        | kRAISE String {
+            if (!driver.check_only) {
+                $$ = new ControlStmtNode(Control::Raise, $2);
+            }
+        }
+        | kRAISE FunctionCall {
+            if (!driver.check_only) {
+                $$ = new ControlStmtNode(Control::Raise, $2);
+            }
+        }
         ;
 
-ExitStatement
-        : kEXIT
-        | kEXIT Expression
-        ;
+// ExitStatement
+//         : kEXIT {
+//             if (!driver.check_only) {
+//                 $$ = new ExitNode(0);
+//             }
+//         }
+//         | kEXIT Expression {
+//             if (!driver.check_only) {
+//                 $$ = new ExitNode($2);
+//             }
+//         }
+//         ;
 
 ReturnStatement
-        : kRETURN
-        | kRETURN Expression
+        : kRETURN {
+            if (!driver.check_only) {
+                $$ = new ControlStmtNode(Control::Return);
+            }
+        }
+        | kRETURN Expression {
+            if (!driver.check_only) {
+                $$ = new ControlStmtNode(Control::Return, $2);
+            }
+        }
         ;
 
 Expression
@@ -612,7 +1555,7 @@ Expression
             }
         }
         // TODO Criar nó: $2 then $1 else nil
-        | AssignExpr ControlExpr
+//         | AssignExpr ControlExpr
         | TernaryExpr {
             if (!driver.check_only) {
                 $$ = $1;
@@ -626,16 +1569,16 @@ Expression
         ;
 
 LambdaExpr // TODO Escolher apenas uma maneira de escrever lambda expressions
-        : kLAMBDA FormalParamList '(' Expression ')' {
+        : kDEF FormalParamList '(' Expression ')' {
             if (!driver.check_only) {
                 $$ = new LambdaExprNode($2, $4);
             }
         }
-        | kLAMBDA FormalParamList sDEF Expression {
-            if (!driver.check_only) {
-                $$ = new LambdaExprNode($2, $4);
-            }
-        }
+//         | kDEF FormalParamList sDEF Expression {
+//             if (!driver.check_only) {
+//                 $$ = new LambdaExprNode($2, $4);
+//             }
+//         }
         ;
 
 AssignExpr
@@ -674,25 +1617,19 @@ AssignValue
         }
         | kASYNC Expression {
             if (!driver.check_only) {
-                $$ = new AsyncNode($2);
+                $$ = new AsyncNode(AsyncType::Expression, $2);
             }
         }
-        | StatementBlock /* {
+        | StatementBlock {
             if (!driver.check_only) {
                 $$ = $1;
             }
-        } */
-        | kASYNC StatementBlock /* {
+        }
+        | kASYNC StatementBlock {
             if (!driver.check_only) {
-                $$ = new AsyncNode($2);
+                $$ = new AsyncNode(AsyncType::Statement, $2);
             }
-        } */
-        ;
-
-ControlExpr
-        : kIF Expression
-        | kUNLESS Expression
-        // | kFOR QueryOrigin kWHERE Expression
+        }
         ;
 
 TernaryExpr
@@ -706,6 +1643,7 @@ TernaryExpr
                 $$ = new TernaryExprNode(Operation::TernaryIf, $1, $3, $5);
             }
         }
+        // TODO Se houver double comparison, isso fica inútil
         | TernaryExpr kBETWEEN ComparisonExpr kAND ComparisonExpr {
             if (!driver.check_only) {
                 // TODO Criar nó : $1 GEE $3 AND $1 LEE $1
@@ -825,12 +1763,12 @@ RangeExpr
                 $$ = $1;
             }
         }
-        | RangeExpr sDOT2 AddExpr {
+        | RangeExpr sRGO AddExpr {
             if (!driver.check_only) {
                 $$ = new BinaryExprNode(Operation::BinaryRangeOut, $1, $3);
             }
         }
-        | RangeExpr sDOT3 AddExpr {
+        | RangeExpr sRGI AddExpr {
             if (!driver.check_only) {
                 $$ = new BinaryExprNode(Operation::BinaryRangeIn, $1, $3);
             }
@@ -953,7 +1891,7 @@ SuffixExpr
         }
         | SuffixExpr '[' Expression ':' ']' {
             if (!driver.check_only) {
-                $$ = new TernaryExprNode(Operation::TernarySlice, $$, $3, NULL);
+                $$ = new TernaryExprNode(Operation::TernarySlice, $$, $3, 0);
             }
         }
         | SuffixExpr '[' Expression ':' Expression ']' {
@@ -963,7 +1901,7 @@ SuffixExpr
         }
         | SuffixExpr '[' ':' Expression ']' {
             if (!driver.check_only) {
-                $$ = new TernaryExprNode(Operation::TernarySlice, $$, NULL, $4);
+                $$ = new TernaryExprNode(Operation::TernarySlice, $$, 0, $4);
             }
         }
         ;
@@ -1070,7 +2008,8 @@ Array
         /*
             from $4 where $6 select $2;
         */
-        | '[' Expression '|' QueryOrigin sDEF LogicExpr ']'
+        // | '[' Expression '|' QueryOrigin sDEF LogicExpr ']'
+        // | '[' Expression '|' QueryOrigin kWHERE LogicExpr ']'
         ;
 
 ExpressionList
@@ -1192,7 +2131,7 @@ QueryExpr
         }
         | kFROM QueryOrigin {
             if (!driver.check_only) {
-                $$ = new QueryNode($2, NULL);
+                $$ = new QueryNode($2, 0);
             }
         }
         ;
@@ -1389,4 +2328,3 @@ void Parser::error(const Parser::location_type& l, const std::string& m) {
 }
 
 } // LANG_NAMESPACE
-

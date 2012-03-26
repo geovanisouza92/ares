@@ -1,4 +1,6 @@
 
+/* Ares Programming Language */
+
 #ifndef LANG_VERSION_H
 #define LANG_VERSION_H
 

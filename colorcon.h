@@ -1,38 +1,43 @@
+/* Ares Programming Language */
 
 #ifndef LANG_COLORCON_H
 #define LANG_COLORCON_H
 
+//#define USE_COLORS
+
 /*  Coloring console syntax:
 
-        \033[x;y;zm
-        \033[am
-    
-    Where:
-        x is ???
-        y is attribute
-            0 - Normal
-            1 - Bold
-            4 - Underline
-        z is text color
-            30 - Black
-            31 - Red
-            32 - Green
-            33 - Yellow
-            34 - Blue
-            35 - Purple
-            36 - Cyan
-            37 - White
-        a (singular) is background color
-            0 - Reset
-            40 - Black
-            41 - Red
-            42 - Green
-            43 - Yellow
-            44 - Blue
-            45 - Purple
-            46 - Cyan
-            47 - White
-*/
+ \033[x;y;zm
+ \033[am
+
+ Where:
+ x is ???
+ y is attribute
+ 0 - Normal
+ 1 - Bold
+ 4 - Underline
+ z is text color
+ 30 - Black
+ 31 - Red
+ 32 - Green
+ 33 - Yellow
+ 34 - Blue
+ 35 - Purple
+ 36 - Cyan
+ 37 - White
+ a (singular) is background color
+ 0 - Reset
+ 40 - Black
+ 41 - Red
+ 42 - Green
+ 43 - Yellow
+ 44 - Blue
+ 45 - Purple
+ 46 - Cyan
+ 47 - White
+ */
+
+#ifdef USE_COLORS
 
 #define COLOR_RESET     "\033[0m"
 
@@ -76,5 +81,52 @@
 #define BACK_PURPLE     "\033[45m"
 #define BACK_CYAN       "\033[46m"
 #define BACK_WHITE      "\033[47m"
+
+#else
+
+#define COLOR_RESET     ""
+
+#define COLOR_BLACK     ""
+#define COLOR_BBLACK    ""
+#define COLOR_UBLACK    ""
+
+#define COLOR_RED       ""
+#define COLOR_BRED      ""
+#define COLOR_URED      ""
+
+#define COLOR_GREEN     ""
+#define COLOR_BGREEN    ""
+#define COLOR_UGREEN    ""
+
+#define COLOR_YELLOW    ""
+#define COLOR_BYELLOW   ""
+#define COLOR_UYELLOW   ""
+
+#define COLOR_BLUE      ""
+#define COLOR_BBLUE     ""
+#define COLOR_UBLUE     ""
+
+#define COLOR_PURPLE    ""
+#define COLOR_BPURPLE   ""
+#define COLOR_UPURPLE   ""
+
+#define COLOR_CYAN      ""
+#define COLOR_BCYAN     ""
+#define COLOR_UCYAN     ""
+
+#define COLOR_WHITE     ""
+#define COLOR_BWHITE    ""
+#define COLOR_UWHITE    ""
+
+#define BACK_BLACK      ""
+#define BACK_RED        ""
+#define BACK_GREEN      ""
+#define BACK_YELLOW     ""
+#define BACK_BLUE       ""
+#define BACK_PURPLE     ""
+#define BACK_CYAN       ""
+#define BACK_WHITE      ""
+
+#endif
 
 #endif

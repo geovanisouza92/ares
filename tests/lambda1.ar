@@ -1,10 +1,10 @@
 nums = 2..50;
 for i in 2..8 do
-  nums = filter(lambda (x) (x == i or x % i), nums);
+  nums = filter(def (x) (x == i or x % i), nums);
 print(nums);
 
 sentence = "It is raining cats and begings";
 words = sentence.split();
 words;
-lengths = words.map(lambda (word) (word.length()));
+lengths = words.map(def (word) (word.length()));
 lengths;

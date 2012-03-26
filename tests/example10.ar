@@ -8,7 +8,7 @@ module Sistema
     var Cidade: String;
     var Estabegin: String;
     
-    method Endereco()
+    def Endereco()
     begin
       # .ctor
     end
@@ -19,7 +19,7 @@ module Sistema
     var CodigoDaCidade: Integer;
     var Numero: String; # Adicionar pattern
     
-    method Telefone()
+    def Telefone()
     begin
       # .ctor
     end
@@ -29,7 +29,7 @@ module Sistema
     var Tipo: Integer;
     var Email: String; # Adicionar pattern
     
-    method Email()
+    def Email()
     begin
       # .ctor
     end
@@ -38,7 +38,7 @@ module Sistema
    class Pessoa
     var Nome: String; # invariants not nil
     
-    method Pessoa()
+    def Pessoa()
     begin
       # .ctor
     end  
@@ -49,7 +49,7 @@ module Sistema
     var DataNascimento: Date;
     var CPF: String; # Adicionar pattern
     
-    method PessoaFisica()
+    def PessoaFisica()
     begin
       # .ctor
     end
@@ -59,7 +59,7 @@ module Sistema
     var CNPJ: String; # Adicionar pattern
     var NomeFantasia: String;
     
-    method PessoaJuridica()
+    def PessoaJuridica()
     begin
       # .ctor
     end
@@ -70,7 +70,7 @@ module Sistema
     var Cargo: String;
     var DataAdmissao: Date;
     
-    method Funcionario()
+    def Funcionario()
     begin
       # .ctor
     end
@@ -79,7 +79,7 @@ module Sistema
   class Cliente > PessoaFisica
     var Tipo: Integer;
     
-    method Cliente()
+    def Cliente()
     begin
       # .ctor
     end
@@ -90,7 +90,7 @@ module Sistema
     var Descricao: String;
     var Preco: Float;
     
-    method Prato()
+    def Prato()
     begin
       # .ctor
     end
@@ -99,7 +99,7 @@ module Sistema
   class ItemDoPedido
     var Quantidade: Float;
     
-    method ItemDoPedido()
+    def ItemDoPedido()
     begin
       # .ctor
     end
@@ -109,7 +109,7 @@ module Sistema
     var DataHora: DateTime;
     var FormaDePagamento: Integer;
     
-    method Pedido()
+    def Pedido()
     begin
       # .ctor
     end

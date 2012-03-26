@@ -1,11 +1,11 @@
 module Fibonacci
 
-  method fib(num: Integer): Integer
+  def fib(num: Integer): Integer
   begin
     if 0 == num then
-      exit 0;
+      return 0;
     elif 1 == num then
-      exit 1;
+      return 1;
     else
       Result = fib(num - 1) + fib(num - 2);
   end

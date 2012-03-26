@@ -1,4 +1,6 @@
 
+Ares Programming Language
+
 TODO
 
     . Generate AST for productions
@@ -10,6 +12,7 @@ TODO
     . Enable parallel assignment's like "a, b = b, c"
     . Create context messages for errors from input
     . Add operator overloading
+    . Make performance tests between list comprehension and query expressions to generate new array's
     . Add Unicode support
 
 Changelog

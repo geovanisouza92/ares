@@ -2,7 +2,7 @@ module Banco
 
   class Cliente
     private
-    method SetCliente(Value: String)
+    def SetCliente(Value: String)
     begin
       if Value =~ ~/[0-9]{3}\.[0-9]{3}\.[0-9]{3}\-[0-9]{2}/ then
         FCPF = Value;
@@ -13,11 +13,11 @@ module Banco
     var CPF: String ;
     var Nome: String ; # invariants not nil
     var Telefone: String ;
-    method MostrarCPF(): Integer
+    def MostrarCPF(): Integer
     begin
       # Código
     end
-    method VerSaldo(Conta: Integer)
+    def VerSaldo(Conta: Integer)
     begin
       # Código
     end
@@ -26,11 +26,11 @@ module Banco
   class Conta
     var Agencia: Integer ;
     var NumeroConta: String ;
-    method Depositar(Valor: Float)
+    def Depositar(Valor: Float)
     begin
       # Código
     end
-    method Salbegin(Conta: Integer): Float
+    def Salbegin(Conta: Integer): Float
     begin
       # Código
     end
@@ -38,7 +38,7 @@ module Banco
 
   class ContaPoupanca > Conta
     var DiaDeposito: Integer ;
-    method VerLucro(): Float
+    def VerLucro(): Float
     begin
       # Código
     end

@@ -1,4 +1,7 @@
 #! /bin/sh
+
+# Ares Programming Language
+
 EXT=ar
 
 cd tests

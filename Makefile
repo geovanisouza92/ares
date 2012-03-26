@@ -1,4 +1,6 @@
 
+# Ares Programming Language
+
 DEBUG_MODE=1
 USE_CLANG=1
 
@@ -38,7 +40,7 @@ LFLAGS=
 BINARY=arc
 EXT=ar
 BINFLAGS=-c --verbose=2	
-MODULES=st.o stoql.o parser.o scanner.o driver.o main.o
+MODULES=st.o stoql.o stmt.o parser.o scanner.o driver.o main.o
 CLEAN=parser.cpp parser.h scanner.cpp *.hh *.out* *.results *.diff
 TEST_MODULES=tests/*.$(EXT)
 

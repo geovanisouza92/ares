@@ -1,3 +1,6 @@
 
 six = (one = 1) + (two = 2) + (three = 3);
 
+# var s = [ 2 * x | x in 0 ... 100 => x ** 2 > 3 ];
+var s = from x in 0 ... 100 where x ** 2 > 3 select 2 * x;
+
