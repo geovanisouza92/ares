@@ -114,7 +114,7 @@ using namespace SyntaxTree;
 %token  kRIGHT      "right"
 %token  kSEALED     "sealed"
 %token  kSELECT     "select"
-%token  kSELF       "self"
+// %token  kSELF       "self"
 %token  kSET        "set"
 %token  kSIGNAL     "signal"
 %token  kSKIP       "skip"
@@ -201,19 +201,15 @@ using namespace SyntaxTree;
 %type   <v_node>    QueryBody
 %type   <v_node>    QueryOrigin
 %type   <v_node>    QueryBodyClause
-%type   <v_node>    WhereClause
 %type   <v_node>    JoinClause
-%type   <v_node>    OrderByClause
 %type   <v_node>    OrderingItem
 %type   <v_node>    RangeClause
 %type   <v_node>    SelectsOrGroupClause
-%type   <v_node>    GroupByClause
-%type   <v_node>    SelectClause
 %type   <v_node>    Expression
 %type   <v_node>    LoopStatement
 %type   <v_node>    RetryStatement
 %type   <v_node>    YieldStatement
-%type   <v_node>    AsyncStatement
+// %type   <v_node>    AsyncStatement
 %type   <v_node>    RaiseStatement
 %type   <v_node>    ReturnStatement
 %type   <v_node>    ForStatement
@@ -239,7 +235,6 @@ using namespace SyntaxTree;
 %type   <v_node>    Getter
 %type   <v_node>    Setter
 %type   <v_node>    VisibilityStatement
-%type   <v_node>    IncludeStatement
 %type   <v_node>    ClassDecl
 %type   <v_node>    ImportStatement
 %type   <v_node>    ModuleDecl
@@ -332,11 +327,11 @@ Statement
                 $$ = $1;
             }
         }
-        | AsyncStatement {
-            if (!driver.check_only) {
-                $$ = $1;
-            }
-        }
+        // | AsyncStatement {
+        //     if (!driver.check_only) {
+        //         $$ = $1;
+        //     }
+        // }
         | YieldStatement ';' {
             if (!driver.check_only) {
                 $$ = $1;
@@ -367,11 +362,12 @@ Statement
                 $$ = $1;
             }
         }
-        | IncludeStatement ';' {
+        | kINCLUDE QualifiedId ';' /* {
+            // TODO Chamar comando do driver
             if (!driver.check_only) {
                 $$ = $1;
             }
-        }
+        } */
         | VisibilityStatement {
             if (!driver.check_only) {
                 $$ = $1;
@@ -460,14 +456,6 @@ ImportStatement
         }
         ;
 
-IncludeStatement
-        : kINCLUDE QualifiedId {
-            if (!driver.check_only) {
-                $$ = new IncludeStmtNode($2);
-            }
-        }
-        ;
-
 ClassDecl
         : kCLASS Identifier {
             if (!driver.check_only) {
@@ -526,6 +514,74 @@ ClassDecl
                   ->set_heritance($6)
                   ->add_specifier(Specifier::Abstract)
                   ->add_specifier(Specifier::Sealed);
+            }
+        }
+        | kASYNC kCLASS Identifier {
+            if (!driver.check_only) {
+                $$ = new ClassDeclNode($3);
+                ((ClassDeclNode *) $$)
+                  ->add_specifier(Specifier::Async);
+            }
+        }
+        | kASYNC kCLASS Identifier '>' QualifiedId { // IdentifierList
+            if (!driver.check_only) {
+                $$ = new ClassDeclNode($3);
+                ((ClassDeclNode *) $$)
+                  ->set_heritance($5)
+                  ->add_specifier(Specifier::Async);
+            }
+        }
+        | kSEALED kASYNC kCLASS Identifier {
+            if (!driver.check_only) {
+                $$ = new ClassDeclNode($4);
+                ((ClassDeclNode *) $$)
+                  ->add_specifier(Specifier::Sealed)
+                  ->add_specifier(Specifier::Async);
+            }
+        }
+        | kSEALED kASYNC kCLASS Identifier '>' QualifiedId { // IdentifierList
+            if (!driver.check_only) {
+                $$ = new ClassDeclNode($4);
+                ((ClassDeclNode *) $$)
+                  ->set_heritance($6)
+                  ->add_specifier(Specifier::Sealed)
+                  ->add_specifier(Specifier::Async);
+            }
+        }
+        | kABSTRACT kASYNC kCLASS Identifier {
+            if (!driver.check_only) {
+                $$ = new ClassDeclNode($4);
+                ((ClassDeclNode *) $$)
+                  ->add_specifier(Specifier::Abstract)
+                  ->add_specifier(Specifier::Async);
+            }
+        }
+        | kABSTRACT kASYNC kCLASS Identifier '>' QualifiedId { // IdentifierList
+            if (!driver.check_only) {
+                $$ = new ClassDeclNode($4);
+                ((ClassDeclNode *) $$)
+                  ->set_heritance($6)
+                  ->add_specifier(Specifier::Abstract)
+                  ->add_specifier(Specifier::Async);
+            }
+        }
+        | kABSTRACT kSEALED kASYNC kCLASS Identifier {
+            if (!driver.check_only) {
+                $$ = new ClassDeclNode($5);
+                ((ClassDeclNode *) $$)
+                  ->add_specifier(Specifier::Abstract)
+                  ->add_specifier(Specifier::Sealed)
+                  ->add_specifier(Specifier::Async);
+            }
+        }
+        | kABSTRACT kSEALED kASYNC kCLASS Identifier '>' QualifiedId { // IdentifierList
+            if (!driver.check_only) {
+                $$ = new ClassDeclNode($5);
+                ((ClassDeclNode *) $$)
+                  ->set_heritance($7)
+                  ->add_specifier(Specifier::Abstract)
+                  ->add_specifier(Specifier::Sealed)
+                  ->add_specifier(Specifier::Async);
             }
         }
         ;
@@ -848,6 +904,82 @@ FunctionDecl
                   ->add_specifier(Specifier::Class);
             }
         }
+        | kABSTRACT kASYNC kDEF QualifiedId FormalParamList {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($4, $5);
+                ((FunctionDeclNode *) $$)
+                  ->add_specifier(Specifier::Abstract)
+                  ->add_specifier(Specifier::Async);
+            }
+        }
+        | kABSTRACT kASYNC kDEF QualifiedId FormalParamList InterceptClause {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($4, $5);
+                ((FunctionDeclNode *) $$)
+                  ->set_intercept($6)
+                  ->add_specifier(Specifier::Abstract)
+                  ->add_specifier(Specifier::Async);
+            }
+        }
+        | kABSTRACT kASYNC kDEF QualifiedId FormalParamList ReturnType {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($4, $5);
+                ((FunctionDeclNode *) $$)
+                  ->set_return($6)
+                  ->add_specifier(Specifier::Abstract)
+                  ->add_specifier(Specifier::Async);
+            }
+        }
+        | kABSTRACT kASYNC kDEF QualifiedId FormalParamList ReturnType InterceptClause {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($4, $5);
+                ((FunctionDeclNode *) $$)
+                  ->set_return($6)
+                  ->set_intercept($7)
+                  ->add_specifier(Specifier::Abstract)
+                  ->add_specifier(Specifier::Async);
+            }
+        }
+        | kABSTRACT kCLASS kASYNC kDEF QualifiedId FormalParamList {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($5, $6);
+                ((FunctionDeclNode *) $$)
+                  ->add_specifier(Specifier::Abstract)
+                  ->add_specifier(Specifier::Class)
+                  ->add_specifier(Specifier::Async);
+            }
+        }
+        | kABSTRACT kCLASS kASYNC kDEF QualifiedId FormalParamList InterceptClause {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($5, $6);
+                ((FunctionDeclNode *) $$)
+                  ->set_intercept($7)
+                  ->add_specifier(Specifier::Abstract)
+                  ->add_specifier(Specifier::Class)
+                  ->add_specifier(Specifier::Async);
+            }
+        }
+        | kABSTRACT kCLASS kASYNC kDEF QualifiedId FormalParamList ReturnType {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($5, $6);
+                ((FunctionDeclNode *) $$)
+                  ->set_return($7)
+                  ->add_specifier(Specifier::Abstract)
+                  ->add_specifier(Specifier::Class)
+                  ->add_specifier(Specifier::Async);
+            }
+        }
+        | kABSTRACT kCLASS kASYNC kDEF QualifiedId FormalParamList ReturnType InterceptClause {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($5, $6);
+                ((FunctionDeclNode *) $$)
+                  ->set_return($7)
+                  ->set_intercept($8)
+                  ->add_specifier(Specifier::Abstract)
+                  ->add_specifier(Specifier::Class)
+                  ->add_specifier(Specifier::Async);
+            }
+        }
         ;
 
 RealFunctionDecl
@@ -908,6 +1040,74 @@ RealFunctionDecl
                   ->set_return($5)
                   ->set_intercept($6)
                   ->add_specifier(Specifier::Class);
+            }
+        }
+        | kASYNC kDEF QualifiedId FormalParamList {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($3, $4);
+                ((FunctionDeclNode *) $$)
+                  ->add_specifier(Specifier::Async);
+            }
+        }
+        | kASYNC kDEF QualifiedId FormalParamList InterceptClause {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($3, $4);
+                ((FunctionDeclNode *) $$)
+                  ->set_intercept($5)
+                  ->add_specifier(Specifier::Async);
+            }
+        }
+        | kASYNC kDEF QualifiedId FormalParamList ReturnType {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($3, $4);
+                ((FunctionDeclNode *) $$)
+                  ->set_return($5)
+                  ->add_specifier(Specifier::Async);
+            }
+        }
+        | kASYNC kDEF QualifiedId FormalParamList ReturnType InterceptClause {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($3, $4);
+                ((FunctionDeclNode *) $$)
+                  ->set_return($5)
+                  ->set_intercept($6)
+                  ->add_specifier(Specifier::Async);
+            }
+        }
+        | kCLASS kASYNC kDEF QualifiedId FormalParamList {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($4, $5);
+                ((FunctionDeclNode *) $$)
+                  ->add_specifier(Specifier::Class)
+                  ->add_specifier(Specifier::Async);
+            }
+        }
+        | kCLASS kASYNC kDEF QualifiedId FormalParamList InterceptClause {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($4, $5);
+                ((FunctionDeclNode *) $$)
+                  ->set_intercept($6)
+                  ->add_specifier(Specifier::Class)
+                  ->add_specifier(Specifier::Async);
+            }
+        }
+        | kCLASS kASYNC kDEF QualifiedId FormalParamList ReturnType {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($4, $5);
+                ((FunctionDeclNode *) $$)
+                  ->set_return($6)
+                  ->add_specifier(Specifier::Class)
+                  ->add_specifier(Specifier::Async);
+            }
+        }
+        | kCLASS kASYNC kDEF QualifiedId FormalParamList ReturnType InterceptClause {
+            if (!driver.check_only) {
+                $$ = new FunctionDeclNode($4, $5);
+                ((FunctionDeclNode *) $$)
+                  ->set_return($6)
+                  ->set_intercept($7)
+                  ->add_specifier(Specifier::Class)
+                  ->add_specifier(Specifier::Async);
             }
         }
         ;
@@ -1282,16 +1482,16 @@ RetryStatement
                 $$ = new ControlStmtNode(Control::Retry);
             }
         }
-        | kRETRY QualifiedId {
-            if (!driver.check_only) {
-                $$ = new ControlStmtNode(Control::Retry, $2);
-            }
-        }
-        | kRETRY INTEGER {
-            if (!driver.check_only) {
-                $$ = new ControlStmtNode(Control::Retry, new IntegerNode($2));
-            }
-        }
+//         | kRETRY QualifiedId {
+//             if (!driver.check_only) {
+//                 $$ = new ControlStmtNode(Control::Retry, $2);
+//             }
+//         }
+//         | kRETRY INTEGER {
+//             if (!driver.check_only) {
+//                 $$ = new ControlStmtNode(Control::Retry, new IntegerNode($2));
+//             }
+//         }
         ;
 
 ConditionalStatement
@@ -1491,13 +1691,13 @@ LoopStatement
         }
         ;
 
-AsyncStatement
-        : kASYNC Statement {
-            if (!driver.check_only) {
-                $$ = new AsyncNode(AsyncType::Statement, $2);
-            }
-        }
-        ;
+// AsyncStatement
+//         : kASYNC Statement {
+//             if (!driver.check_only) {
+//                 $$ = new AsyncNode(AsyncType::Statement, $2);
+//             }
+//         }
+//         ;
 
 RaiseStatement
         : kRAISE {
@@ -1516,19 +1716,6 @@ RaiseStatement
             }
         }
         ;
-
-// ExitStatement
-//         : kEXIT {
-//             if (!driver.check_only) {
-//                 $$ = new ExitNode(0);
-//             }
-//         }
-//         | kEXIT Expression {
-//             if (!driver.check_only) {
-//                 $$ = new ExitNode($2);
-//             }
-//         }
-//         ;
 
 ReturnStatement
         : kRETURN {
@@ -1554,8 +1741,7 @@ Expression
                 $$ = $1;
             }
         }
-        // TODO Criar nó: $2 then $1 else nil
-//         | AssignExpr ControlExpr
+//         | AssignExpr ControlExpr // TODO Criar nó: $2 then $1 else nil
         | TernaryExpr {
             if (!driver.check_only) {
                 $$ = $1;
@@ -1568,7 +1754,7 @@ Expression
         }
         ;
 
-LambdaExpr // TODO Escolher apenas uma maneira de escrever lambda expressions
+LambdaExpr
         : kDEF FormalParamList '(' Expression ')' {
             if (!driver.check_only) {
                 $$ = new LambdaExprNode($2, $4);
@@ -1912,11 +2098,11 @@ Value
                 $$ = new NilNode();
             }
         }
-        | kSELF {
-            if (!driver.check_only) {
-                $$ = new IdentifierNode("self");
-            }
-        }
+//         | kSELF {
+//             if (!driver.check_only) {
+//                 $$ = new IdentifierNode("self");
+//             }
+//         }
         | kFALSE {
             if (!driver.check_only) {
                 $$ = new BooleanNode(false);
@@ -1994,20 +2180,12 @@ Array
                 $$ = new ArrayNode($2);
             }
         }
-        // | '[' NamedExpressionList ']'
+        // | '[' NamedExpressionList ']' // Alternativa para criação de arranjos associativos
         | '[' ']' {
             if (!driver.check_only) {
                 $$ = new ArrayNode();
             }
         }
-        /*
-            for $4 do
-                if $6 then
-                    yield $2;
-        */
-        /*
-            from $4 where $6 select $2;
-        */
         // | '[' Expression '|' QueryOrigin sDEF LogicExpr ']'
         // | '[' Expression '|' QueryOrigin kWHERE LogicExpr ']'
         ;
@@ -2120,7 +2298,11 @@ ParamValue
                 $$ = $1;
             }
         }
-        | StatementBlock
+        | StatementBlock {
+            if (!driver.check_only) {
+                $$ = $1;
+            }
+        }
         ;
 
 QueryExpr
@@ -2184,9 +2366,9 @@ QueryBodyClauseRepeat
         ;
 
 QueryBodyClause
-        : WhereClause {
+        : kWHERE LogicExpr {
             if (!driver.check_only) {
-                $$ = $1;
+                $$ = new WhereNode($2);
             }
         }
         | JoinClause {
@@ -2194,22 +2376,14 @@ QueryBodyClause
                 $$ = $1;
             }
         }
-        | OrderByClause {
+        | kORDER kBY OrderingItemList {
             if (!driver.check_only) {
-                $$ = $1;
+                $$ = new OrderByNode($3);
             }
         }
         | RangeClause {
             if (!driver.check_only) {
                 $$ = $1;
-            }
-        }
-        ;
-
-WhereClause
-        : kWHERE LogicExpr {
-            if (!driver.check_only) {
-                $$ = new WhereNode($2);
             }
         }
         ;
@@ -2228,14 +2402,6 @@ JoinClause
         | kRIGHT kJOIN QueryOrigin kON LogicExpr {
             if (!driver.check_only) {
                 $$ = new JoinNode($3, $5, JoinDirection::Right);
-            }
-        }
-        ;
-
-OrderByClause
-        : kORDER kBY OrderingItemList {
-            if (!driver.check_only) {
-                $$ = new OrderByNode($3);
             }
         }
         ;
@@ -2291,28 +2457,12 @@ RangeClause
         ;
 
 SelectsOrGroupClause
-        : GroupByClause {
-            if (!driver.check_only) {
-                $$ = $1;
-            }
-        }
-        | SelectClause {
-            if (!driver.check_only) {
-                $$ = $1;
-            }
-        }
-        ;
-
-GroupByClause
         : kGROUP kBY Expression {
             if (!driver.check_only) {
                 $$ = new GroupByNode($3);
             }
         }
-        ;
-
-SelectClause
-        : kSELECT ExpressionList {
+        | kSELECT ExpressionList {
             if (!driver.check_only) {
                 $$ = new SelectNode($2);
             }

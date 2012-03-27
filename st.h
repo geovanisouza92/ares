@@ -13,6 +13,7 @@ using namespace std;
 
 #include "enum.h"
 
+#define ENVIRONMENT
 #define TAB out << string(d * 2, ' ')
 
 namespace LANG_NAMESPACE {

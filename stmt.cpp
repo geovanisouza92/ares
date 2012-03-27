@@ -23,8 +23,22 @@ ConditionStmtNode::set_else(SyntaxNode * e) {
 	return this;
 }
 
-void ConditionStmtNode::print_using(ostream & out, unsigned b) {
-	// TODO
+void ConditionStmtNode::print_using(ostream & out, unsigned d) {
+	TAB << "Condition =>" << endl;
+	cond_stmt->print_using(out, d + 2);
+	TAB << "Then =>" << endl;
+	then_stmt->print_using(out, d + 2);
+	if (elif_stmt->size() > 0) {
+		for (VectorNode::iterator elif = elif_stmt->begin();
+				elif < elif_stmt->end(); elif++) {
+			TAB << "Elif =>" << endl;
+			(*elif)->print_using(out, d + 2);
+		}
+	}
+	if (else_stmt != 0) {
+		TAB << "Else =>" << endl;
+		else_stmt->print_using(out, d + 2);
+	}
 }
 
 CaseStmtNode::CaseStmtNode(SyntaxNode * c) :
@@ -46,7 +60,19 @@ CaseStmtNode::set_else(SyntaxNode * e) {
 }
 
 void CaseStmtNode::print_using(ostream & out, unsigned d) {
-	// TODO
+	TAB << "Case =>" << endl;
+	case_stmt->print_using(out, d + 1);
+	if (when_stmt->size() > 0) {
+		for (VectorNode::iterator when = when_stmt->begin();
+				when < when_stmt->end(); when++) {
+//			TAB << "When =>" << endl;
+			(*when)->print_using(out, d + 1);
+		}
+	}
+	if (else_stmt != 0) {
+		TAB << "Else =>" << endl;
+		else_stmt->print_using(out, d + 1);
+	}
 }
 
 WhenClauseNode::WhenClauseNode(SyntaxNode * w, SyntaxNode * b) :
@@ -54,7 +80,10 @@ WhenClauseNode::WhenClauseNode(SyntaxNode * w, SyntaxNode * b) :
 }
 
 void WhenClauseNode::print_using(ostream & out, unsigned d) {
-	// TODO
+	TAB << "When =>" << endl;
+	when->print_using(out, d + 1);
+	TAB << "Block =>" << endl;
+	block->print_using(out, d + 1);
 }
 
 ForStmtNode::ForStmtNode(SyntaxNode * l, SyntaxNode * r, Loop::Operation o,
@@ -69,7 +98,26 @@ ForStmtNode::set_step(SyntaxNode * s) {
 }
 
 void ForStmtNode::print_using(ostream & out, unsigned d) {
-	// TODO
+	switch (op) {
+	case Loop::Ascending:
+		TAB << "Ascending expression from =>" << endl;
+		break;
+	case Loop::Descending:
+		TAB << "Descending expression from =>" << endl;
+		break;
+	case Loop::Iteration:
+		TAB << "Iteration expression from =>" << endl;
+		break;
+	}
+	lhs->print_using(out, d + 1);
+	TAB << "To =>" << endl;
+	rhs->print_using(out, d + 1);
+	if (step != 0) {
+		TAB << "By step =>" << endl;
+		step->print_using(out, d + 1);
+	}
+	TAB << "Block =>" << endl;
+	block->print_using(out, d + 1);
 }
 
 LoopStmtNode::LoopStmtNode(SyntaxNode * e, SyntaxNode * b, Loop::Operation o) :
@@ -77,7 +125,17 @@ LoopStmtNode::LoopStmtNode(SyntaxNode * e, SyntaxNode * b, Loop::Operation o) :
 }
 
 void LoopStmtNode::print_using(ostream & out, unsigned d) {
-	// TODO
+	switch (op) {
+	case Loop::While:
+		TAB << "While expressio =>" << endl;
+		break;
+	case Loop::Until:
+		TAB << "Until expressio =>" << endl;
+		break;
+	}
+	expr->print_using(out, d + 1);
+	TAB << "Block =>" << endl;
+	block->print_using(out, d + 1);
 }
 
 ControlStmtNode::ControlStmtNode(Control::Operation o) :
@@ -89,7 +147,50 @@ ControlStmtNode::ControlStmtNode(Control::Operation o, SyntaxNode * e) :
 }
 
 void ControlStmtNode::print_using(ostream & out, unsigned d) {
-	// TODO
+	switch (op) {
+	case Control::Break:
+		TAB << "Break statement" << endl;
+		break;
+	case Control::Continue:
+		TAB << "Continue statement" << endl;
+		break;
+	case Control::Private:
+		TAB << "Alter visibility of below items to PRIVATE" << endl;
+		break;
+	case Control::Protected:
+		TAB << "Alter visibility of below items to PROTECTED" << endl;
+		break;
+	case Control::Public:
+		TAB << "Alter visibility of below items to PUBLIC" << endl;
+		break;
+	case Control::Raise:
+		if (expr != 0) {
+			TAB << "Raise statement with expression =>" << endl;
+			expr->print_using(out, d + 1);
+		} else {
+			TAB << "Raise statement" << endl;
+		}
+		break;
+	case Control::Retry:
+		TAB << "Retry statement" << endl;
+		break;
+	case Control::Return:
+		if (expr != 0) {
+			TAB << "Return statement with expression =>" << endl;
+			expr->print_using(out, d + 1);
+		} else {
+			TAB << "Return statement" << endl;
+		}
+		break;
+	case Control::Yield:
+		if (expr != 0) {
+			TAB << "Yield statement with expression =>" << endl;
+			expr->print_using(out, d + 1);
+		} else {
+			TAB << "Yield statement" << endl;
+		}
+		break;
+	}
 }
 
 BlockStmtNode::BlockStmtNode(VectorNode * s) :
@@ -122,7 +223,31 @@ BlockStmtNode::set_rescue(VectorNode * r) {
 }
 
 void BlockStmtNode::print_using(ostream & out, unsigned d) {
-	// TODO
+	if (require != 0) {
+		for (VectorNode::iterator req = require->begin(); req < require->end();
+				req++) {
+			TAB << "Require =>" << endl;
+			(*req)->print_using(out, d + 1);
+		}
+	}
+	for (VectorNode::iterator stmt = stmts->begin(); stmt < stmts->end();
+			stmt++) {
+		(*stmt)->print_using(out, d + 1);
+	}
+	if (rescue != 0) {
+		for (VectorNode::iterator res = rescue->begin(); res < rescue->end();
+				res++) {
+			TAB << "Rescue =>" << endl;
+			(*res)->print_using(out, d + 1);
+		}
+	}
+	if (ensure != 0) {
+		for (VectorNode::iterator ens = ensure->begin(); ens < ensure->end();
+				ens++) {
+			TAB << "Ensure =>" << endl;
+			(*ens)->print_using(out, d + 1);
+		}
+	}
 }
 
 ValidationNode::ValidationNode(SyntaxNode * e, SyntaxNode * r) :
@@ -130,7 +255,12 @@ ValidationNode::ValidationNode(SyntaxNode * e, SyntaxNode * r) :
 }
 
 void ValidationNode::print_using(ostream & out, unsigned d) {
-	// TODO
+	TAB << "Validation require =>" << endl;
+	expr->print_using(out, d + 1);
+	if (raise != 0) {
+		TAB << "Raising the exception" << endl;
+		raise->print_using(out, d + 1);
+	}
 }
 
 VarDeclNode::VarDeclNode(VectorNode * v) :
@@ -138,7 +268,9 @@ VarDeclNode::VarDeclNode(VectorNode * v) :
 }
 
 void VarDeclNode::print_using(ostream & out, unsigned d) {
-	// TODO
+	TAB << "Declare variables =>" << endl;
+	for (VectorNode::iterator var = vars->begin(); var < vars->end(); var++)
+		(*var)->print_using(out, d + 1);
 }
 
 VariableNode::VariableNode(SyntaxNode * n) :
@@ -164,7 +296,20 @@ VariableNode::set_invariants(SyntaxNode * i) {
 }
 
 void VariableNode::print_using(ostream & out, unsigned d) {
-	// TODO
+	TAB << "Element named =>" << endl;
+	name->print_using(out, d + 1);
+	if (type != 0) {
+		TAB << "Of type" << endl;
+		type->print_using(out, d + 1);
+	}
+	if (initial_value != 0) {
+		TAB << "With initial value =>" << endl;
+		initial_value->print_using(out, d + 1);
+	}
+	if (invariants != 0) {
+		TAB << "With invariants condition =>" << endl;
+		invariants->print_using(out, d + 1);
+	}
 }
 
 ConstDeclNode::ConstDeclNode(VectorNode * v) :
@@ -172,7 +317,10 @@ ConstDeclNode::ConstDeclNode(VectorNode * v) :
 }
 
 void ConstDeclNode::print_using(ostream & out, unsigned d) {
-	// TODO
+	TAB << "Declare constants =>" << endl;
+	for (VectorNode::iterator cons = consts->begin(); cons < consts->end();
+			cons++)
+		(*cons)->print_using(out, d + 1);
 }
 
 InterceptNode::InterceptNode(Intercept::Type t, VectorNode * i) :
@@ -180,7 +328,21 @@ InterceptNode::InterceptNode(Intercept::Type t, VectorNode * i) :
 }
 
 void InterceptNode::print_using(ostream & out, unsigned d) {
-	// TODO
+	switch (type) {
+	case Intercept::After:
+		TAB << "Intercept after =>" << endl;
+		break;
+	case Intercept::Before:
+		TAB << "Intercept before =>" << endl;
+		break;
+	case Intercept::Signal:
+		TAB << "Intercept signals =>" << endl;
+		break;
+	}
+	for (VectorNode::iterator item = items->begin(); item < items->end();
+			item++) {
+		(*item)->print_using(out, d + 1);
+	}
 }
 
 FunctionDeclNode::FunctionDeclNode(SyntaxNode * n, VectorNode * p) :
@@ -212,7 +374,32 @@ FunctionDeclNode::add_stmt(SyntaxNode * s) {
 }
 
 void FunctionDeclNode::print_using(ostream & out, unsigned d) {
-	// TODO
+	TAB << "Function named =>" << endl;
+	name->print_using(out, d + 1);
+	if (specifiers.size() > 0) {
+		for (vector<Specifier::Flag>::iterator spec = specifiers.begin();
+				spec < specifiers.end(); spec++)
+			TAB << "With specifier => " << Specifier::get_enum_name(*spec)
+					<< endl;
+	}
+	if (params->size() > 0) {
+		TAB << "With parameters =>" << endl;
+		for (VectorNode::iterator param = params->begin();
+				param < params->end(); param++) {
+			(*param)->print_using(out, d + 1);
+		}
+	} else
+		TAB << "Without parameters" << endl;
+	if (return_type != 0) {
+		TAB << "With return type =>" << endl;
+		return_type->print_using(out, d + 1);
+	}
+	if (intercept != 0)
+		intercept->print_using(out, d + 1);
+	if (stmt != 0) {
+		TAB << "Block =>" << endl;
+		stmt->print_using(out, d + 1);
+	}
 }
 
 EventDeclNode::EventDeclNode(SyntaxNode * n) :
@@ -232,7 +419,14 @@ EventDeclNode::set_initial_value(SyntaxNode * v) {
 }
 
 void EventDeclNode::print_using(ostream & out, unsigned d) {
-	// TODO
+	TAB << "Event named =>" << endl;
+	name->print_using(out, d + 1);
+	if (intercept != 0)
+		intercept->print_using(out, d + 1);
+	if (initial_value != 0) {
+		TAB << "With initial value =>" << endl;
+		initial_value->print_using(out, d + 1);
+	}
 }
 
 AttrDeclNode::AttrDeclNode(SyntaxNode * n) :
@@ -270,7 +464,28 @@ AttrDeclNode::set_invariants(SyntaxNode * i) {
 }
 
 void AttrDeclNode::print_using(ostream & out, unsigned d) {
-	// TODO
+	TAB << "Attribute named =>" << endl;
+	name->print_using(out, d + 1);
+	if (return_type != 0) {
+		TAB << "Of type =>" << endl;
+		return_type->print_using(out, d + 1);
+	}
+	if (initial_value != 0) {
+		TAB << "With initial value =>" << endl;
+		initial_value->print_using(out, d + 1);
+	}
+	if (invariants != 0) {
+		TAB << "With invariants condition =>" << endl;
+		invariants->print_using(out, d + 1);
+	}
+	if (getter != 0) {
+		TAB << "Getting with =>" << endl;
+		getter->print_using(out, d + 1);
+	}
+	if (setter != 0) {
+		TAB << "Getting with =>" << endl;
+		setter->print_using(out, d + 1);
+	}
 }
 
 IncludeStmtNode::IncludeStmtNode(SyntaxNode * n) :
@@ -305,7 +520,24 @@ ClassDeclNode::add_stmts(VectorNode * s) {
 }
 
 void ClassDeclNode::print_using(ostream & out, unsigned d) {
-	// TODO
+	TAB << "Class named =>" << endl;
+	name->print_using(out, d + 1);
+	if (heritance != 0) {
+		TAB << "Heritance of =>" << endl;
+		heritance->print_using(out, d + 1);
+	}
+	if (specifiers.size() > 0) {
+		for (vector<Specifier::Flag>::iterator spec = specifiers.begin();
+				spec < specifiers.end(); spec++)
+			TAB << "With specifier => " << Specifier::get_enum_name(*spec)
+					<< endl;
+	}
+	if (stmts->size() > 0) {
+		for (VectorNode::iterator stmt = stmts->begin(); stmt < stmts->end();
+				stmt++) {
+			(*stmt)->print_using(out, d + 1);
+		}
+	}
 }
 
 ImportStmtNode::ImportStmtNode(VectorNode * m) :
@@ -334,7 +566,14 @@ ModuleNode::add_stmts(VectorNode * s) {
 }
 
 void ModuleNode::print_using(ostream & out, unsigned d) {
-	// TODO
+	TAB << "Module named =>" << endl;
+	name->print_using(out, d + 1);
+	if (stmts->size() > 0) {
+		for (VectorNode::iterator stmt = stmts->begin(); stmt < stmts->end();
+				stmt++) {
+			(*stmt)->print_using(out, d + 1);
+		}
+	}
 }
 
 } // SyntaxTree

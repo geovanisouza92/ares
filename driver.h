@@ -18,8 +18,6 @@ namespace fs = boost::filesystem3;
 #include "console.h"
 #include "scanner.h"
 
-#define ENVIRO
-
 namespace LANG_NAMESPACE {
 
 class Driver {
@@ -30,7 +28,7 @@ public:
 	unsigned lines, total_lines;
 	unsigned errors, warnings, hints;
 	class Scanner * lexer;
-#ifdef ENVIRO
+#ifdef ENVIRONMENT
 	class SyntaxTree::Environment * Env;
 #endif
 public:

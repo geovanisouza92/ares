@@ -19,7 +19,7 @@ Driver::Driver() :
 		origin(LANG_SHELL_NAME), check_only(false), verbose_mode(
 				VerboseMode::ErrorsAndWarnings), lines(0), total_lines(0), errors(
 				0), warnings(0), hints(0) {
-#ifdef ENVIRO
+#ifdef ENVIRONMENT
 	Env = new SyntaxTree::Environment(0);
 #endif
 }
@@ -28,7 +28,7 @@ Driver::~Driver() {
 }
 
 bool Driver::parse_stream(istream& in, const string& sname) {
-#ifdef ENVIRO 
+#ifdef ENVIRONMENT
 	Env->clear();
 #endif
 	origin = sname;
@@ -39,11 +39,11 @@ bool Driver::parse_stream(istream& in, const string& sname) {
 		this->lexer = &scanner;
 		Parser parser(*this);
 #if defined(LANG_DEBUG)
-		cout << "Setting debug mode..." << endl;
-		if (verbose_mode == VerboseMode::AllForDebug)
+//		cout << "Setting debug mode..." << endl;
+		if (verbose_mode == VerboseMode::AllForDebug) {
 			scanner.set_debug(true);
-		if (verbose_mode == VerboseMode::AllForDebug)
 			parser.set_debug_level(true);
+		}
 #endif
 		result = parser.parse() == 0;
 		reset_lines();
@@ -150,7 +150,7 @@ void Driver::make_things_happen(FinallyAction::Action action, ostream& out) {
 		if (errors == 0
 				&& verbose_mode >= VerboseMode::ErrorsWarningsAndHints) {
 			syntax_ok_for(origin);
-#ifdef ENVIRO
+#ifdef ENVIRONMENT
 			Env->print_tree_using(out);
 #endif
 		}

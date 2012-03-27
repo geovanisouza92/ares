@@ -3,8 +3,6 @@ Ares Programming Language
 
 TODO
 
-    . Generate AST for productions
-    . Print AST
     . Generate semantical rules
     . Generate LLVM-IR
     . Generate Standard Library
@@ -12,10 +10,14 @@ TODO
     . Enable parallel assignment's like "a, b = b, c"
     . Create context messages for errors from input
     . Add operator overloading
-    . Make performance tests between list comprehension and query expressions to generate new array's
+    . List comprehension versus query expressions
     . Add Unicode support
 
 Changelog
+
+[0.2.4]
+    + Generate AST for productions
+    + Print AST
 
 [0.2.2]
     + New grammar

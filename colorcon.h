@@ -37,7 +37,8 @@
  47 - White
  */
 
-#ifdef USE_COLORS
+//#ifdef USE_COLORS
+#ifndef LANG_DEBUG
 
 #define COLOR_RESET     "\033[0m"
 

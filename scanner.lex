@@ -106,7 +106,6 @@ rgx \~\/(\\.|[^\/])*\/
 "right"         return token::kRIGHT;
 "sealed"        return token::kSEALED;
 "select"        return token::kSELECT;
-"self"          return token::kSELF;
 "set"           return token::kSET;
 "signal"        return token::kSIGNAL;
 "skip"          return token::kSKIP;
