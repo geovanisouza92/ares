@@ -1,4 +1,3 @@
-
 /* Ares Programming Language */
 
 #ifndef LANG_STOQL_H
@@ -8,98 +7,98 @@
 #include "enum.h"
 
 namespace LANG_NAMESPACE {
-namespace SyntaxTree {
+    namespace SyntaxTree {
 
-class QueryNode: public ExpressionNode {
-protected:
-	SyntaxNode * origin;
-	SyntaxNode * body;
-public:
-	QueryNode(SyntaxNode *, SyntaxNode *);
-	virtual void print_using(ostream &, unsigned);
-};
+        class QueryNode: public ExpressionNode {
+        protected:
+            SyntaxNode * queryOrigin;
+            SyntaxNode * queryBody;
+            public:
+            QueryNode(SyntaxNode *, SyntaxNode *);
+            virtual void printUsing(ostream &, unsigned);
+        };
 
-class QueryOriginNode: public SyntaxNode {
-protected:
-	SyntaxNode * id;
-	SyntaxNode * expr;
-public:
-	QueryOriginNode(SyntaxNode *, SyntaxNode *);
-	virtual void print_using(ostream &, unsigned);
-};
+        class QueryOriginNode: public SyntaxNode {
+        protected:
+            SyntaxNode * originIdentifier;
+            SyntaxNode * originExpression;
+            public:
+            QueryOriginNode(SyntaxNode *, SyntaxNode *);
+            virtual void printUsing(ostream &, unsigned);
+        };
 
-class QueryBodyNode: public SyntaxNode {
-protected:
-	VectorNode * body;
-	SyntaxNode * finally;
-public:
-	QueryBodyNode();
-	virtual QueryBodyNode * set_body(VectorNode *);
-	virtual QueryBodyNode * set_finally(SyntaxNode *);
-	virtual void print_using(ostream &, unsigned);
-};
+        class QueryBodyNode: public SyntaxNode {
+        protected:
+            VectorNode * queryBody;
+            SyntaxNode * queryFinally;
+            public:
+            QueryBodyNode();
+            virtual QueryBodyNode * set_body(VectorNode *);
+            virtual QueryBodyNode * set_finally(SyntaxNode *);
+            virtual void printUsing(ostream &, unsigned);
+        };
 
-class WhereNode: public SyntaxNode {
-protected:
-	SyntaxNode * expr;
-public:
-	WhereNode(SyntaxNode *);
-	virtual void print_using(ostream &, unsigned);
-};
+        class WhereNode: public SyntaxNode {
+        protected:
+            SyntaxNode * whereExpression;
+            public:
+            WhereNode(SyntaxNode *);
+            virtual void printUsing(ostream &, unsigned);
+        };
 
-class JoinNode: public SyntaxNode {
-protected:
-	JoinDirection::Direction direction;
-	SyntaxNode * origin;
-	SyntaxNode * expr;
-public:
-	JoinNode(SyntaxNode *, SyntaxNode *, JoinDirection::Direction);
-	virtual void print_using(ostream &, unsigned);
-};
+        class JoinNode: public SyntaxNode {
+        protected:
+            JoinType::Type joinDirection;
+            SyntaxNode * joinOrigin;
+            SyntaxNode * joinExpression;
+            public:
+            JoinNode(JoinType::Type, SyntaxNode *, SyntaxNode *);
+            virtual void printUsing(ostream &, unsigned);
+        };
 
-class OrderingNode: public SyntaxNode {
-public:
-	SyntaxNode * expr;
-	OrderDirection::Direction direction;
-public:
-	OrderingNode(SyntaxNode *, OrderDirection::Direction);
-	virtual void print_using(ostream &, unsigned);
-};
+        class OrderingNode: public SyntaxNode {
+        public:
+            OrderType::Type orderType;
+            SyntaxNode * orderExpression;
+            public:
+            OrderingNode(OrderType::Type, SyntaxNode *);
+            virtual void printUsing(ostream &, unsigned);
+        };
 
-class OrderByNode: public SyntaxNode {
-protected:
-	VectorNode * orders;
-public:
-	OrderByNode(VectorNode *);
-	virtual void print_using(ostream &, unsigned);
-};
+        class OrderByNode: public SyntaxNode {
+        protected:
+            VectorNode * orders;
+        public:
+            OrderByNode(VectorNode *);
+            virtual void printUsing(ostream &, unsigned);
+        };
 
-class GroupByNode: public SyntaxNode {
-protected:
-	SyntaxNode * expr;
-public:
-	GroupByNode(SyntaxNode *);
-	virtual void print_using(ostream &, unsigned);
-};
+        class GroupByNode: public SyntaxNode {
+        protected:
+            SyntaxNode * groupExpression;
+            public:
+            GroupByNode(SyntaxNode *);
+            virtual void printUsing(ostream &, unsigned);
+        };
 
-class RangeNode: public SyntaxNode {
-protected:
-	RangeType::Type type;
-	SyntaxNode * range;
-public:
-	RangeNode(RangeType::Type, SyntaxNode *);
-	virtual void print_using(ostream &, unsigned);
-};
+        class RangeNode: public SyntaxNode {
+        protected:
+            RangeType::Type rangeType;
+            SyntaxNode * rangeRange;
+            public:
+            RangeNode(RangeType::Type, SyntaxNode *);
+            virtual void printUsing(ostream &, unsigned);
+        };
 
-class SelectNode: public SyntaxNode {
-protected:
-	VectorNode * selection;
-public:
-	SelectNode(VectorNode *);
-	virtual void print_using(ostream &, unsigned);
-};
+        class SelectNode: public SyntaxNode {
+        protected:
+            VectorNode * selection;
+            public:
+            SelectNode(VectorNode *);
+            virtual void printUsing(ostream &, unsigned);
+        };
 
-} // SyntaxTree
+    } // SyntaxTree
 } // LANG_NAMESPACE
 
 #endif

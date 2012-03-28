@@ -1,4 +1,3 @@
-
 /* Ares Programming Language */
 
 #ifndef LANG_SCANNER_H
@@ -16,11 +15,11 @@ using namespace LANG_NAMESPACE;
 #ifndef YY_DECL
 
 #define YY_DECL \
-    Parser::token_type \
-    Scanner::lex( \
-        Parser::semantic_type* yylval, \
-        Parser::location_type* yylloc, \
-        class Driver& driver )
+    Compiler::Parser::token_type \
+    Compiler::Scanner::lex( \
+            Compiler::Parser::semantic_type* yylval, \
+            Compiler::Parser::location_type* yylloc, \
+        class Compiler::Driver& driver )
 #endif
 
 #ifndef __FLEX_LEXER_H
@@ -30,16 +29,17 @@ using namespace LANG_NAMESPACE;
 #endif
 
 namespace LANG_NAMESPACE {
+    namespace Compiler {
 
-class Scanner: public arcFlexLexer {
-public:
-	Scanner(istream* arg_yyin = 0, ostream* arg_yyout = 0);
-	virtual ~Scanner();
-	virtual Parser::token_type lex(Parser::semantic_type* yylval,
-			Parser::location_type* yylloc, class Driver& driver);
-	void set_debug(bool b);
-};
+        class Scanner: public arcFlexLexer {
+        public:
+            Scanner(istream* arg_yyin = 0, ostream* arg_yyout = 0);
+            virtual ~Scanner();
+            virtual Parser::token_type lex(Parser::semantic_type* yylval, Parser::location_type* yylloc, class Driver& driver);
+            void set_debug(bool b);
+        };
 
-}
+    } // Driver
+} // LANG_NAMESPACE
 
 #endif

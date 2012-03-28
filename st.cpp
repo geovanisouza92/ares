@@ -1,235 +1,248 @@
-
 /* Ares Programming Language */
 
+#include <string>
 #include <ostream>
 
 #include "st.h"
 
 namespace LANG_NAMESPACE {
-namespace SyntaxTree {
+    namespace SyntaxTree {
 
-Environment::Environment(Environment * p) :
-		prev(p), stmts(new VectorNode()) {
-}
+        SyntaxNode::~SyntaxNode() { }
 
-Environment::~Environment() {
-}
+        NodeType::Type
+        SyntaxNode::getNodeType() {
+            return nodeType;
+        }
 
-Environment *
-Environment::clear() {
-	stmts->clear();
-	return this;
-}
+        void
+        SyntaxNode::setNodeType(NodeType::Type t) {
+            nodeType = t;
+        }
 
-Environment *
-Environment::put_stmt(SyntaxNode * v) {
-	stmts->push_back(v);
-	return this;
-}
+        Environment::Environment(Environment * p) :
+                previous(p), statements(new VectorNode()) {
+        }
 
-Environment *
-Environment::put_stmts(VectorNode * v) {
-	for (VectorNode::iterator stmt = v->begin(); stmt < v->end(); stmt++)
-		put_stmt(*stmt);
-	return this;
-}
+        Environment::~Environment() {
+        }
 
-void Environment::print_tree_using(ostream & out) {
-	for (VectorNode::iterator stmt = stmts->begin(); stmt < stmts->end();
-			stmt++)
-		(*stmt)->print_using(out, 0);
-}
+        Environment *
+        Environment::clear() {
+            statements->clear();
+            return this;
+        }
 
-NilNode::NilNode() {
-}
+//        Environment *
+//        Environment::putStatement(SyntaxNode * v) {
+//            statements->push_back(v);
+//            return this;
+//        }
 
-void NilNode::print_using(ostream & out, unsigned d) {
-	TAB << "Nil" << endl;
-}
+        Environment *
+        Environment::putStatements(VectorNode * v) {
+            for (VectorNode::iterator stmt = v->begin(); stmt < v->end(); stmt++)
+                statements->push_back(*stmt);
+            return this;
+        }
 
-IdentifierNode::IdentifierNode(string v) :
-		value(v) {
-	set_node_type(NodeType::Identifier);
-}
+        void Environment::printUsing(ostream & out, unsigned d) {
+            for (VectorNode::iterator stmt = statements->begin(); stmt < statements->end(); stmt++)
+                (*stmt)->printUsing(out, 0);
+        }
 
-void IdentifierNode::print_using(ostream & out, unsigned d) {
-	TAB << "Identifier => " << value << endl;
-}
+        NilNode::NilNode() {
+        }
 
-StringNode::StringNode(string v) :
-		value(v) {
-	set_node_type(NodeType::String);
-}
+        void NilNode::printUsing(ostream & out, unsigned d) {
+            TAB << "Nil" << endl;
+        }
 
-void StringNode::append(string v) {
-	value += v;
-}
+        IdentifierNode::IdentifierNode(string v) :
+                value(v) {
+            setNodeType(NodeType::Identifier);
+        }
 
-void StringNode::print_using(ostream & out, unsigned d) {
-	TAB << "String => " << value << endl;
-}
+        void IdentifierNode::printUsing(ostream & out, unsigned d) {
+            TAB << "Identifier => " << value << endl;
+        }
 
-RegexNode::RegexNode(string v) :
-		value(v) {
-	set_node_type(NodeType::Regex);
-}
+        StringNode::StringNode(string v) :
+                value(v) {
+            setNodeType(NodeType::String);
+        }
 
-void RegexNode::print_using(ostream & out, unsigned d) {
-	TAB << "Regex => " << value << endl;
-}
+        void StringNode::append(string v) {
+            value += v;
+        }
 
-FloatNode::FloatNode(double v) :
-		value(v) {
-	set_node_type(NodeType::Float);
-}
+        void StringNode::printUsing(ostream & out, unsigned d) {
+            TAB << "String => " << value << endl;
+        }
 
-void FloatNode::print_using(ostream & out, unsigned d) {
-	TAB << "Float => " << value << endl;
-}
+        RegexNode::RegexNode(string v) :
+                value(v) {
+            setNodeType(NodeType::Regex);
+        }
 
-IntegerNode::IntegerNode(int v) :
-		value(v) {
-	set_node_type(NodeType::Integer);
-}
+        void RegexNode::printUsing(ostream & out, unsigned d) {
+            TAB << "Regex => " << value << endl;
+        }
 
-void IntegerNode::print_using(ostream & out, unsigned d) {
-	TAB << "Integer => " << value << endl;
-}
+        FloatNode::FloatNode(double v) :
+                value(v) {
+            setNodeType(NodeType::Float);
+        }
 
-BooleanNode::BooleanNode(bool v) :
-		value(v) {
-	set_node_type(NodeType::Boolean);
-}
+        void FloatNode::printUsing(ostream & out, unsigned d) {
+            TAB << "Float => " << value << endl;
+        }
 
-void BooleanNode::print_using(ostream & out, unsigned d) {
-	TAB << "Boolean => " << (value ? "True" : "False") << endl;
-}
+        IntegerNode::IntegerNode(int v) :
+                value(v) {
+            setNodeType(NodeType::Integer);
+        }
 
-ArrayNode::ArrayNode() :
-		value(new VectorNode()) {
-	set_node_type(NodeType::Array);
-}
+        void IntegerNode::printUsing(ostream & out, unsigned d) {
+            TAB << "Integer => " << value << endl;
+        }
 
-ArrayNode::ArrayNode(VectorNode * v) :
-		value(v) {
-	set_node_type(NodeType::Array);
-}
+        BooleanNode::BooleanNode(bool v) :
+                value(v) {
+            setNodeType(NodeType::Boolean);
+        }
 
-void ArrayNode::print_using(ostream & out, unsigned d) {
-	TAB << "Array => [ " << endl;
-	for (VectorNode::iterator elem = value->begin(); elem < value->end();
-			elem++) {
-		(*elem)->print_using(out, d + 1);
-		TAB << ((elem != value->end() - 1) ? ", " : " ") << endl;
-	}
-	TAB << " ]" << endl;
-}
+        void BooleanNode::printUsing(ostream & out, unsigned d) {
+            TAB << "Boolean => " << (value ? "True" : "False") << endl;
+        }
 
-HashPairNode::HashPairNode(SyntaxNode * k, SyntaxNode * v) :
-		key(k), value(v) {
-	set_node_type(NodeType::HashPair);
-}
+        ArrayNode::ArrayNode() : value(new VectorNode()) {
+            setNodeType(NodeType::Array);
+        }
 
-void HashPairNode::print_using(ostream & out, unsigned d) {
-	key->print_using(out, d + 1);
-	TAB << "^" << endl;
-	value->print_using(out, d + 1);
-}
+        ArrayNode::ArrayNode(VectorNode * v) : value(v) {
+            setNodeType(NodeType::Array);
+        }
 
-HashNode::HashNode() :
-		value(new VectorNode()) {
-	set_node_type(NodeType::Hash);
-}
+        void ArrayNode::printUsing(ostream & out, unsigned d) {
+            TAB << "Array => [ " << endl;
+            for (VectorNode::iterator elem = value->begin(); elem < value->end(); elem++) {
+                (*elem)->printUsing(out, d + 1);
+                TAB << ((elem != value->end() - 1) ? ", " : " ") << endl;
+            }
+            TAB << " ]" << endl;
+        }
 
-HashNode::HashNode(VectorNode * v) :
-		value(v) {
-	set_node_type(NodeType::Hash);
-}
+        HashPairNode::HashPairNode(SyntaxNode * k, SyntaxNode * v) : pairKey(k), pairValue(v) {
+            setNodeType(NodeType::HashPair);
+        }
 
-void HashNode::print_using(ostream & out, unsigned d) {
-	TAB << "Hash => { " << endl;
-	for (VectorNode::iterator elem = value->begin(); elem < value->end();
-			elem++) {
-		(*elem)->print_using(out, d + 1);
-		TAB << ((elem != value->end() - 1) ? ", " : " ") << endl;
-	}
-	TAB << " }" << endl;
-}
+        void HashPairNode::printUsing(ostream & out, unsigned d) {
+            pairKey->printUsing(out, d + 1);
+            TAB << "^" << endl;
+            pairValue->printUsing(out, d + 1);
+        }
 
-void UnaryExprNode::print_using(ostream & out, unsigned d) {
-	TAB << "Unary expression [ " << Operation::get_enum_name(operation)
-			<< " ] => " << endl;
-	member1->print_using(out, d + 1);
-}
+        HashNode::HashNode() : value(new VectorNode()) {
+            setNodeType(NodeType::Hash);
+        }
 
-void BinaryExprNode::print_using(ostream & out, unsigned d) {
-	TAB << "Binary expression [ " << Operation::get_enum_name(operation)
-			<< " ] => " << endl;
-	member1->print_using(out, d + 1);
-	member2->print_using(out, d + 1);
-}
+        HashNode::HashNode(VectorNode * v) : value(v) {
+            setNodeType(NodeType::Hash);
+        }
 
-void TernaryExprNode::print_using(ostream & out, unsigned d) {
-	TAB << "Ternary expression [ " << Operation::get_enum_name(operation)
-			<< " ] => " << endl;
-	member1->print_using(out, d + 1);
-	member2->print_using(out, d + 1);
-	member3->print_using(out, d + 1);
-}
+        void HashNode::printUsing(ostream & out, unsigned d) {
+            TAB << "Hash => { " << endl;
+            for (VectorNode::iterator elem = value->begin(); elem < value->end(); elem++) {
+                (*elem)->printUsing(out, d + 1);
+                TAB << ((elem != value->end() - 1) ? ", " : " ") << endl;
+            }
+            TAB << " }" << endl;
+        }
 
-FunctionCallNode::FunctionCallNode(SyntaxNode * n) :
-		name(n), args(new VectorNode) {
-	set_node_type(NodeType::Nil);
-}
+        void UnaryNode::printUsing(ostream & out, unsigned d) {
+            TAB << "Unary expression [ " << BaseOperator::getEnumName(op) << " ] => " << endl;
+            member1->printUsing(out, d + 1);
+        }
 
-FunctionCallNode::FunctionCallNode(SyntaxNode * n, VectorNode * a) :
-		name(n), args(a) {
-	set_node_type(NodeType::Nil);
-}
+        UnaryNode::UnaryNode(BaseOperator::Operator op, SyntaxNode * m1) :op(op), member1(m1) {
+            setNodeType(NodeType::Nil);
+        }
 
-void FunctionCallNode::print_using(ostream & out, unsigned d) {
-	TAB << "Function call for [ " << endl;
-	name->print_using(out, d + 1);
-	if (args->size() > 0) {
-		TAB << " ] with arguments ( " << endl;
-		for (VectorNode::iterator arg = args->begin(); arg < args->end();
-				arg++) {
-			(*arg)->print_using(out, d + 1);
-			out << ((arg != args->end() - 1) ? ", " : " ") << endl;
-		}
-		TAB << " )" << endl;
-	} else
-		TAB << " ] without arguments" << endl;
-}
+        UnaryNode::UnaryNode(BaseOperator::Operator op, VectorNode * m1) :op(op), vector1(m1) {
+            setNodeType(NodeType::Nil);
+        }
 
-AsyncNode::AsyncNode(AsyncType::Type t, SyntaxNode * i) :
-		item(i), type(t) {
-}
+        BinaryNode::BinaryNode(BaseOperator::Operator op, SyntaxNode * m1, SyntaxNode * m2) :
+                op(op), member1(m1), member2(m2) {
+            setNodeType(NodeType::Nil);
+        }
 
-void AsyncNode::print_using(ostream & out, unsigned d) {
-	TAB << "Asyncronous element => " << endl;
-	item->print_using(out, d + 1);
-}
+        void BinaryNode::printUsing(ostream & out, unsigned d) {
+            TAB << "Binary expression [ " << BaseOperator::getEnumName(op) << " ] => " << endl;
+            member1->printUsing(out, d + 1);
+            member2->printUsing(out, d + 1);
+        }
 
-LambdaExprNode::LambdaExprNode(VectorNode * a, SyntaxNode * e) :
-		args(a), expr(e) {
-}
+        TernaryNode::TernaryNode(BaseOperator::Operator op, SyntaxNode *m1, SyntaxNode *m2, SyntaxNode *m3) :
+                op(op), member1(m1), member2(m2), member3(m3) {
+            setNodeType(NodeType::Nil);
+        }
 
-void LambdaExprNode::print_using(ostream & out, unsigned d) {
-	TAB << "Lambda expression ";
-	if (args->size() > 0) {
-		out << "with arguments ( " << endl;
-		for (VectorNode::iterator arg = args->begin(); arg < args->end();
-				arg++) {
-			(*arg)->print_using(out, d + 1);
-			out << ((arg != args->end() - 1) ? ", " : " ") << endl;
-		}
-		TAB << " )" << endl;
-	}
-	out << "without arguments" << endl;
-	TAB << " using expression => " << endl;
-	expr->print_using(out, d + 1);
-}
+        void TernaryNode::printUsing(ostream & out, unsigned d) {
+            TAB << "Ternary expression [ " << BaseOperator::getEnumName(op) << " ] => " << endl;
+            member1->printUsing(out, d + 1);
+            member2->printUsing(out, d + 1);
+            member3->printUsing(out, d + 1);
+        }
 
-} // SyntaxTree
+        FunctionCallNode::FunctionCallNode(SyntaxNode * n) : functionName(n), functionArguments(new VectorNode) {
+            setNodeType(NodeType::Nil);
+        }
+
+        FunctionCallNode::FunctionCallNode(SyntaxNode * n, VectorNode * a) : functionName(n), functionArguments(a) {
+            setNodeType(NodeType::Nil);
+        }
+
+        void FunctionCallNode::printUsing(ostream & out, unsigned d) {
+            TAB << "Function call for [ " << endl;
+            functionName->printUsing(out, d + 1);
+            if (functionArguments->size() > 0) {
+                TAB << " ] with arguments ( " << endl;
+                for (VectorNode::iterator arg = functionArguments->begin(); arg < functionArguments->end(); arg++) {
+                    (*arg)->printUsing(out, d + 1);
+                    out << string((d + 1) * 2, ' ') << ((arg != functionArguments->end() - 1) ? ", " : " ") << endl;
+                }
+                TAB << " )" << endl;
+            } else
+                TAB << " ] without arguments" << endl;
+        }
+
+        AsyncNode::AsyncNode(AsyncType::Type t, SyntaxNode * i) : asyncType(t), item(i) { }
+
+        void AsyncNode::printUsing(ostream & out, unsigned d) {
+            TAB << "Asyncronous element => " << endl;
+            item->printUsing(out, d + 1);
+        }
+
+        LambdaNode::LambdaNode(VectorNode * a, SyntaxNode * e) :
+                lambdaArguments(a), lambdaExpression(e) {
+        }
+
+        void LambdaNode::printUsing(ostream & out, unsigned d) {
+            TAB << "Lambda expression ";
+            if (lambdaArguments->size() > 0) {
+                out << "with arguments ( " << endl;
+                for (VectorNode::iterator arg = lambdaArguments->begin(); arg < lambdaArguments->end(); arg++) {
+                    (*arg)->printUsing(out, d + 1);
+                    out << string((d + 1) * 2, ' ') << ((arg != lambdaArguments->end() - 1) ? ", " : " ") << endl;
+                }
+                TAB << " ) " << endl;
+            } else
+                out << "without arguments ";
+            out << "using expression => " << endl;
+            lambdaExpression->printUsing(out, d + 1);
+        }
+
+    } // SyntaxTree
 } // LANG_NAMESPACE

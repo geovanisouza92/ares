@@ -3,6 +3,8 @@
 #ifndef LANG_CONFIG_H
 #define LANG_CONFIG_H
 
+#include <string>
+
 //#define LANG_DEBUG
 
 #define LANG_NAME               "Ares"
@@ -55,7 +57,7 @@ namespace n { \
     x,
 #define DECLARE_ENUM_NAMES_END(e) \
   }; \
-  static string get_enum_name(e value) { \
+  static string getEnumName(e value) { \
     return EnumNames[value]; \
   } \
 }

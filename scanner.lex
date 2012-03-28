@@ -3,6 +3,8 @@
 
 /* Ares Programming Language */
 
+#include <string>
+
 using namespace std;
 
 #include "scanner.h"
@@ -10,6 +12,7 @@ using namespace std;
 #include "version.h"
 
 using namespace LANG_NAMESPACE;
+using namespace LANG_NAMESPACE::Compiler;
 
 typedef Parser::token token;
 typedef Parser::token_type token_type;
@@ -155,13 +158,13 @@ rgx \~\/(\\.|[^\/])*\/
     // Comments
     yylloc->lines();
     yylloc->step();
-    driver.inc_lines();
+    driver.incLines();
 }
 
 \n {
     yylloc->lines(yyleng);
     yylloc->step();
-    driver.inc_lines();
+    driver.incLines();
 }
 
 . {
@@ -171,6 +174,7 @@ rgx \~\/(\\.|[^\/])*\/
 %%
 
 namespace LANG_NAMESPACE {
+namespace Compiler {
 
 Scanner::Scanner(std::istream* in, std::ostream* out)
     : arcFlexLexer(in, out) {
@@ -183,7 +187,8 @@ void Scanner::set_debug(bool b) {
     yy_flex_debug = b;
 }
 
-}
+} // Compiler
+} // LANG_NAMESPACE
 
 #ifdef yylex
 #undef yylex

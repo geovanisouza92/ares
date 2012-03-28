@@ -12,59 +12,61 @@ using namespace std;
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
 
-namespace fs = boost::filesystem3;
+namespace fileSystem = boost::filesystem3;
 
 #include "st.h"
 #include "console.h"
 #include "scanner.h"
 
+using namespace LANG_NAMESPACE::Enum;
+
 namespace LANG_NAMESPACE {
+    namespace Compiler {
 
-class Driver {
-public:
-	string origin;
-	bool check_only;
-	VerboseMode::Mode verbose_mode;
-	unsigned lines, total_lines;
-	unsigned errors, warnings, hints;
-	class Scanner * lexer;
+        class Driver {
+        public:
+            string origin;
+            bool checkOnly;
+            VerboseMode::Mode verboseMode;
+            unsigned lines, totalLines;
+            unsigned errors, warnings, hints;
+            class Scanner * lexer;
 #ifdef ENVIRONMENT
-	class SyntaxTree::Environment * Env;
+            class SyntaxTree::Environment * enviro;
 #endif
-public:
-	Driver();
-	virtual ~Driver();
-	virtual bool parse_stream(istream&, const string& sname = "stream input");
-	virtual bool parse_string(const string&, const string& sname =
-			"string stream");
-	virtual bool parse_file(const string&);
+        public:
+            Driver();
+            virtual ~Driver();
+            virtual bool parseStream(istream&, const string& sname = "stream input");
+            virtual bool parseString(const string&, const string& sname = "string stream");
+            virtual bool parseFile(const string&);
 
-	virtual int error(const class location&, const string&);
-	virtual int error(const string&);
-	virtual void warning(const class location&, const string&);
-	virtual void warning(const string&);
-	virtual void hint(const class location&, const string&);
-	virtual void hint(const string&);
-	virtual string resume_messages();
+            virtual int error(const class location&, const string&);
+            virtual int error(const string&);
+            virtual void warning(const class location&, const string&);
+            virtual void warning(const string&);
+            virtual void hint(const class location&, const string&);
+            virtual void hint(const string&);
+            virtual string resumeMessages();
 
-	virtual inline void syntax_ok_for(const string what) {
-		cout << "=> Syntax OK for " << COLOR_BGREEN << what
-				<< COLOR_RESET << endl;
-	}
-	virtual inline void reset_lines() {
-		total_lines += lines;
-		lines = 0;
-	}
-	virtual inline void inc_lines() {
-		++lines;
-	}
-	virtual inline void dec_lines() {
-		--lines;
-	}
+            virtual inline void syntaxOkFor(const string what) {
+                cout << "=> Syntax OK for " << COLOR_BGREEN << what << COLOR_RESET << endl;
+            }
+            virtual inline void resetLines() {
+                totalLines += lines;
+                lines = 0;
+            }
+            virtual inline void incLines() {
+                ++lines;
+            }
+            virtual inline void decLines() {
+                --lines;
+            }
 
-	virtual void make_things_happen(FinallyAction::Action, ostream&);
-};
+            virtual void produce(FinallyAction::Action, ostream&);
+        };
 
-}
+    } // Compiler
+} // LANG_NAMESPACE
 
 #endif
