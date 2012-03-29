@@ -35,6 +35,8 @@ YFLAGS="-v --defines=parser.h"
 LFLAGS=""
 end
 
+BINFLAGS="--verbose=2"
+
 task :default => [ :clear, :bitcode, :link, :assembly, :native ]
 
 task :clear do
@@ -55,17 +57,17 @@ task :bitcode do
       case mod
         when :parser
           cmd = "bison #{YFLAGS} -o #{mod}.cpp #{mod}.yacc"
-          puts cmd
+          # puts cmd
           system cmd
         when :scanner
           cmd = "flex #{LFLAGS} -o#{mod}.cpp #{mod}.lex"
-          puts cmd
+          # puts cmd
           system cmd
         end
       end
     # Generate bitcode for each file.cpp
     cmd = "clang++ #{CXXFLAGS} -o #{mod}.bc #{mod}.cpp"
-    puts cmd
+    # puts cmd
     system cmd
   end
 end
@@ -84,14 +86,14 @@ task :link do
   LIBS.each do |lib|
     cmd << "-l#{lib} "
   end
-  puts cmd
+  # puts cmd
   system cmd
 end
 
 task :assembly do
   # Generate assembly code
   cmd = "llc -x86-asm-syntax=att -o #{BINARY}.s #{BINARY}.bc"
-  puts cmd
+  # puts cmd
   system cmd
 end
 
@@ -104,6 +106,13 @@ task :native do
   LIBS.each do |lib|
     cmd << "-l#{lib} "
   end
-  puts cmd
+  # puts cmd
+  system cmd
+end
+
+task :test do
+  test_files=Dir.glob("tests/*.ar")
+  cmd = "#{BINARY} #{BINFLAGS} #{test_files.flatten.join(" ")}"
+  # puts cmd
   system cmd
 end
