@@ -63,7 +63,6 @@ if (driver.verboseMode >= VerboseMode::Low) { \
 
 int main(int argc, char** argv) {
 
-    bool printed = false;
     int maxErrors = 3, filesProcessed = 0;
     Enum::InteractionMode::Mode mode = Enum::InteractionMode::None;
     vector<string> files, messages;
@@ -93,10 +92,10 @@ int main(int argc, char** argv) {
 
     if (options.count("eval")) {
         mode = InteractionMode::LineEval;
-        if (!printed) {
-            cout << langVersionInfo() << endl;
-            printed = true;
-        }
+        // if (!printed) {
+        //     cout << langVersionInfo() << endl;
+        //     printed = true;
+        // }
         line = options["eval"].as<string>();
         if (!line.empty()) {
             TRAIT_END
@@ -131,10 +130,10 @@ int main(int argc, char** argv) {
         // printed = true;
     }
 
-    if (!printed) {
-        cout << langVersionInfo() << endl;
-        printed = true;
-    }
+    // if (!printed) {
+    //     cout << langVersionInfo() << endl;
+    //     printed = true;
+    // }
 
     if (driver.verboseMode >= VerboseMode::High && !messages.empty())
         for (vector<string>::iterator message = messages.begin(); message < messages.end(); message++)
@@ -158,7 +157,6 @@ int main(int argc, char** argv) {
     if (mode == InteractionMode::Shell) {
         string guide(">>> ");
         int blanks = 0;
-        cout << endl;
         while (cout << COLOR_BGREEN<< LANG_SHELL_NAME << COLOR_RESET << guide &&getline(cin, line))
         if (!line.empty()) {
             TRAIT_END
