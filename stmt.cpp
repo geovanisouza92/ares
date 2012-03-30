@@ -117,10 +117,10 @@ namespace LANG_NAMESPACE {
         void LoopNode::printUsing(ostream & out, unsigned d) {
             switch (loopType) {
             case LoopType::While:
-                TAB << "While expressio =>" << endl;
+                TAB << "While expression =>" << endl;
                 break;
             case LoopType::Until:
-                TAB << "Until expressio =>" << endl;
+                TAB << "Until expression =>" << endl;
                 break;
             }
             loopExpression->printUsing(out, d + 1);
@@ -141,13 +141,13 @@ namespace LANG_NAMESPACE {
                 TAB << "Continue statement" << endl;
                 break;
             case ControlType::Private:
-                TAB << "Alter visibility of below items to PRIVATE" << endl;
+                TAB << "Alter visibility of items below to PRIVATE" << endl;
                 break;
             case ControlType::Protected:
-                TAB << "Alter visibility of below items to PROTECTED" << endl;
+                TAB << "Alter visibility of items below to PROTECTED" << endl;
                 break;
             case ControlType::Public:
-                TAB << "Alter visibility of below items to PUBLIC" << endl;
+                TAB << "Alter visibility of items below to PUBLIC" << endl;
                 break;
             case ControlType::Raise:
                 if (controlExpression != NULL) {
@@ -247,9 +247,7 @@ namespace LANG_NAMESPACE {
                 (*var)->printUsing(out, d + 1);
         }
 
-        ElementNode::ElementNode(SyntaxNode * n) :
-                elementName(n) {
-        }
+        ElementNode::ElementNode(SyntaxNode * n) : elementName(n), elementType(NULL), elementInitialValue(NULL), elementInvariants(NULL) { }
 
         ElementNode *
         ElementNode::setElementType(SyntaxNode * t) {
@@ -349,7 +347,7 @@ namespace LANG_NAMESPACE {
             functionName->printUsing(out, d + 1);
             if (functionSpecifiers.size() > 0) {
                 for (vector<SpecifierType::Type>::iterator spec = functionSpecifiers.begin(); spec < functionSpecifiers.end(); spec++)
-                    TAB << "With specifier => " << SpecifierType::getEnumName(*spec) << endl;
+                    TAB << "With specifier =>" << SpecifierType::getEnumName(*spec) << endl;
             }
             if (functionParams->size() > 0) {
                 TAB << "With parameters =>" << endl;
@@ -463,13 +461,12 @@ namespace LANG_NAMESPACE {
             }
         }
 
-//        IncludeNode::IncludeNode(SyntaxNode * n) :
-//                name(n) {
-//        }
-//
-//        void IncludeNode::print_using(ostream & out, unsigned d) {
-//            // TODO
-//        }
+        IncludeNode::IncludeNode(SyntaxNode * i) : includeItem(i) { }
+
+        void IncludeNode::printUsing(ostream & out, unsigned d) {
+            TAB << "Including =>" << endl;
+            includeItem->printUsing(out, d + 1);
+        }
 
         ClassNode::ClassNode(SyntaxNode * n) : className(n), classHeritance(NULL), classStatements(new VectorNode()) { }
 
@@ -502,7 +499,7 @@ namespace LANG_NAMESPACE {
             }
             if (classSpecifiers.size() > 0) {
                 for (vector<SpecifierType::Type>::iterator spec = classSpecifiers.begin(); spec < classSpecifiers.end(); spec++)
-                    TAB << "With specifier => " << SpecifierType::getEnumName(*spec) << endl;
+                    TAB << "With specifier =>" << SpecifierType::getEnumName(*spec) << endl;
             }
             if (classStatements->size() > 0) {
                 for (VectorNode::iterator stmt = classStatements->begin(); stmt < classStatements->end(); stmt++) {

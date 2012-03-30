@@ -194,13 +194,13 @@ namespace LANG_NAMESPACE {
             virtual void printUsing(ostream &, unsigned);
         };
 
-//        class IncludeNode: public StatementNode {
-//        protected:
-//            SyntaxNode * functionName;
-//        public:
-//            IncludeNode(SyntaxNode *);
-//            virtual void printUsing(ostream &, unsigned);
-//        };
+        class IncludeNode: public StatementNode {
+        protected:
+            SyntaxNode * includeItem;
+        public:
+            IncludeNode(SyntaxNode *);
+            virtual void printUsing(ostream &, unsigned);
+        };
 
         class ClassNode: public StatementNode {
         protected:

@@ -125,12 +125,12 @@ namespace LANG_NAMESPACE {
         }
 
         void ArrayNode::printUsing(ostream & out, unsigned d) {
-            TAB << "Array => [ " << endl;
+            TAB << "Array => [" << endl;
             for (VectorNode::iterator elem = value->begin(); elem < value->end(); elem++) {
                 (*elem)->printUsing(out, d + 1);
-                TAB << ((elem != value->end() - 1) ? ", " : " ") << endl;
+                out << string((d + 1) * 2, ' ') << ((elem != value->end() - 1) ? ", " : " ") << endl;
             }
-            TAB << " ]" << endl;
+            TAB << "]" << endl;
         }
 
         HashPairNode::HashPairNode(SyntaxNode * k, SyntaxNode * v) : pairKey(k), pairValue(v) {
@@ -139,7 +139,7 @@ namespace LANG_NAMESPACE {
 
         void HashPairNode::printUsing(ostream & out, unsigned d) {
             pairKey->printUsing(out, d + 1);
-            TAB << "^" << endl;
+            out << string((d + 1) * 2, ' ') << "^" << endl;
             pairValue->printUsing(out, d + 1);
         }
 
@@ -152,16 +152,36 @@ namespace LANG_NAMESPACE {
         }
 
         void HashNode::printUsing(ostream & out, unsigned d) {
-            TAB << "Hash => { " << endl;
+            TAB << "Hash => {" << endl;
             for (VectorNode::iterator elem = value->begin(); elem < value->end(); elem++) {
                 (*elem)->printUsing(out, d + 1);
-                TAB << ((elem != value->end() - 1) ? ", " : " ") << endl;
+                out << string((d + 1) * 2, ' ') << ((elem != value->end() - 1) ? ", " : " ") << endl;
             }
-            TAB << " }" << endl;
+            TAB << "}" << endl;
+        }
+
+        NewNode::NewNode(NewType::Type t, SyntaxNode * i) : newType(t), newInstanceOf(i) { }
+
+        NewNode::NewNode(NewType::Type t, VectorNode * n) : newType(t), newAnonymousClass(n) { }
+
+        void
+        NewNode::printUsing(ostream & out, unsigned d) {
+            switch(newType) {
+            case NewType::InstanceOf:
+                TAB << "New instance of =>" << endl;
+                newInstanceOf->printUsing(out, d + 1);
+                break;
+            case NewType::AnonymousClass:
+                TAB << "New anonymous class with attributes =>" << endl;
+                for (VectorNode::iterator pair = newAnonymousClass->begin(); pair < newAnonymousClass->end(); pair++) {
+                    (*pair)->printUsing(out, d + 1);
+                }
+                break;
+            }
         }
 
         void UnaryNode::printUsing(ostream & out, unsigned d) {
-            TAB << "Unary expression [ " << BaseOperator::getEnumName(op) << " ] => " << endl;
+            TAB << "Unary expression [ " << BaseOperator::getEnumName(op) << " ] =>" << endl;
             member1->printUsing(out, d + 1);
         }
 
@@ -179,7 +199,7 @@ namespace LANG_NAMESPACE {
         }
 
         void BinaryNode::printUsing(ostream & out, unsigned d) {
-            TAB << "Binary expression [ " << BaseOperator::getEnumName(op) << " ] => " << endl;
+            TAB << "Binary expression [ " << BaseOperator::getEnumName(op) << " ] =>" << endl;
             member1->printUsing(out, d + 1);
             member2->printUsing(out, d + 1);
         }
@@ -190,7 +210,7 @@ namespace LANG_NAMESPACE {
         }
 
         void TernaryNode::printUsing(ostream & out, unsigned d) {
-            TAB << "Ternary expression [ " << BaseOperator::getEnumName(op) << " ] => " << endl;
+            TAB << "Ternary expression [ " << BaseOperator::getEnumName(op) << " ] =>" << endl;
             member1->printUsing(out, d + 1);
             member2->printUsing(out, d + 1);
             member3->printUsing(out, d + 1);
@@ -205,23 +225,23 @@ namespace LANG_NAMESPACE {
         }
 
         void FunctionCallNode::printUsing(ostream & out, unsigned d) {
-            TAB << "Function call for [ " << endl;
+            TAB << "Function call for [" << endl;
             functionName->printUsing(out, d + 1);
             if (functionArguments->size() > 0) {
-                TAB << " ] with arguments ( " << endl;
+                TAB << "] with arguments (" << endl;
                 for (VectorNode::iterator arg = functionArguments->begin(); arg < functionArguments->end(); arg++) {
                     (*arg)->printUsing(out, d + 1);
                     out << string((d + 1) * 2, ' ') << ((arg != functionArguments->end() - 1) ? ", " : " ") << endl;
                 }
-                TAB << " )" << endl;
+                TAB << ")" << endl;
             } else
-                TAB << " ] without arguments" << endl;
+                TAB << "] without arguments" << endl;
         }
 
         AsyncNode::AsyncNode(AsyncType::Type t, SyntaxNode * i) : asyncType(t), item(i) { }
 
         void AsyncNode::printUsing(ostream & out, unsigned d) {
-            TAB << "Asyncronous element => " << endl;
+            TAB << "Asyncronous element =>" << endl;
             item->printUsing(out, d + 1);
         }
 
@@ -232,15 +252,15 @@ namespace LANG_NAMESPACE {
         void LambdaNode::printUsing(ostream & out, unsigned d) {
             TAB << "Lambda expression ";
             if (lambdaArguments->size() > 0) {
-                out << "with arguments ( " << endl;
+                out << "with arguments (" << endl;
                 for (VectorNode::iterator arg = lambdaArguments->begin(); arg < lambdaArguments->end(); arg++) {
                     (*arg)->printUsing(out, d + 1);
                     out << string((d + 1) * 2, ' ') << ((arg != lambdaArguments->end() - 1) ? ", " : " ") << endl;
                 }
-                TAB << " ) " << endl;
+                TAB << ") " << endl;
             } else
                 out << "without arguments ";
-            out << "using expression => " << endl;
+            out << "using expression =>" << endl;
             lambdaExpression->printUsing(out, d + 1);
         }
 

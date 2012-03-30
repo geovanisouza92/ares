@@ -11,11 +11,11 @@ namespace LANG_NAMESPACE {
         }
 
         void QueryNode::printUsing(ostream & out, unsigned d) {
-            TAB << "Query from [ " << endl;
+            TAB << "Query from [" << endl;
             queryOrigin->printUsing(out, d + 1);
-            TAB << " ]" << endl;
+            TAB << "]" << endl;
             if (queryBody != NULL) {
-                TAB << "using => " << endl;
+                TAB << "Producing => " << endl;
                 queryBody->printUsing(out, d + 1);
             }
         }
@@ -26,9 +26,9 @@ namespace LANG_NAMESPACE {
         }
 
         void QueryOriginNode::printUsing(ostream & out, unsigned d) {
-            TAB << "From => " << endl;
+            TAB << "From =>" << endl;
             originIdentifier->printUsing(out, d + 1);
-            TAB << "in " << endl;
+            TAB << "in" << endl;
             originExpression->printUsing(out, d + 1);
         }
 
@@ -52,12 +52,12 @@ namespace LANG_NAMESPACE {
         }
 
         void QueryBodyNode::printUsing(ostream & out, unsigned d) {
-            TAB << "Operations => " << endl;
+            TAB << "Operations =>" << endl;
             for (VectorNode::iterator b = queryBody->begin(); b < queryBody->end(); b++) {
                 (*b)->printUsing(out, d + 2);
             }
             if (queryFinally != NULL) {
-                TAB << "Finally => " << endl;
+                TAB << "Finally =>" << endl;
                 queryFinally->printUsing(out, d + 1);
             }
         }
@@ -68,7 +68,7 @@ namespace LANG_NAMESPACE {
         }
 
         void WhereNode::printUsing(ostream & out, unsigned d) {
-            TAB << "Where => " << endl;
+            TAB << "Where =>" << endl;
             whereExpression->printUsing(out, d + 1);
         }
 
@@ -79,18 +79,18 @@ namespace LANG_NAMESPACE {
         void JoinNode::printUsing(ostream & out, unsigned d) {
             switch (joinDirection) {
             case JoinType::Left:
-                TAB << "Left join => " << endl;
+                TAB << "Left join =>" << endl;
                 break;
             case JoinType::Right:
-                TAB << "Right join => " << endl;
+                TAB << "Right join =>" << endl;
                 break;
             default:
-                TAB << "Join => " << endl;
+                TAB << "Join =>" << endl;
                 break;
             }
-            TAB << "Origin => " << endl;
+            TAB << "Origin =>" << endl;
             joinOrigin->printUsing(out, d + 1);
-            TAB << "on expression => " << endl;
+            TAB << "on expression =>" << endl;
             joinExpression->printUsing(out, d + 1);
         }
 
@@ -117,7 +117,7 @@ namespace LANG_NAMESPACE {
         }
 
         void OrderByNode::printUsing(ostream & out, unsigned d) {
-            TAB << "Ordering => " << endl;
+            TAB << "Ordering =>" << endl;
             for (VectorNode::iterator order = orders->begin(); order < orders->end(); order++) {
                 (*order)->printUsing(out, d + 1);
                 TAB << ((order != orders->end() - 1) ? ", " : " ") << endl;
@@ -129,7 +129,7 @@ namespace LANG_NAMESPACE {
         }
 
         void GroupByNode::printUsing(ostream & out, unsigned d) {
-            TAB << "Grouping => " << endl;
+            TAB << "Grouping =>" << endl;
             groupExpression->printUsing(out, d + 1);
         }
 
@@ -141,13 +141,13 @@ namespace LANG_NAMESPACE {
         void RangeNode::printUsing(ostream & out, unsigned d) {
             switch (rangeType) {
             case RangeType::Skip:
-                TAB << "Skiping => " << endl;
+                TAB << "Skiping =>" << endl;
                 break;
             case RangeType::Step:
-                TAB << "Steping => " << endl;
+                TAB << "Steping =>" << endl;
                 break;
             case RangeType::Take:
-                TAB << "Taking => " << endl;
+                TAB << "Taking =>" << endl;
                 break;
             default:
                 break;
@@ -160,7 +160,7 @@ namespace LANG_NAMESPACE {
         }
 
         void SelectNode::printUsing(ostream & out, unsigned d) {
-            TAB << "Select => " << endl;
+            TAB << "Select =>" << endl;
             for (VectorNode::iterator select = selection->begin(); select < selection->end(); select++) {
                 (*select)->printUsing(out, d + 1);
                 TAB << ((select != selection->end() - 1) ? ", " : " ") << endl;

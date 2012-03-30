@@ -363,12 +363,12 @@ Statement
                 $$ = $1;
             }
         }
-        | kINCLUDE QualifiedId ';' /* {
+        | kINCLUDE QualifiedId ';' {
             // TODO Chamar comando do driver
             if (!driver.checkOnly) {
-                $$ = $1;
+                $$ = new IncludeNode($2);
             }
-        } */
+        }
         | VisibilityStatement {
             if (!driver.checkOnly) {
                 $$ = $1;
@@ -2129,12 +2129,14 @@ PrefixExpr
         }
         | kNEW FunctionCall %prec UNARY {
             if (!driver.checkOnly) {
-                $$ = new UnaryNode(BaseOperator::UnaryNew, $2);
+                // $$ = new UnaryNode(BaseOperator::UnaryNew, $2);
+                $$ = new NewNode(NewType::InstanceOf, $2);
             }
         }
         | kNEW kCLASS '(' NamedExpressionList ')' %prec UNARY {
             if (!driver.checkOnly) {
-                $$ = new UnaryNode(BaseOperator::UnaryNewClass, $4);
+                // $$ = new UnaryNode(BaseOperator::UnaryNewClass, $4);
+                $$ = new NewNode(NewType::AnonymousClass, $4);
             }
         }
         ;

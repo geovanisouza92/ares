@@ -10,3 +10,4 @@ Dependencies:
       + Boost >= 1.48
       + GDB Debugger
       + GIT >= 1.7.5.4
+      + Rake >= 0.9.2.2

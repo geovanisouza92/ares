@@ -124,12 +124,23 @@ namespace LANG_NAMESPACE {
     public:
         HashNode();
         HashNode(VectorNode *);
-        virtual void printUsing(ostream &, unsigned );
+        virtual void printUsing(ostream &, unsigned);
+    };
+
+    class NewNode : public SyntaxNode {
+    protected:
+        NewType::Type newType;
+        SyntaxNode * newInstanceOf;
+        VectorNode * newAnonymousClass;
+    public:
+        NewNode(NewType::Type, SyntaxNode *);
+        NewNode(NewType::Type, VectorNode *);
+        virtual void printUsing(ostream &, unsigned);
     };
 
     class ExpressionNode : public SyntaxNode {
     public:
-        virtual void printUsing(ostream &, unsigned ) = 0;
+        virtual void printUsing(ostream &, unsigned) = 0;
     };
 
     class UnaryNode : public ExpressionNode {

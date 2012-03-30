@@ -23,96 +23,106 @@ LIBS=[
   "boost_system"
 ]
 
-if ENV["debug"]
-CXXFLAGS="-O0 -g3 -emit-llvm -Wall -c -fmessage-length=0 -Wno-unused-function -Wno-logical-op-parentheses -Wno-switch-enum -DLANG_DEBUG=1"
-LDFLAGS="-v -native"
-YFLAGS="--debug -v --defines=parser.h"
-LFLAGS="--debug"
-elsif ENV["release"]
-CXXFLAGS="-O3 -emit-llvm -Wall -c -fmessage-length=0 -Wno-unused-function -Wno-logical-op-parentheses -Wno-switch-enum"
-LDFLAGS="-v"
-YFLAGS="-v --defines=parser.h"
-LFLAGS=""
+task :default => :debug
+
+task :debug do
+  CXXFLAGS="-O0 -g3 -emit-llvm -Wall -c -fmessage-length=0 -Wno-unused-function -Wno-logical-op-parentheses -Wno-switch-enum -DLANG_DEBUG=1"
+  LDFLAGS="-v -native"
+  YFLAGS="--debug -v --defines=parser.h"
+  LFLAGS="--debug"
+  Rake::Task['build:default'].invoke
+end
+
+task :release do
+  CXXFLAGS="-O3 -emit-llvm -Wall -c -fmessage-length=0 -Wno-unused-function -Wno-logical-op-parentheses -Wno-switch-enum"
+  LDFLAGS="-v"
+  YFLAGS="-v --defines=parser.h"
+  LFLAGS=""
+  Rake::Task['build:default'].invoke
 end
 
 BINFLAGS="--verbose=2"
 
-task :default => [ :clear, :bitcode, :link, :assembly, :native ]
+namespace :build do
 
-task :clear do
-  # Delete previous bitcode modules
-  MODULES.each do |mod|
-    File.delete("#{mod}.bc") if File.exists?("#{mod}.bc")
-  end
-  files_to_clean.flatten.each do |file|
-    # puts "Delete file #{file}"
-    File.delete(file) if File.exists?(file)
-  end
-end
+  task :default => [ :clear, :bitcode, :link, :assembly, :native ]
 
-task :bitcode do
-  # Check for each bitcode module
-  MODULES.each do |mod|
-    unless File.exists? "#{mod}.cpp"
-      case mod
-        when :parser
-          cmd = "bison #{YFLAGS} -o #{mod}.cpp #{mod}.yacc"
-          # puts cmd
-          system cmd
-        when :scanner
-          cmd = "flex #{LFLAGS} -o#{mod}.cpp #{mod}.lex"
-          # puts cmd
-          system cmd
+  task :clear do
+    # Delete previous bitcode modules
+    MODULES.each do |mod|
+      File.delete("#{mod}.bc") if File.exists?("#{mod}.bc")
+    end
+    files_to_clean.flatten.each do |file|
+      # puts "Delete file #{file}"
+      File.delete(file) if File.exists?(file)
+    end
+  end
+
+  task :bitcode do
+    # Check for each bitcode module
+    MODULES.each do |mod|
+      unless File.exists? "#{mod}.cpp"
+        case mod
+          when :parser
+            cmd = "bison #{YFLAGS} -o #{mod}.cpp #{mod}.yacc"
+            # puts cmd
+            system cmd
+          when :scanner
+            cmd = "flex #{LFLAGS} -o#{mod}.cpp #{mod}.lex"
+            # puts cmd
+            system cmd
+          end
         end
-      end
-    # Generate bitcode for each file.cpp
-    cmd = "clang++ #{CXXFLAGS} -o #{mod}.bc #{mod}.cpp"
+      # Generate bitcode for each file.cpp
+      cmd = "clang++ #{CXXFLAGS} -o #{mod}.bc #{mod}.cpp"
+      # puts cmd
+      system cmd
+    end
+  end
+
+  task :link do
+    # Link bitcode files into one bitcode
+    cmd = "llvm-ld "
+    cmd << "#{LDFLAGS} "
+    cmd << "-o #{BINARY} "
+    MODULES.each do |mod|
+      cmd << "#{mod}.bc "
+    end
+    LIBDIRS.each do |libdir|
+      cmd << "-L#{libdir} "
+    end
+    LIBS.each do |lib|
+      cmd << "-l#{lib} "
+    end
     # puts cmd
     system cmd
   end
-end
 
-task :link do
-  # Link bitcode files into one bitcode
-  cmd = "llvm-ld "
-  cmd << "#{LDFLAGS} "
-  cmd << "-o #{BINARY} "
-  MODULES.each do |mod|
-    cmd << "#{mod}.bc "
+  task :assembly do
+    # Generate assembly code
+    cmd = "llc -x86-asm-syntax=att -o #{BINARY}.s #{BINARY}.bc"
+    # puts cmd
+    system cmd
   end
-  LIBDIRS.each do |libdir|
-    cmd << "-L#{libdir} "
-  end
-  LIBS.each do |lib|
-    cmd << "-l#{lib} "
-  end
-  # puts cmd
-  system cmd
-end
 
-task :assembly do
-  # Generate assembly code
-  cmd = "llc -x86-asm-syntax=att -o #{BINARY}.s #{BINARY}.bc"
-  # puts cmd
-  system cmd
-end
-
-task :native do
-  # Generate native executable
-  cmd = "gcc -fno-strict-aliasing -O3 -o #{BINARY} #{BINARY}.s "
-  LIBDIRS.each do |libdir|
-    cmd << "-L#{libdir} "
+  task :native do
+    # Generate native executable
+    cmd = "gcc -fno-strict-aliasing -O3 -o #{BINARY} #{BINARY}.s "
+    LIBDIRS.each do |libdir|
+      cmd << "-L#{libdir} "
+    end
+    LIBS.each do |lib|
+      cmd << "-l#{lib} "
+    end
+    # puts cmd
+    system cmd
   end
-  LIBS.each do |lib|
-    cmd << "-l#{lib} "
-  end
-  # puts cmd
-  system cmd
-end
 
-task :test do
-  test_files=Dir.glob("tests/*.ar")
-  cmd = "#{BINARY} #{BINFLAGS} #{test_files.flatten.join(" ")}"
-  # puts cmd
-  system cmd
+  task :test do
+    test_files=Dir.glob("tests/*.ar")
+    cmd = "./#{BINARY} #{BINFLAGS} #{test_files.flatten.join(" ")}"
+    # puts cmd
+    system cmd
+  end
+
 end
