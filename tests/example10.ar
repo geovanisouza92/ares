@@ -1,12 +1,12 @@
 module Sistema
 
   class Endereco
-    var Tipo: Integer;
-    var Endereco: String;
-    var Bairro: String;
-    var Cep: String;
-    var Cidade: String;
-    var Estabegin: String;
+    attr Tipo: Integer;
+    attr Endereco: String;
+    attr Bairro: String;
+    attr Cep: String;
+    attr Cidade: String;
+    attr Estado: String;
     
     def Endereco()
     begin
@@ -15,9 +15,9 @@ module Sistema
   end
 
   class Telefone
-    var Tipo: Integer;
-    var CodigoDaCidade: Integer;
-    var Numero: String; # Adicionar pattern
+    attr Tipo: Integer;
+    attr CodigoDaCidade: Integer;
+    attr Numero: String; # Adicionar pattern
     
     def Telefone()
     begin
@@ -26,8 +26,8 @@ module Sistema
   end
 
   class Email
-    var Tipo: Integer;
-    var Email: String; # Adicionar pattern
+    attr Tipo: Integer;
+    attr Email: String; # Adicionar pattern
     
     def Email()
     begin
@@ -36,7 +36,7 @@ module Sistema
   end
 
    class Pessoa
-    var Nome: String; # invariants not nil
+    attr Nome: String; # invariants not nil
     
     def Pessoa()
     begin
@@ -45,9 +45,9 @@ module Sistema
   end
 
   class PessoaFisica > Pessoa
-    var Sexo: Integer;
-    var DataNascimento: Date;
-    var CPF: String; # Adicionar pattern
+    attr Sexo: Integer;
+    attr DataNascimento: Date;
+    attr CPF: String; # Adicionar pattern
     
     def PessoaFisica()
     begin
@@ -56,8 +56,8 @@ module Sistema
   end
 
   class PessoaJuridica > Pessoa
-    var CNPJ: String; # Adicionar pattern
-    var NomeFantasia: String;
+    attr CNPJ: String; # Adicionar pattern
+    attr NomeFantasia: String;
     
     def PessoaJuridica()
     begin
@@ -66,9 +66,9 @@ module Sistema
   end
 
   class Funcionario > PessoaFisica
-    var Matricula: Integer;
-    var Cargo: String;
-    var DataAdmissao: Date;
+    attr Matricula: Integer;
+    attr Cargo: String;
+    attr DataAdmissao: Date;
     
     def Funcionario()
     begin
@@ -77,7 +77,7 @@ module Sistema
   end
 
   class Cliente > PessoaFisica
-    var Tipo: Integer;
+    attr Tipo: Integer;
     
     def Cliente()
     begin
@@ -86,9 +86,9 @@ module Sistema
   end
 
   class Prato
-    var Nome: String;
-    var Descricao: String;
-    var Preco: Float;
+    attr Nome: String;
+    attr Descricao: String;
+    attr Preco: Float;
     
     def Prato()
     begin
@@ -97,7 +97,7 @@ module Sistema
   end
 
   class ItemDoPedido
-    var Quantidade: Float;
+    attr Quantidade: Float;
     
     def ItemDoPedido()
     begin
@@ -106,8 +106,8 @@ module Sistema
   end
 
   class Pedido
-    var DataHora: DateTime;
-    var FormaDePagamento: Integer;
+    attr DataHora: DateTime;
+    attr FormaDePagamento: Integer;
     
     def Pedido()
     begin

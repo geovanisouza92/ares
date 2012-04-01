@@ -10,12 +10,8 @@ using namespace LANG_NAMESPACE::Enum;
 namespace LANG_NAMESPACE {
     namespace SyntaxTree {
 
-        class StatementNode: public SyntaxNode {
-        public:
-            virtual void printUsing(ostream &, unsigned) = 0;
-        };
-
-        class ConditionNode: public StatementNode {
+    	// TODO Dividir em IfNode e UnlessNode
+        class ConditionNode: public SyntaxNode {
         protected:
             ConditionType::Type conditionOperator;
             SyntaxNode * conditionExpression;
@@ -29,19 +25,19 @@ namespace LANG_NAMESPACE {
             virtual void printUsing(ostream &, unsigned);
         };
 
-        class CaseNode: public StatementNode {
+        class CaseNode: public SyntaxNode {
         protected:
             SyntaxNode * caseExpression;
             VectorNode * caseWhen;
-            SyntaxNode * caseElse;
+            VectorNode * caseElse;
         public:
             CaseNode(SyntaxNode *);
             virtual CaseNode * setWhen(VectorNode *);
-            virtual CaseNode * setElse(SyntaxNode *);
+            virtual CaseNode * setElse(VectorNode *);
             virtual void printUsing(ostream &, unsigned);
         };
 
-        class WhenNode: public StatementNode {
+        class WhenNode: public SyntaxNode {
         protected:
             SyntaxNode * whenExpression;
             SyntaxNode * whenBlock;
@@ -50,7 +46,7 @@ namespace LANG_NAMESPACE {
             virtual void printUsing(ostream &, unsigned);
         };
 
-        class ForNode: public StatementNode {
+        class ForNode: public SyntaxNode {
         protected:
             LoopType::Type forType;
             SyntaxNode * forLhs;
@@ -63,7 +59,8 @@ namespace LANG_NAMESPACE {
             virtual void printUsing(ostream &, unsigned);
         };
 
-        class LoopNode: public StatementNode {
+        // TODO Dividir em WhileNode e UntilNode
+        class LoopNode: public SyntaxNode {
         protected:
             LoopType::Type loopType;
             SyntaxNode * loopExpression;
@@ -73,7 +70,7 @@ namespace LANG_NAMESPACE {
             virtual void printUsing(ostream &, unsigned);
         };
 
-        class ControlNode: public StatementNode {
+        class ControlNode: public SyntaxNode {
         protected:
             ControlType::Type controlType;
             SyntaxNode * controlExpression;
@@ -83,7 +80,7 @@ namespace LANG_NAMESPACE {
             virtual void printUsing(ostream &, unsigned);
         };
 
-        class BlockNode: public StatementNode {
+        class BlockNode: public SyntaxNode {
         protected:
             VectorNode * blockRequire;
             VectorNode * blockEnsure;
@@ -97,7 +94,7 @@ namespace LANG_NAMESPACE {
             virtual void printUsing(ostream &, unsigned);
         };
 
-        class ValidationNode: public StatementNode {
+        class ValidationNode: public SyntaxNode {
         protected:
             SyntaxNode * validationExpression;
             SyntaxNode * validationRaise;
@@ -106,7 +103,7 @@ namespace LANG_NAMESPACE {
             virtual void printUsing(ostream &, unsigned);
         };
 
-        class VariableNode: public StatementNode {
+        class VariableNode: public SyntaxNode {
         protected:
             VectorNode * variables;
         public:
@@ -114,7 +111,7 @@ namespace LANG_NAMESPACE {
             virtual void printUsing(ostream &, unsigned);
         };
 
-        class ElementNode: public StatementNode {
+        class ElementNode: public SyntaxNode {
         protected:
             SyntaxNode * elementName;
             SyntaxNode * elementType;
@@ -128,7 +125,7 @@ namespace LANG_NAMESPACE {
             virtual void printUsing(ostream &, unsigned);
         };
 
-        class ConstantNode: public StatementNode {
+        class ConstantNode: public SyntaxNode {
         protected:
             VectorNode * constants;
             public:
@@ -136,7 +133,7 @@ namespace LANG_NAMESPACE {
             virtual void printUsing(ostream &, unsigned);
         };
 
-        class InterceptNode: public StatementNode {
+        class InterceptNode: public SyntaxNode {
         protected:
             InterceptionType::Type interceptionType;
             VectorNode * interceptionItems;
@@ -145,7 +142,7 @@ namespace LANG_NAMESPACE {
             virtual void printUsing(ostream &, unsigned);
         };
 
-        class FunctionNode: public StatementNode {
+        class FunctionNode: public SyntaxNode {
         protected:
             vector<SpecifierType::Type> functionSpecifiers;
             SyntaxNode * functionName;
@@ -162,7 +159,7 @@ namespace LANG_NAMESPACE {
             virtual void printUsing(ostream &, unsigned);
         };
 
-        class EventNode: public StatementNode {
+        class EventNode: public SyntaxNode {
         protected:
             SyntaxNode * eventName;
             SyntaxNode * eventIntercept;
@@ -174,9 +171,8 @@ namespace LANG_NAMESPACE {
             virtual void printUsing(ostream &, unsigned);
         };
 
-        class AttributeNode: public StatementNode {
+        class AttributeNode: public SyntaxNode {
         protected:
-//            vector<SpecifierType::Type> attributeSpecifiers;
             SyntaxNode * attributeName;
             SyntaxNode * attributeReturnType;
             SyntaxNode * attributeInitialValue;
@@ -190,11 +186,10 @@ namespace LANG_NAMESPACE {
             virtual AttributeNode * setAttributeGetter(SyntaxNode *);
             virtual AttributeNode * setAttributeSetter(SyntaxNode *);
             virtual AttributeNode * setAttributeInvariants(SyntaxNode *);
-//            virtual AttributeNode * addSpecifier(SpecifierType::Type);
             virtual void printUsing(ostream &, unsigned);
         };
 
-        class IncludeNode: public StatementNode {
+        class IncludeNode: public SyntaxNode {
         protected:
             SyntaxNode * includeItem;
         public:
@@ -202,7 +197,7 @@ namespace LANG_NAMESPACE {
             virtual void printUsing(ostream &, unsigned);
         };
 
-        class ClassNode: public StatementNode {
+        class ClassNode: public SyntaxNode {
         protected:
             vector<SpecifierType::Type> classSpecifiers;
             SyntaxNode * className;
@@ -216,7 +211,7 @@ namespace LANG_NAMESPACE {
             virtual void printUsing(ostream &, unsigned);
         };
 
-        class ImportNode: public StatementNode {
+        class ImportNode: public SyntaxNode {
         protected:
             VectorNode * importMembers;
             SyntaxNode * importOrigin;
@@ -226,7 +221,7 @@ namespace LANG_NAMESPACE {
             virtual void printUsing(ostream &, unsigned);
         };
 
-        class ModuleNode: public StatementNode {
+        class ModuleNode: public SyntaxNode {
         protected:
             SyntaxNode * moduleName;
             VectorNode * moduleStatements;

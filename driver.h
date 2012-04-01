@@ -49,21 +49,11 @@ namespace LANG_NAMESPACE {
             virtual void hint(const string&);
             virtual string resumeMessages();
 
-            virtual inline void syntaxOkFor(const string what) {
-                cout << "=> Syntax OK for " << COLOR_BGREEN << what << COLOR_RESET << endl;
-            }
-            virtual inline void resetLines() {
-                totalLines += lines;
-                lines = 0;
-            }
-            virtual inline void incLines() {
-                ++lines;
-            }
-            virtual inline void decLines() {
-                --lines;
-            }
-
-            virtual void produce(FinallyAction::Action, ostream&);
+            virtual inline void syntaxOkFor(const string);
+            virtual inline void resetLines();
+            virtual inline void incLines();
+            virtual inline void decLines();
+            virtual void produce(FinallyAction::Action, ostream &);
         };
 
     } // Compiler

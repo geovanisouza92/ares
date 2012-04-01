@@ -1,7 +1,7 @@
 
-%{
-
 /* Ares Programming Language */
+
+%{
 
 #include <string>
 #include <vector>
@@ -46,11 +46,9 @@ using namespace SyntaxTree;
 #define yylex driver.lexer->lex
 %}
 
-// TODO Reorder items
-
 %token          sEOF    0   "end of file"
 
-%token  <v_str> ID         "identifier"
+%token  <v_str> ID         "IdentifierLiteral"
 %token  <v_flt> FLOAT      "float"
 %token  <v_int> INTEGER    "integer"
 %token  <v_str> STRING     "string"
@@ -70,7 +68,6 @@ using namespace SyntaxTree;
 %token  kCASE       "case"
 %token  kCLASS      "class"
 %token  kCONST      "const"
-%token  kCONTINUE   "continue"
 %token  kDEF        "def"
 %token  kDESC       "desc"
 %token  kDO         "do"
@@ -79,7 +76,6 @@ using namespace SyntaxTree;
 %token  kEND        "end"
 %token  kENSURE     "ensure"
 %token  kEVENT      "event"
-// %token  kEXIT       "exit"
 %token  kFALSE      "false"
 %token  kFOR        "for"
 %token  kFROM       "from"
@@ -92,11 +88,8 @@ using namespace SyntaxTree;
 %token  kINCLUDE    "include"
 %token  kINVARIANTS "invariants"
 %token  kIN         "in"
-// %token  kIS         "is"
 %token  kJOIN       "join"
-// %token  kLAMBDA     "lambda"
 %token  kLEFT       "left"
-// %token  kMETHOD     "method"
 %token  kMODULE     "module"
 %token  kNEW        "new"
 %token  kNIL        "nil"
@@ -115,7 +108,6 @@ using namespace SyntaxTree;
 %token  kRIGHT      "right"
 %token  kSEALED     "sealed"
 %token  kSELECT     "select"
-// %token  kSELF       "self"
 %token  kSET        "set"
 %token  kSIGNAL     "signal"
 %token  kSKIP       "skip"
@@ -138,21 +130,20 @@ using namespace SyntaxTree;
 %token  sMUE    "*="
 %token  sDIE    "/="
 
-// %token  sDEF    "=>"
 %token  '?'     "?"
 %token  ':'     ":"
 %token  sEQL    "=="
+%token  sNEQ    "!="
 %token  sIDE    "==="
 %token  sNID    "!=="
-%token  sNEQ    "!="
 %token  '<'     "<"
 %token  sLEE    "<="
 %token  '>'     ">"
 %token  sGEE    ">="
 %token  sMAT    "=~"
 %token  sNMA    "!~"
-%token  sRGO    ".."
-%token  sRGI    "..."
+%token  sRAE    ".."
+%token  sRAI    "..."
 %token  '+'     "+"
 %token  '-'     "-"
 %token  '*'     "*"
@@ -172,92 +163,98 @@ using namespace SyntaxTree;
 
 %nonassoc ID FLOAT INTEGER STRING REGEX kTRUE kFALSE
 
-%left   sEQL sIDE sNID sNEQ sLEE sGEE sRGO sRGI sPOW sADE sSUE sMUE sDIE // sDEF
+%left   sEQL sIDE sNID sNEQ sLEE sGEE sRAE sRAI sPOW sADE sSUE sMUE sDIE
 %left   kAND kOR kXOR kIMPLIES
-%left   '=' '?' ':' '<' '>' '+' '-' '*' '/' // '|'
-%right  UNARY
+%left   '=' '?' ':' '<' '>' '+' '-' '*' '/'
+%right  UNARY kASYNC
 
-%type   <v_node>    Value
-%type   <v_node>    String
-%type   <v_node>    Identifier
-%type   <v_node>    Array
-%type   <v_node>    Hash
-%type   <v_node>    NamedExpression
-%type   <v_node>    QualifiedId
-%type   <v_node>    FunctionCall
-%type   <v_node>    ParamValue
-%type   <v_node>    SuffixExpr
-%type   <v_node>    PrefixExpr
-%type   <v_node>    PowerExpr
-%type   <v_node>    MultExpr
-%type   <v_node>    AddExpr
-%type   <v_node>    RangeExpr
-%type   <v_node>    ComparisonExpr
-%type   <v_node>    LogicExpr
-%type   <v_node>    TernaryExpr
-%type   <v_node>    AssignValue
-%type   <v_node>    AssignExpr
-%type   <v_node>    LambdaExpr
-%type   <v_node>    QueryExpr
-%type   <v_node>    QueryBody
-%type   <v_node>    QueryOrigin
-%type   <v_node>    QueryBodyClause
-%type   <v_node>    JoinClause
-%type   <v_node>    OrderingItem
-%type   <v_node>    RangeClause
-%type   <v_node>    SelectsOrGroupClause
-%type   <v_node>    Expression
-%type   <v_node>    LoopStatement
-%type   <v_node>    RetryStatement
-%type   <v_node>    YieldStatement
-// %type   <v_node>    AsyncStatement
-%type   <v_node>    RaiseStatement
-%type   <v_node>    ReturnStatement
-%type   <v_node>    ForStatement
+%type   <v_node>    Statement
+%type   <v_node>    ModuleDeclaration
+%type   <v_node>    ClassDeclaration
+%type   <v_node>    ClassMember
+%type   <v_node>    VisibilityDeclaration
+%type   <v_node>    AbstractClassFunctionDeclaration
+%type   <v_node>    InterceptClause
+%type   <v_node>    ClassFunctionDeclaration
+%type   <v_node>    ReturnType
+%type   <v_node>    AttributeDeclaration
+%type   <v_node>    InitialValue
+%type   <v_node>    AttributeGetter
+%type   <v_node>    AttributeSetter
+%type   <v_node>    Invariants
+%type   <v_node>    Condition
+%type   <v_node>    EventDeclaration
+%type   <v_node>    FunctionDeclaration
+%type   <v_node>    VariableDeclaration
+%type   <v_node>    Variable
+%type   <v_node>    ConstantDeclaration
+%type   <v_node>    Constant
+%type   <v_node>    ImportStatement
+%type   <v_node>    IncludeStatement
+%type   <v_node>    IfStatement
+%type   <v_node>    ElifStatement
+%type   <v_node>    UnlessStatement
 %type   <v_node>    CaseStatement
 %type   <v_node>    WhenClause
-%type   <v_node>    ConditionalStatement
-%type   <v_node>    ElifStatement
-%type   <v_node>    WhenRescueClause
-%type   <v_node>    Condition
-%type   <v_node>    StatementBlock
-%type   <v_node>    Constant
-%type   <v_node>    ConstantDecl
-%type   <v_node>    Variable
-%type   <v_node>    VariableDecl
-%type   <v_node>    InitialValue
-%type   <v_node>    ReturnType
-%type   <v_node>    InvariantsClause
-%type   <v_node>    InterceptClause
-%type   <v_node>    RealFunctionDecl
-%type   <v_node>    FunctionDecl
-%type   <v_node>    EventDecl
-%type   <v_node>    AttributeDecl
-%type   <v_node>    Getter
-%type   <v_node>    Setter
-%type   <v_node>    VisibilityStatement
-%type   <v_node>    ClassDecl
-%type   <v_node>    ImportStatement
-%type   <v_node>    ModuleDecl
-%type   <v_node>    Statement
+%type   <v_node>    ForStatement
+%type   <v_node>    WhileStatement
+%type   <v_node>    UntilStatement
+%type   <v_node>    BreakStatement
+%type   <v_node>    RaiseStatement
+%type   <v_node>    RetryStatement
+%type   <v_node>    ReturnStatement
+%type   <v_node>    YieldStatement
+%type   <v_node>    BlockStatement
+%type   <v_node>    Expression
+%type   <v_node>    LambdaExpression
+%type   <v_node>    AssignmentExpression
+%type   <v_node>    AssignmentValue
+%type   <v_node>    QueryExpression
+%type   <v_node>    QueryOrigin
+%type   <v_node>    QueryBody
+%type   <v_node>    QueryBodyMember
+%type   <v_node>    JoinClause
+%type   <v_node>    OrderExpression
+%type   <v_node>    RangeClause
+%type   <v_node>    SelectOrGroupClause
+%type   <v_node>    TernaryExpression
+%type   <v_node>    LogicExpression
+%type   <v_node>    ComparisonExpression
+%type   <v_node>    RangeExpression
+%type   <v_node>    AdditionExpression
+%type   <v_node>    MultiplicationExpression
+%type   <v_node>    PowerExpression
+%type   <v_node>    PrefixExpression
+%type   <v_node>    SuffixExpression
+%type   <v_node>    LiteralValue
+%type   <v_node>    BooleanLiteral
+%type   <v_node>    FloatLiteral
+%type   <v_node>    IntegerLiteral
+%type   <v_node>    RegexLiteral
+%type   <v_node>    StringLiteral
+%type   <v_node>    ArrayLiteral
+%type   <v_node>    HashLiteral
+%type   <v_node>    NamedExpression
+%type   <v_node>    FunctionCall
+%type   <v_node>    QualifiedId
+%type   <v_node>    IdentifierLiteral
 
-%type   <v_list>    ExpressionList
-%type   <v_list>    NamedExpressionList
-%type   <v_list>    ParamValueList
+%type   <v_list>    StatementRepeat
+%type   <v_list>    ClassMemberRepeat
+%type   <v_list>    IdentifierList
 %type   <v_list>    FormalParamList
 %type   <v_list>    VariableList
-%type   <v_list>    QueryBodyClauseRepeat
-%type   <v_list>    OrderingItemList
-%type   <v_list>    WhenClauseRepeat
-%type   <v_list>    ElifStatementRepeat
-%type   <v_list>    WhenRescueClauseRepeat
-%type   <v_list>    RequireClause
-%type   <v_list>    RescueClause
-%type   <v_list>    EnsureClause
-%type   <v_list>    Conditions
 %type   <v_list>    ConstantList
-%type   <v_list>    IdentifierList
-%type   <v_list>    Statements
+%type   <v_list>    ElifStatementRepeat
+%type   <v_list>    WhenClauseRepeat
+%type   <v_list>    RequireClause
+%type   <v_list>    ConditionRepeat
+%type   <v_list>    EnsureClause
+%type   <v_list>    RescueClause
+%type   <v_list>    QueryBodyMemberRepeat
+%type   <v_list>    OrderExpressionList
+%type   <v_list>    ExpressionList
+%type   <v_list>    NamedExpressionList
 
 %%
 
@@ -266,21 +263,21 @@ Program
             driver.decLines();
             driver.warning("Nothing to do here.");
         }
-        | Statements {
+        | StatementRepeat {
             if (!driver.checkOnly) {
                 driver.enviro->putStatements($1);
             }
         }
         ;
 
-Statements
+StatementRepeat
         : Statement {
             if (!driver.checkOnly) {
                 $$ = new VectorNode();
                 $$->push_back($1);
             }
         }
-        | Statements Statement {
+        | StatementRepeat Statement {
             if (!driver.checkOnly) {
                 $$->push_back($2);
             }
@@ -288,103 +285,42 @@ Statements
         ;
 
 Statement
-        : Expression ';' {
+        : ModuleDeclaration {
             if (!driver.checkOnly) {
                 $$ = $1;
             }
         }
-        | VariableDecl ';' {
+        | ClassDeclaration ';' {
             if (!driver.checkOnly) {
                 $$ = $1;
             }
         }
-        | ConstantDecl ';' {
+        | ClassDeclaration ClassMemberRepeat kEND {
             if (!driver.checkOnly) {
                 $$ = $1;
             }
         }
-        | StatementBlock {
+        | FunctionDeclaration ';' {
             if (!driver.checkOnly) {
                 $$ = $1;
             }
         }
-        | ConditionalStatement {
+        | FunctionDeclaration BlockStatement {
             if (!driver.checkOnly) {
                 $$ = $1;
             }
         }
-        | CaseStatement {
+        | VariableDeclaration ';' {
             if (!driver.checkOnly) {
                 $$ = $1;
             }
         }
-        | ForStatement {
+        | ConstantDeclaration ';' {
             if (!driver.checkOnly) {
                 $$ = $1;
             }
         }
-        | LoopStatement {
-            if (!driver.checkOnly) {
-                $$ = $1;
-            }
-        }
-        // | AsyncStatement {
-        //     if (!driver.checkOnly) {
-        //         $$ = $1;
-        //     }
-        // }
-        | YieldStatement ';' {
-            if (!driver.checkOnly) {
-                $$ = $1;
-            }
-        }
-        | kBREAK ';' {
-            if (!driver.checkOnly) {
-                $$ = new ControlNode(ControlType::Break);
-            }
-        }
-        | kCONTINUE ';' {
-            if (!driver.checkOnly) {
-                $$ = new ControlNode(ControlType::Continue);
-            }
-        }
-        | RetryStatement ';' {
-            if (!driver.checkOnly) {
-                $$ = $1;
-            }
-        }
-        | RaiseStatement ';' {
-            if (!driver.checkOnly) {
-                $$ = $1;
-            }
-        }
-        | ReturnStatement ';' {
-            if (!driver.checkOnly) {
-                $$ = $1;
-            }
-        }
-        | kINCLUDE QualifiedId ';' {
-            // TODO Chamar comando do driver
-            if (!driver.checkOnly) {
-                $$ = new IncludeNode($2);
-            }
-        }
-        | VisibilityStatement {
-            if (!driver.checkOnly) {
-                $$ = $1;
-            }
-        }
-        | AttributeDecl ';' {
-            if (!driver.checkOnly) {
-                $$ = $1;
-            }
-        }
-        | EventDecl ';' {
-            if (!driver.checkOnly) {
-                $$ = $1;
-            }
-        }
-        | ModuleDecl {
+        | Expression ';' {
             if (!driver.checkOnly) {
                 $$ = $1;
             }
@@ -394,39 +330,110 @@ Statement
                 $$ = $1;
             }
         }
-        | ClassDecl ';' {
+        | IncludeStatement ';' {
             if (!driver.checkOnly) {
                 $$ = $1;
             }
         }
-        | ClassDecl Statements kEND {
-            if (!driver.checkOnly) {
-                ((ClassNode *) $1)
-                  ->addStatements($2);
-                $$ = $1;
-            }
-        }
-        | FunctionDecl ';' {
+        | IfStatement {
             if (!driver.checkOnly) {
                 $$ = $1;
             }
         }
-        | RealFunctionDecl StatementBlock {
+        | kASYNC IfStatement {
             if (!driver.checkOnly) {
-                ((FunctionNode *) $1)
-                  ->setBlock($2);
+                $$ = new AsyncNode($2);
+            }
+        }
+        | UnlessStatement {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | kASYNC UnlessStatement {
+            if (!driver.checkOnly) {
+                $$ = new AsyncNode($2);
+            }
+        }
+        | CaseStatement {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | kASYNC CaseStatement {
+            if (!driver.checkOnly) {
+                $$ = new AsyncNode($2);
+            }
+        }
+        | ForStatement {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | kASYNC ForStatement {
+            if (!driver.checkOnly) {
+                $$ = new AsyncNode($2);
+            }
+        }
+        | WhileStatement {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | kASYNC WhileStatement {
+            if (!driver.checkOnly) {
+                $$ = new AsyncNode($2);
+            }
+        }
+        | UntilStatement {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | kASYNC UntilStatement {
+            if (!driver.checkOnly) {
+                $$ = new AsyncNode($2);
+            }
+        }
+        | RaiseStatement ';' {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | RetryStatement ';' {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | BreakStatement ';' {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | ReturnStatement ';' {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | YieldStatement ';' {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | BlockStatement {
+            if (!driver.checkOnly) {
                 $$ = $1;
             }
         }
         ;
 
-ModuleDecl
+ModuleDeclaration
         : kMODULE QualifiedId kEND {
             if (!driver.checkOnly) {
                 $$ = new ModuleNode($2);
             }
         }
-        | kMODULE QualifiedId Statements kEND {
+        | kMODULE QualifiedId StatementRepeat kEND {
             if (!driver.checkOnly) {
                 $$ = new ModuleNode($2);
                 ((ModuleNode *) $$)
@@ -435,96 +442,27 @@ ModuleDecl
         }
         ;
 
-ImportStatement
-        : kIMPORT IdentifierList {
-            if (!driver.checkOnly) {
-                $$ = new ImportNode($2);
-            }
-        }
-        | kFROM String kIMPORT IdentifierList {
-            if (!driver.checkOnly) {
-                $$ = new ImportNode($4);
-                ((ImportNode *) $$)
-                  ->setImportOrigin($2);
-            }
-        }
-        | kFROM QualifiedId kIMPORT IdentifierList {
-            if (!driver.checkOnly) {
-                $$ = new ImportNode($4);
-                ((ImportNode *) $$)
-                  ->setImportOrigin($2);
-            }
-        }
-        ;
-
-ClassDecl
-        : kCLASS Identifier {
+ClassDeclaration
+        : kCLASS IdentifierLiteral {
             if (!driver.checkOnly) {
                 $$ = new ClassNode($2);
             }
         }
-        | kCLASS Identifier '>' QualifiedId { // IdentifierList
+        | kCLASS IdentifierLiteral '>' QualifiedId {
             if (!driver.checkOnly) {
                 $$ = new ClassNode($2);
                 ((ClassNode *) $$)
                   ->setClassHeritance($4);
             }
         }
-        | kABSTRACT kCLASS Identifier {
-            if (!driver.checkOnly) {
-                $$ = new ClassNode($3);
-                ((ClassNode *) $$)
-                  ->addSpecifier(SpecifierType::Abstract);
-            }
-        }
-        | kSEALED kCLASS Identifier {
-            if (!driver.checkOnly) {
-                $$ = new ClassNode($3);
-                ((ClassNode *) $$)
-                  ->addSpecifier(SpecifierType::Sealed);
-            }
-        }
-        | kABSTRACT kCLASS Identifier '>' QualifiedId { // IdentifierList
-            if (!driver.checkOnly) {
-                $$ = new ClassNode($3);
-                ((ClassNode *) $$)
-                  ->setClassHeritance($5)
-                  ->addSpecifier(SpecifierType::Abstract);
-            }
-        }
-        | kSEALED kCLASS Identifier '>' QualifiedId { // IdentifierList
-            if (!driver.checkOnly) {
-                $$ = new ClassNode($3);
-                ((ClassNode *) $$)
-                  ->setClassHeritance($5)
-                  ->addSpecifier(SpecifierType::Sealed);
-            }
-        }
-        | kABSTRACT kSEALED kCLASS Identifier {
-            if (!driver.checkOnly) {
-                $$ = new ClassNode($4);
-                ((ClassNode *) $$)
-                  ->addSpecifier(SpecifierType::Abstract)
-                  ->addSpecifier(SpecifierType::Sealed);
-            }
-        }
-        | kABSTRACT kSEALED kCLASS Identifier '>' QualifiedId { // IdentifierList
-            if (!driver.checkOnly) {
-                $$ = new ClassNode($4);
-                ((ClassNode *) $$)
-                  ->setClassHeritance($6)
-                  ->addSpecifier(SpecifierType::Abstract)
-                  ->addSpecifier(SpecifierType::Sealed);
-            }
-        }
-        | kASYNC kCLASS Identifier {
+        | kASYNC kCLASS IdentifierLiteral {
             if (!driver.checkOnly) {
                 $$ = new ClassNode($3);
                 ((ClassNode *) $$)
                   ->addSpecifier(SpecifierType::Async);
             }
         }
-        | kASYNC kCLASS Identifier '>' QualifiedId { // IdentifierList
+        | kASYNC kCLASS IdentifierLiteral '>' QualifiedId {
             if (!driver.checkOnly) {
                 $$ = new ClassNode($3);
                 ((ClassNode *) $$)
@@ -532,7 +470,22 @@ ClassDecl
                   ->addSpecifier(SpecifierType::Async);
             }
         }
-        | kSEALED kASYNC kCLASS Identifier {
+        | kSEALED kCLASS IdentifierLiteral {
+            if (!driver.checkOnly) {
+                $$ = new ClassNode($3);
+                ((ClassNode *) $$)
+                  ->addSpecifier(SpecifierType::Sealed);
+            }
+        }
+        | kSEALED kCLASS IdentifierLiteral '>' QualifiedId {
+            if (!driver.checkOnly) {
+                $$ = new ClassNode($3);
+                ((ClassNode *) $$)
+                  ->setClassHeritance($5)
+                  ->addSpecifier(SpecifierType::Sealed);
+            }
+        }
+        | kSEALED kASYNC kCLASS IdentifierLiteral {
             if (!driver.checkOnly) {
                 $$ = new ClassNode($4);
                 ((ClassNode *) $$)
@@ -540,7 +493,7 @@ ClassDecl
                   ->addSpecifier(SpecifierType::Async);
             }
         }
-        | kSEALED kASYNC kCLASS Identifier '>' QualifiedId { // IdentifierList
+        | kSEALED kASYNC kCLASS IdentifierLiteral '>' QualifiedId {
             if (!driver.checkOnly) {
                 $$ = new ClassNode($4);
                 ((ClassNode *) $$)
@@ -549,7 +502,22 @@ ClassDecl
                   ->addSpecifier(SpecifierType::Async);
             }
         }
-        | kABSTRACT kASYNC kCLASS Identifier {
+        | kABSTRACT kCLASS IdentifierLiteral {
+            if (!driver.checkOnly) {
+                $$ = new ClassNode($3);
+                ((ClassNode *) $$)
+                  ->addSpecifier(SpecifierType::Abstract);
+            }
+        }
+        | kABSTRACT kCLASS IdentifierLiteral '>' QualifiedId {
+            if (!driver.checkOnly) {
+                $$ = new ClassNode($3);
+                ((ClassNode *) $$)
+                  ->setClassHeritance($5)
+                  ->addSpecifier(SpecifierType::Abstract);
+            }
+        }
+        | kABSTRACT kASYNC kCLASS IdentifierLiteral {
             if (!driver.checkOnly) {
                 $$ = new ClassNode($4);
                 ((ClassNode *) $$)
@@ -557,7 +525,7 @@ ClassDecl
                   ->addSpecifier(SpecifierType::Async);
             }
         }
-        | kABSTRACT kASYNC kCLASS Identifier '>' QualifiedId { // IdentifierList
+        | kABSTRACT kASYNC kCLASS IdentifierLiteral '>' QualifiedId {
             if (!driver.checkOnly) {
                 $$ = new ClassNode($4);
                 ((ClassNode *) $$)
@@ -566,7 +534,24 @@ ClassDecl
                   ->addSpecifier(SpecifierType::Async);
             }
         }
-        | kABSTRACT kSEALED kASYNC kCLASS Identifier {
+        | kABSTRACT kSEALED kCLASS IdentifierLiteral {
+            if (!driver.checkOnly) {
+                $$ = new ClassNode($4);
+                ((ClassNode *) $$)
+                  ->addSpecifier(SpecifierType::Abstract)
+                  ->addSpecifier(SpecifierType::Sealed);
+            }
+        }
+        | kABSTRACT kSEALED kCLASS IdentifierLiteral '>' QualifiedId {
+            if (!driver.checkOnly) {
+                $$ = new ClassNode($4);
+                ((ClassNode *) $$)
+                  ->setClassHeritance($6)
+                  ->addSpecifier(SpecifierType::Abstract)
+                  ->addSpecifier(SpecifierType::Sealed);
+            }
+        }
+        | kABSTRACT kSEALED kASYNC kCLASS IdentifierLiteral {
             if (!driver.checkOnly) {
                 $$ = new ClassNode($5);
                 ((ClassNode *) $$)
@@ -575,7 +560,7 @@ ClassDecl
                   ->addSpecifier(SpecifierType::Async);
             }
         }
-        | kABSTRACT kSEALED kASYNC kCLASS Identifier '>' QualifiedId { // IdentifierList
+        | kABSTRACT kSEALED kASYNC kCLASS IdentifierLiteral '>' QualifiedId {
             if (!driver.checkOnly) {
                 $$ = new ClassNode($5);
                 ((ClassNode *) $$)
@@ -587,7 +572,61 @@ ClassDecl
         }
         ;
 
-VisibilityStatement
+ClassMemberRepeat
+        : ClassMember {
+            if (!driver.checkOnly) {
+                $$ = new VectorNode();
+                $$->push_back($1);
+            }
+        }
+        | ClassMemberRepeat ClassMember {
+            if (!driver.checkOnly) {
+                $$->push_back($2);
+            }
+        }
+        ;
+
+ClassMember
+        : VisibilityDeclaration {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | AbstractClassFunctionDeclaration ';' {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | ClassFunctionDeclaration ';' {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | ClassFunctionDeclaration BlockStatement {
+            if (!driver.checkOnly) {
+                ((FunctionNode *) $1)
+                  ->setBlock($2);
+                $$ = $1;
+            }
+        }
+        | AttributeDeclaration ';' {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | EventDeclaration ';' {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | IncludeStatement ';' {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        ;
+
+VisibilityDeclaration
         : kPRIVATE {
             if (!driver.checkOnly) {
                 $$ = new ControlNode(ControlType::Private);
@@ -605,330 +644,15 @@ VisibilityStatement
         }
         ;
 
-AttributeDecl
-        : kATTR Identifier ReturnType {
-            if (!driver.checkOnly) {
-                $$ = new AttributeNode($2);
-                ((AttributeNode *) $$)
-                  ->setAttributeReturnType($3);
-            }
-        }
-        | kATTR Identifier ReturnType InvariantsClause {
-            if (!driver.checkOnly) {
-                $$ = new AttributeNode($2);
-                ((AttributeNode *) $$)
-                  ->setAttributeReturnType($3)
-                  ->setAttributeInvariants($4);
-            }
-        }
-        | kATTR Identifier ReturnType Setter {
-            if (!driver.checkOnly) {
-                $$ = new AttributeNode($2);
-                ((AttributeNode *) $$)
-                  ->setAttributeReturnType($3)
-                  ->setAttributeSetter($4);
-            }
-        }
-        | kATTR Identifier ReturnType Setter InvariantsClause {
-            if (!driver.checkOnly) {
-                $$ = new AttributeNode($2);
-                ((AttributeNode *) $$)
-                  ->setAttributeReturnType($3)
-                  ->setAttributeSetter($4)
-                  ->setAttributeInvariants($5);
-            }
-        }
-        | kATTR Identifier ReturnType Getter {
-            if (!driver.checkOnly) {
-                $$ = new AttributeNode($2);
-                ((AttributeNode *) $$)
-                  ->setAttributeReturnType($3)
-                  ->setAttributeGetter($4);
-            }
-        }
-        | kATTR Identifier ReturnType Getter InvariantsClause {
-            if (!driver.checkOnly) {
-                $$ = new AttributeNode($2);
-                ((AttributeNode *) $$)
-                  ->setAttributeReturnType($3)
-                  ->setAttributeGetter($4)
-                  ->setAttributeInvariants($5);
-            }
-        }
-        | kATTR Identifier ReturnType Getter Setter {
-            if (!driver.checkOnly) {
-                $$ = new AttributeNode($2);
-                ((AttributeNode *) $$)
-                  ->setAttributeReturnType($3)
-                  ->setAttributeGetter($4)
-                  ->setAttributeSetter($5);
-            }
-        }
-        | kATTR Identifier ReturnType Getter Setter InvariantsClause {
-            if (!driver.checkOnly) {
-                $$ = new AttributeNode($2);
-                ((AttributeNode *) $$)
-                  ->setAttributeReturnType($3)
-                  ->setAttributeGetter($4)
-                  ->setAttributeSetter($5)
-                  ->setAttributeInvariants($6);
-            }
-        }
-        | kATTR Identifier ReturnType InitialValue {
-            if (!driver.checkOnly) {
-                $$ = new AttributeNode($2);
-                ((AttributeNode *) $$)
-                  ->setAttributeReturnType($3)
-                  ->setAttributeInitialValue($4);
-            }
-        }
-        | kATTR Identifier ReturnType InitialValue InvariantsClause {
-            if (!driver.checkOnly) {
-                $$ = new AttributeNode($2);
-                ((AttributeNode *) $$)
-                  ->setAttributeReturnType($3)
-                  ->setAttributeInitialValue($4)
-                  ->setAttributeInvariants($5);
-            }
-        }
-        | kATTR Identifier ReturnType InitialValue Setter {
-            if (!driver.checkOnly) {
-                $$ = new AttributeNode($2);
-                ((AttributeNode *) $$)
-                  ->setAttributeReturnType($3)
-                  ->setAttributeInitialValue($4)
-                  ->setAttributeSetter($5);
-            }
-        }
-        | kATTR Identifier ReturnType InitialValue Setter InvariantsClause {
-            if (!driver.checkOnly) {
-                $$ = new AttributeNode($2);
-                ((AttributeNode *) $$)
-                  ->setAttributeReturnType($3)
-                  ->setAttributeInitialValue($4)
-                  ->setAttributeSetter($5)
-                  ->setAttributeInvariants($6);
-            }
-        }
-        | kATTR Identifier ReturnType InitialValue Getter {
-            if (!driver.checkOnly) {
-                $$ = new AttributeNode($2);
-                ((AttributeNode *) $$)
-                  ->setAttributeReturnType($3)
-                  ->setAttributeInitialValue($4)
-                  ->setAttributeGetter($5);
-            }
-        }
-        | kATTR Identifier ReturnType InitialValue Getter InvariantsClause {
-            if (!driver.checkOnly) {
-                $$ = new AttributeNode($2);
-                ((AttributeNode *) $$)
-                  ->setAttributeReturnType($3)
-                  ->setAttributeInitialValue($4)
-                  ->setAttributeGetter($5)
-                  ->setAttributeInvariants($6);
-            }
-        }
-        | kATTR Identifier ReturnType InitialValue Getter Setter {
-            if (!driver.checkOnly) {
-                $$ = new AttributeNode($2);
-                ((AttributeNode *) $$)
-                  ->setAttributeReturnType($3)
-                  ->setAttributeInitialValue($4)
-                  ->setAttributeGetter($5)
-                  ->setAttributeSetter($6);
-            }
-        }
-        | kATTR Identifier ReturnType InitialValue Getter Setter InvariantsClause {
-            if (!driver.checkOnly) {
-                $$ = new AttributeNode($2);
-                ((AttributeNode *) $$)
-                  ->setAttributeReturnType($3)
-                  ->setAttributeInitialValue($4)
-                  ->setAttributeGetter($5)
-                  ->setAttributeSetter($6)
-                  ->setAttributeInvariants($7);
-            }
-        // }
-        // | kCLASS kATTR Identifier ReturnType InitialValue {
-        //     if (!driver.checkOnly) {
-        //         $$ = new AttributeNode($3);
-        //         ((AttributeNode *) $$)
-        //           ->setAttributeReturnType($4)
-        //           ->setAttributeInitialValue($5)
-        //           ->addSpecifier(SpecifierType::Class);
-        //     }
-        // }
-        // | kCLASS kATTR Identifier ReturnType InitialValue InvariantsClause {
-        //     if (!driver.checkOnly) {
-        //         $$ = new AttributeNode($3);
-        //         ((AttributeNode *) $$)
-        //           ->setAttributeReturnType($4)
-        //           ->setAttributeInitialValue($5)
-        //           ->setAttributeInvariants($6)
-        //           ->addSpecifier(SpecifierType::Class);
-        //     }
-        // }
-        // | kCLASS kATTR Identifier ReturnType InitialValue Setter {
-        //     if (!driver.checkOnly) {
-        //         $$ = new AttributeNode($3);
-        //         ((AttributeNode *) $$)
-        //           ->setAttributeReturnType($4)
-        //           ->setAttributeInitialValue($5)
-        //           ->setAttributeSetter($6)
-        //           ->addSpecifier(SpecifierType::Class);
-        //     }
-        // }
-        // | kCLASS kATTR Identifier ReturnType InitialValue Setter InvariantsClause {
-        //     if (!driver.checkOnly) {
-        //         $$ = new AttributeNode($3);
-        //         ((AttributeNode *) $$)
-        //           ->setAttributeReturnType($4)
-        //           ->setAttributeInitialValue($5)
-        //           ->setAttributeSetter($6)
-        //           ->setAttributeInvariants($7)
-        //           ->addSpecifier(SpecifierType::Class);
-        //     }
-        // }
-        // | kCLASS kATTR Identifier ReturnType InitialValue Getter {
-        //     if (!driver.checkOnly) {
-        //         $$ = new AttributeNode($3);
-        //         ((AttributeNode *) $$)
-        //           ->setAttributeReturnType($4)
-        //           ->setAttributeInitialValue($5)
-        //           ->setAttributeGetter($6)
-        //           ->addSpecifier(SpecifierType::Class);
-        //     }
-        // }
-        // | kCLASS kATTR Identifier ReturnType InitialValue Getter InvariantsClause {
-        //     if (!driver.checkOnly) {
-        //         $$ = new AttributeNode($3);
-        //         ((AttributeNode *) $$)
-        //           ->setAttributeReturnType($4)
-        //           ->setAttributeInitialValue($5)
-        //           ->setAttributeGetter($6)
-        //           ->setAttributeInvariants($7)
-        //           ->addSpecifier(SpecifierType::Class);
-        //     }
-        // }
-        // | kCLASS kATTR Identifier ReturnType InitialValue Getter Setter {
-        //     if (!driver.checkOnly) {
-        //         $$ = new AttributeNode($3);
-        //         ((AttributeNode *) $$)
-        //           ->setAttributeReturnType($4)
-        //           ->setAttributeInitialValue($5)
-        //           ->setAttributeGetter($6)
-        //           ->setAttributeSetter($7)
-        //           ->addSpecifier(SpecifierType::Class);
-        //     }
-        // }
-        // | kCLASS kATTR Identifier ReturnType InitialValue Getter Setter InvariantsClause {
-        //     if (!driver.checkOnly) {
-        //         $$ = new AttributeNode($3);
-        //         ((AttributeNode *) $$)
-        //           ->setAttributeReturnType($4)
-        //           ->setAttributeInitialValue($5)
-        //           ->setAttributeGetter($6)
-        //           ->setAttributeSetter($7)
-        //           ->setAttributeInvariants($8)
-        //           ->addSpecifier(SpecifierType::Class);
-        //     }
-        }
-        ;
-
-InvariantsClause
-        : kINVARIANTS Condition {
-            if (!driver.checkOnly) {
-                $$ = $2;
-            }
-        }
-        ;
-
-Getter
-        : kGET {
-            if (!driver.checkOnly) {
-                $$ = new IdentifierNode("default");
-            }
-        }
-        | kGET QualifiedId {
-            if (!driver.checkOnly) {
-                $$ = $2;
-            }
-        }
-        ;
-
-Setter
-        : kSET {
-            if (!driver.checkOnly) {
-                $$ = new IdentifierNode("default");
-            }
-        }
-        | kSET QualifiedId {
-            if (!driver.checkOnly) {
-                $$ = $2;
-            }
-        }
-        ;
-
-EventDecl
-        : kEVENT Identifier {
-            if (!driver.checkOnly) {
-                $$ = new EventNode($2);
-            }
-        }
-        | kEVENT Identifier '=' StatementBlock {
-            if (!driver.checkOnly) {
-                $$ = new EventNode($2);
-                ((EventNode *) $$)
-                  ->setEventInitialValue($4);
-            }
-        }
-        | kEVENT Identifier '=' QualifiedId {
-            if (!driver.checkOnly) {
-                $$ = new EventNode($2);
-                ((EventNode *) $$)
-                  ->setEventInitialValue($4);
-            }
-        }
-        | kEVENT Identifier InterceptClause {
-            if (!driver.checkOnly) {
-                $$ = new EventNode($2);
-                ((EventNode *) $$)
-                  ->setEventIntercept($3);
-            }
-        }
-        | kEVENT Identifier InterceptClause '=' StatementBlock {
-            if (!driver.checkOnly) {
-                $$ = new EventNode($2);
-                ((EventNode *) $$)
-                  ->setEventIntercept($3)
-                  ->setEventInitialValue($5);
-            }
-        }
-        | kEVENT Identifier InterceptClause '=' QualifiedId {
-            if (!driver.checkOnly) {
-                $$ = new EventNode($2);
-                ((EventNode *) $$)
-                  ->setEventIntercept($3)
-                  ->setEventInitialValue($5);
-            }
-        }
-        ;
-
-FunctionDecl
-        : RealFunctionDecl {
-            if (!driver.checkOnly) {
-                $$ = $1;
-            }
-        }
-        | kABSTRACT kDEF QualifiedId FormalParamList {
+AbstractClassFunctionDeclaration
+        : kABSTRACT kDEF IdentifierLiteral FormalParamList {
             if (!driver.checkOnly) {
                 $$ = new FunctionNode($3, $4);
                 ((FunctionNode *) $$)
                   ->addSpecifier(SpecifierType::Abstract);
             }
         }
-        | kABSTRACT kDEF QualifiedId FormalParamList InterceptClause {
+        | kABSTRACT kDEF IdentifierLiteral FormalParamList InterceptClause {
             if (!driver.checkOnly) {
                 $$ = new FunctionNode($3, $4);
                 ((FunctionNode *) $$)
@@ -936,7 +660,7 @@ FunctionDecl
                   ->addSpecifier(SpecifierType::Abstract);
             }
         }
-        | kABSTRACT kDEF QualifiedId FormalParamList ReturnType {
+        | kABSTRACT kDEF IdentifierLiteral FormalParamList ReturnType {
             if (!driver.checkOnly) {
                 $$ = new FunctionNode($3, $4);
                 ((FunctionNode *) $$)
@@ -944,7 +668,7 @@ FunctionDecl
                   ->addSpecifier(SpecifierType::Abstract);
             }
         }
-        | kABSTRACT kDEF QualifiedId FormalParamList ReturnType InterceptClause {
+        | kABSTRACT kDEF IdentifierLiteral FormalParamList ReturnType InterceptClause {
             if (!driver.checkOnly) {
                 $$ = new FunctionNode($3, $4);
                 ((FunctionNode *) $$)
@@ -953,43 +677,7 @@ FunctionDecl
                   ->addSpecifier(SpecifierType::Abstract);
             }
         }
-        | kABSTRACT kCLASS kDEF QualifiedId FormalParamList {
-            if (!driver.checkOnly) {
-                $$ = new FunctionNode($4, $5);
-                ((FunctionNode *) $$)
-                  ->addSpecifier(SpecifierType::Abstract)
-                  ->addSpecifier(SpecifierType::Class);
-            }
-        }
-        | kABSTRACT kCLASS kDEF QualifiedId FormalParamList InterceptClause {
-            if (!driver.checkOnly) {
-                $$ = new FunctionNode($4, $5);
-                ((FunctionNode *) $$)
-                  ->setFunctionIntercept($6)
-                  ->addSpecifier(SpecifierType::Abstract)
-                  ->addSpecifier(SpecifierType::Class);
-            }
-        }
-        | kABSTRACT kCLASS kDEF QualifiedId FormalParamList ReturnType {
-            if (!driver.checkOnly) {
-                $$ = new FunctionNode($4, $5);
-                ((FunctionNode *) $$)
-                  ->setFunctionReturn($6)
-                  ->addSpecifier(SpecifierType::Abstract)
-                  ->addSpecifier(SpecifierType::Class);
-            }
-        }
-        | kABSTRACT kCLASS kDEF QualifiedId FormalParamList ReturnType InterceptClause {
-            if (!driver.checkOnly) {
-                $$ = new FunctionNode($4, $5);
-                ((FunctionNode *) $$)
-                  ->setFunctionReturn($6)
-                  ->setFunctionIntercept($7)
-                  ->addSpecifier(SpecifierType::Abstract)
-                  ->addSpecifier(SpecifierType::Class);
-            }
-        }
-        | kABSTRACT kASYNC kDEF QualifiedId FormalParamList {
+        | kABSTRACT kASYNC kDEF IdentifierLiteral FormalParamList {
             if (!driver.checkOnly) {
                 $$ = new FunctionNode($4, $5);
                 ((FunctionNode *) $$)
@@ -997,7 +685,7 @@ FunctionDecl
                   ->addSpecifier(SpecifierType::Async);
             }
         }
-        | kABSTRACT kASYNC kDEF QualifiedId FormalParamList InterceptClause {
+        | kABSTRACT kASYNC kDEF IdentifierLiteral FormalParamList InterceptClause {
             if (!driver.checkOnly) {
                 $$ = new FunctionNode($4, $5);
                 ((FunctionNode *) $$)
@@ -1006,7 +694,7 @@ FunctionDecl
                   ->addSpecifier(SpecifierType::Async);
             }
         }
-        | kABSTRACT kASYNC kDEF QualifiedId FormalParamList ReturnType {
+        | kABSTRACT kASYNC kDEF IdentifierLiteral FormalParamList ReturnType {
             if (!driver.checkOnly) {
                 $$ = new FunctionNode($4, $5);
                 ((FunctionNode *) $$)
@@ -1015,7 +703,7 @@ FunctionDecl
                   ->addSpecifier(SpecifierType::Async);
             }
         }
-        | kABSTRACT kASYNC kDEF QualifiedId FormalParamList ReturnType InterceptClause {
+        | kABSTRACT kASYNC kDEF IdentifierLiteral FormalParamList ReturnType InterceptClause {
             if (!driver.checkOnly) {
                 $$ = new FunctionNode($4, $5);
                 ((FunctionNode *) $$)
@@ -1025,7 +713,43 @@ FunctionDecl
                   ->addSpecifier(SpecifierType::Async);
             }
         }
-        | kABSTRACT kCLASS kASYNC kDEF QualifiedId FormalParamList {
+        | kABSTRACT kCLASS kDEF IdentifierLiteral FormalParamList {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($4, $5);
+                ((FunctionNode *) $$)
+                  ->addSpecifier(SpecifierType::Abstract)
+                  ->addSpecifier(SpecifierType::Class);
+            }
+        }
+        | kABSTRACT kCLASS kDEF IdentifierLiteral FormalParamList InterceptClause {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($4, $5);
+                ((FunctionNode *) $$)
+                  ->setFunctionIntercept($6)
+                  ->addSpecifier(SpecifierType::Abstract)
+                  ->addSpecifier(SpecifierType::Class);
+            }
+        }
+        | kABSTRACT kCLASS kDEF IdentifierLiteral FormalParamList ReturnType {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($4, $5);
+                ((FunctionNode *) $$)
+                  ->setFunctionReturn($6)
+                  ->addSpecifier(SpecifierType::Abstract)
+                  ->addSpecifier(SpecifierType::Class);
+            }
+        }
+        | kABSTRACT kCLASS kDEF IdentifierLiteral FormalParamList ReturnType InterceptClause {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($4, $5);
+                ((FunctionNode *) $$)
+                  ->setFunctionReturn($6)
+                  ->setFunctionIntercept($7)
+                  ->addSpecifier(SpecifierType::Abstract)
+                  ->addSpecifier(SpecifierType::Class);
+            }
+        }
+        | kABSTRACT kCLASS kASYNC kDEF IdentifierLiteral FormalParamList {
             if (!driver.checkOnly) {
                 $$ = new FunctionNode($5, $6);
                 ((FunctionNode *) $$)
@@ -1034,7 +758,7 @@ FunctionDecl
                   ->addSpecifier(SpecifierType::Async);
             }
         }
-        | kABSTRACT kCLASS kASYNC kDEF QualifiedId FormalParamList InterceptClause {
+        | kABSTRACT kCLASS kASYNC kDEF IdentifierLiteral FormalParamList InterceptClause {
             if (!driver.checkOnly) {
                 $$ = new FunctionNode($5, $6);
                 ((FunctionNode *) $$)
@@ -1044,7 +768,7 @@ FunctionDecl
                   ->addSpecifier(SpecifierType::Async);
             }
         }
-        | kABSTRACT kCLASS kASYNC kDEF QualifiedId FormalParamList ReturnType {
+        | kABSTRACT kCLASS kASYNC kDEF IdentifierLiteral FormalParamList ReturnType {
             if (!driver.checkOnly) {
                 $$ = new FunctionNode($5, $6);
                 ((FunctionNode *) $$)
@@ -1054,7 +778,7 @@ FunctionDecl
                   ->addSpecifier(SpecifierType::Async);
             }
         }
-        | kABSTRACT kCLASS kASYNC kDEF QualifiedId FormalParamList ReturnType InterceptClause {
+        | kABSTRACT kCLASS kASYNC kDEF IdentifierLiteral FormalParamList ReturnType InterceptClause {
             if (!driver.checkOnly) {
                 $$ = new FunctionNode($5, $6);
                 ((FunctionNode *) $$)
@@ -1066,170 +790,6 @@ FunctionDecl
             }
         }
         ;
-
-RealFunctionDecl
-        : kDEF QualifiedId FormalParamList {
-            if (!driver.checkOnly) {
-                $$ = new FunctionNode($2, $3);
-            }
-        }
-        | kDEF QualifiedId FormalParamList InterceptClause {
-            if (!driver.checkOnly) {
-                $$ = new FunctionNode($2, $3);
-                ((FunctionNode *) $$)
-                  ->setFunctionIntercept($4);
-            }
-        }
-        | kDEF QualifiedId FormalParamList ReturnType {
-            if (!driver.checkOnly) {
-                $$ = new FunctionNode($2, $3);
-                ((FunctionNode *) $$)
-                  ->setFunctionReturn($4);
-            }
-        }
-        | kDEF QualifiedId FormalParamList ReturnType InterceptClause {
-            if (!driver.checkOnly) {
-                $$ = new FunctionNode($2, $3);
-                ((FunctionNode *) $$)
-                  ->setFunctionReturn($4)
-                  ->setFunctionIntercept($5);
-            }
-        }
-        | kCLASS kDEF QualifiedId FormalParamList {
-            if (!driver.checkOnly) {
-                $$ = new FunctionNode($3, $4);
-                ((FunctionNode *) $$)
-                  ->addSpecifier(SpecifierType::Class);
-            }
-        }
-        | kCLASS kDEF QualifiedId FormalParamList InterceptClause {
-            if (!driver.checkOnly) {
-                $$ = new FunctionNode($3, $4);
-                ((FunctionNode *) $$)
-                  ->setFunctionIntercept($5)
-                  ->addSpecifier(SpecifierType::Class);
-            }
-        }
-        | kCLASS kDEF QualifiedId FormalParamList ReturnType {
-            if (!driver.checkOnly) {
-                $$ = new FunctionNode($3, $4);
-                ((FunctionNode *) $$)
-                  ->setFunctionReturn($5)
-                  ->addSpecifier(SpecifierType::Class);
-            }
-        }
-        | kCLASS kDEF QualifiedId FormalParamList ReturnType InterceptClause {
-            if (!driver.checkOnly) {
-                $$ = new FunctionNode($3, $4);
-                ((FunctionNode *) $$)
-                  ->setFunctionReturn($5)
-                  ->setFunctionIntercept($6)
-                  ->addSpecifier(SpecifierType::Class);
-            }
-        }
-        | kASYNC kDEF QualifiedId FormalParamList {
-            if (!driver.checkOnly) {
-                $$ = new FunctionNode($3, $4);
-                ((FunctionNode *) $$)
-                  ->addSpecifier(SpecifierType::Async);
-            }
-        }
-        | kASYNC kDEF QualifiedId FormalParamList InterceptClause {
-            if (!driver.checkOnly) {
-                $$ = new FunctionNode($3, $4);
-                ((FunctionNode *) $$)
-                  ->setFunctionIntercept($5)
-                  ->addSpecifier(SpecifierType::Async);
-            }
-        }
-        | kASYNC kDEF QualifiedId FormalParamList ReturnType {
-            if (!driver.checkOnly) {
-                $$ = new FunctionNode($3, $4);
-                ((FunctionNode *) $$)
-                  ->setFunctionReturn($5)
-                  ->addSpecifier(SpecifierType::Async);
-            }
-        }
-        | kASYNC kDEF QualifiedId FormalParamList ReturnType InterceptClause {
-            if (!driver.checkOnly) {
-                $$ = new FunctionNode($3, $4);
-                ((FunctionNode *) $$)
-                  ->setFunctionReturn($5)
-                  ->setFunctionIntercept($6)
-                  ->addSpecifier(SpecifierType::Async);
-            }
-        }
-        | kCLASS kASYNC kDEF QualifiedId FormalParamList {
-            if (!driver.checkOnly) {
-                $$ = new FunctionNode($4, $5);
-                ((FunctionNode *) $$)
-                  ->addSpecifier(SpecifierType::Class)
-                  ->addSpecifier(SpecifierType::Async);
-            }
-        }
-        | kCLASS kASYNC kDEF QualifiedId FormalParamList InterceptClause {
-            if (!driver.checkOnly) {
-                $$ = new FunctionNode($4, $5);
-                ((FunctionNode *) $$)
-                  ->setFunctionIntercept($6)
-                  ->addSpecifier(SpecifierType::Class)
-                  ->addSpecifier(SpecifierType::Async);
-            }
-        }
-        | kCLASS kASYNC kDEF QualifiedId FormalParamList ReturnType {
-            if (!driver.checkOnly) {
-                $$ = new FunctionNode($4, $5);
-                ((FunctionNode *) $$)
-                  ->setFunctionReturn($6)
-                  ->addSpecifier(SpecifierType::Class)
-                  ->addSpecifier(SpecifierType::Async);
-            }
-        }
-        | kCLASS kASYNC kDEF QualifiedId FormalParamList ReturnType InterceptClause {
-            if (!driver.checkOnly) {
-                $$ = new FunctionNode($4, $5);
-                ((FunctionNode *) $$)
-                  ->setFunctionReturn($6)
-                  ->setFunctionIntercept($7)
-                  ->addSpecifier(SpecifierType::Class)
-                  ->addSpecifier(SpecifierType::Async);
-            }
-        }
-        ;
-
-FormalParamList
-        : '(' ')' {
-            if (!driver.checkOnly) {
-                $$ = new VectorNode();
-            }
-        }
-        // | '(' sRGI ')'
-        | '(' VariableList ')' {
-            if (!driver.checkOnly) {
-                $$ = $2;
-            }
-        }
-        // | '(' VariableList ',' sRGI ')'
-        ;
-
-ReturnType
-        : ':' QualifiedId {
-            if (!driver.checkOnly) {
-                $$ = $2;
-            }
-        }
-//         | ':' QualifiedId ArrayTails
-        ;
-
-// ArrayTails
-//         : ArrayTail
-//         | ArrayTails ArrayTail
-//         ;
-
-// ArrayTail
-//         : '[' ']'
-//         | '[' INTEGER ']'
-//         ;
 
 InterceptClause
         : kAFTER IdentifierList {
@@ -1263,7 +823,437 @@ IdentifierList
         }
         ;
 
-VariableDecl
+ClassFunctionDeclaration
+        : kDEF IdentifierLiteral FormalParamList {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($2, $3);
+            }
+        }
+        | kDEF IdentifierLiteral FormalParamList InterceptClause {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($2, $3);
+                ((FunctionNode *) $$)
+                  ->setFunctionIntercept($4);
+            }
+        }
+        | kDEF IdentifierLiteral FormalParamList ReturnType {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($2, $3);
+                ((FunctionNode *) $$)
+                  ->setFunctionReturn($4);
+            }
+        }
+        | kDEF IdentifierLiteral FormalParamList ReturnType InterceptClause {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($2, $3);
+                ((FunctionNode *) $$)
+                  ->setFunctionReturn($4)
+                  ->setFunctionIntercept($5);
+            }
+        }
+        | kASYNC kDEF IdentifierLiteral FormalParamList {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($3, $4);
+                ((FunctionNode *) $$)
+                  ->addSpecifier(SpecifierType::Async);
+            }
+        }
+        | kASYNC kDEF IdentifierLiteral FormalParamList InterceptClause {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($3, $4);
+                ((FunctionNode *) $$)
+                  ->setFunctionIntercept($5)
+                  ->addSpecifier(SpecifierType::Async);
+            }
+        }
+        | kASYNC kDEF IdentifierLiteral FormalParamList ReturnType {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($3, $4);
+                ((FunctionNode *) $$)
+                  ->setFunctionReturn($5)
+                  ->addSpecifier(SpecifierType::Async);
+            }
+        }
+        | kASYNC kDEF IdentifierLiteral FormalParamList ReturnType InterceptClause {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($3, $4);
+                ((FunctionNode *) $$)
+                  ->setFunctionReturn($5)
+                  ->setFunctionIntercept($6)
+                  ->addSpecifier(SpecifierType::Async);
+            }
+        }
+        | kCLASS kDEF IdentifierLiteral FormalParamList {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($3, $4);
+                ((FunctionNode *) $$)
+                  ->addSpecifier(SpecifierType::Class);
+            }
+        }
+        | kCLASS kDEF IdentifierLiteral FormalParamList InterceptClause {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($3, $4);
+                ((FunctionNode *) $$)
+                  ->setFunctionIntercept($5)
+                  ->addSpecifier(SpecifierType::Class);
+            }
+        }
+        | kCLASS kDEF IdentifierLiteral FormalParamList ReturnType {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($3, $4);
+                ((FunctionNode *) $$)
+                  ->setFunctionReturn($5)
+                  ->addSpecifier(SpecifierType::Class);
+            }
+        }
+        | kCLASS kDEF IdentifierLiteral FormalParamList ReturnType InterceptClause {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($3, $4);
+                ((FunctionNode *) $$)
+                  ->setFunctionReturn($5)
+                  ->setFunctionIntercept($6)
+                  ->addSpecifier(SpecifierType::Class);
+            }
+        }
+        | kCLASS kASYNC kDEF IdentifierLiteral FormalParamList {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($4, $5);
+                ((FunctionNode *) $$)
+                  ->addSpecifier(SpecifierType::Class)
+                  ->addSpecifier(SpecifierType::Async);
+            }
+        }
+        | kCLASS kASYNC kDEF IdentifierLiteral FormalParamList InterceptClause {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($4, $5);
+                ((FunctionNode *) $$)
+                  ->setFunctionIntercept($6)
+                  ->addSpecifier(SpecifierType::Class)
+                  ->addSpecifier(SpecifierType::Async);
+            }
+        }
+        | kCLASS kASYNC kDEF IdentifierLiteral FormalParamList ReturnType {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($4, $5);
+                ((FunctionNode *) $$)
+                  ->setFunctionReturn($6)
+                  ->addSpecifier(SpecifierType::Class)
+                  ->addSpecifier(SpecifierType::Async);
+            }
+        }
+        | kCLASS kASYNC kDEF IdentifierLiteral FormalParamList ReturnType InterceptClause {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($4, $5);
+                ((FunctionNode *) $$)
+                  ->setFunctionReturn($6)
+                  ->setFunctionIntercept($7)
+                  ->addSpecifier(SpecifierType::Class)
+                  ->addSpecifier(SpecifierType::Async);
+            }
+        }
+        ;
+
+FormalParamList
+        : '(' ')' {
+            if (!driver.checkOnly) {
+                $$ = new VectorNode();
+            }
+        }
+        | '(' VariableList ')' {
+            if (!driver.checkOnly) {
+                $$ = $2;
+            }
+        }
+        ;
+
+ReturnType
+        : ':' QualifiedId {
+            if (!driver.checkOnly) {
+                $$ = $2;
+            }
+        }
+        ;
+
+AttributeDeclaration
+        : kATTR IdentifierLiteral ReturnType {
+            if (!driver.checkOnly) {
+                $$ = new AttributeNode($2);
+                ((AttributeNode *) $$)
+                  ->setAttributeReturnType($3);
+            }
+        }
+        | kATTR IdentifierLiteral ReturnType Invariants {
+            if (!driver.checkOnly) {
+                $$ = new AttributeNode($2);
+                ((AttributeNode *) $$)
+                  ->setAttributeReturnType($3)
+                  ->setAttributeInvariants($4);
+            }
+        }
+        | kATTR IdentifierLiteral ReturnType AttributeSetter {
+            if (!driver.checkOnly) {
+                $$ = new AttributeNode($2);
+                ((AttributeNode *) $$)
+                  ->setAttributeReturnType($3)
+                  ->setAttributeSetter($4);
+            }
+        }
+        | kATTR IdentifierLiteral ReturnType AttributeSetter Invariants {
+            if (!driver.checkOnly) {
+                $$ = new AttributeNode($2);
+                ((AttributeNode *) $$)
+                  ->setAttributeReturnType($3)
+                  ->setAttributeSetter($4)
+                  ->setAttributeInvariants($5);
+            }
+        }
+        | kATTR IdentifierLiteral ReturnType AttributeGetter {
+            if (!driver.checkOnly) {
+                $$ = new AttributeNode($2);
+                ((AttributeNode *) $$)
+                  ->setAttributeReturnType($3)
+                  ->setAttributeGetter($4);
+            }
+        }
+        | kATTR IdentifierLiteral ReturnType AttributeGetter Invariants {
+            if (!driver.checkOnly) {
+                $$ = new AttributeNode($2);
+                ((AttributeNode *) $$)
+                  ->setAttributeReturnType($3)
+                  ->setAttributeGetter($4)
+                  ->setAttributeInvariants($5);
+            }
+        }
+        | kATTR IdentifierLiteral ReturnType AttributeGetter AttributeSetter {
+            if (!driver.checkOnly) {
+                $$ = new AttributeNode($2);
+                ((AttributeNode *) $$)
+                  ->setAttributeReturnType($3)
+                  ->setAttributeGetter($4)
+                  ->setAttributeSetter($5);
+            }
+        }
+        | kATTR IdentifierLiteral ReturnType AttributeGetter AttributeSetter Invariants {
+            if (!driver.checkOnly) {
+                $$ = new AttributeNode($2);
+                ((AttributeNode *) $$)
+                  ->setAttributeReturnType($3)
+                  ->setAttributeGetter($4)
+                  ->setAttributeSetter($5)
+                  ->setAttributeInvariants($6);
+            }
+        }
+        | kATTR IdentifierLiteral ReturnType InitialValue {
+            if (!driver.checkOnly) {
+                $$ = new AttributeNode($2);
+                ((AttributeNode *) $$)
+                  ->setAttributeReturnType($3)
+                  ->setAttributeInitialValue($4);
+            }
+        }
+        | kATTR IdentifierLiteral ReturnType InitialValue Invariants {
+            if (!driver.checkOnly) {
+                $$ = new AttributeNode($2);
+                ((AttributeNode *) $$)
+                  ->setAttributeReturnType($3)
+                  ->setAttributeInitialValue($4)
+                  ->setAttributeInvariants($5);
+            }
+        }
+        | kATTR IdentifierLiteral ReturnType InitialValue AttributeSetter {
+            if (!driver.checkOnly) {
+                $$ = new AttributeNode($2);
+                ((AttributeNode *) $$)
+                  ->setAttributeReturnType($3)
+                  ->setAttributeInitialValue($4)
+                  ->setAttributeSetter($5);
+            }
+        }
+        | kATTR IdentifierLiteral ReturnType InitialValue AttributeSetter Invariants {
+            if (!driver.checkOnly) {
+                $$ = new AttributeNode($2);
+                ((AttributeNode *) $$)
+                  ->setAttributeReturnType($3)
+                  ->setAttributeInitialValue($4)
+                  ->setAttributeSetter($5)
+                  ->setAttributeInvariants($6);
+            }
+        }
+        | kATTR IdentifierLiteral ReturnType InitialValue AttributeGetter {
+            if (!driver.checkOnly) {
+                $$ = new AttributeNode($2);
+                ((AttributeNode *) $$)
+                  ->setAttributeReturnType($3)
+                  ->setAttributeInitialValue($4)
+                  ->setAttributeGetter($5);
+            }
+        }
+        | kATTR IdentifierLiteral ReturnType InitialValue AttributeGetter Invariants {
+            if (!driver.checkOnly) {
+                $$ = new AttributeNode($2);
+                ((AttributeNode *) $$)
+                  ->setAttributeReturnType($3)
+                  ->setAttributeInitialValue($4)
+                  ->setAttributeGetter($5)
+                  ->setAttributeInvariants($6);
+            }
+        }
+        | kATTR IdentifierLiteral ReturnType InitialValue AttributeGetter AttributeSetter {
+            if (!driver.checkOnly) {
+                $$ = new AttributeNode($2);
+                ((AttributeNode *) $$)
+                  ->setAttributeReturnType($3)
+                  ->setAttributeInitialValue($4)
+                  ->setAttributeGetter($5)
+                  ->setAttributeSetter($6);
+            }
+        }
+        | kATTR IdentifierLiteral ReturnType InitialValue AttributeGetter AttributeSetter Invariants {
+            if (!driver.checkOnly) {
+                $$ = new AttributeNode($2);
+                ((AttributeNode *) $$)
+                  ->setAttributeReturnType($3)
+                  ->setAttributeInitialValue($4)
+                  ->setAttributeGetter($5)
+                  ->setAttributeSetter($6)
+                  ->setAttributeInvariants($7);
+            }
+        }
+        ;
+
+InitialValue
+        : '=' AssignmentValue {
+            if (!driver.checkOnly) {
+                $$ = $2;
+            }
+        }
+        ;
+
+AttributeGetter
+        : kGET {
+            if (!driver.checkOnly) {
+                $$ = new IdentifierNode("default");
+            }
+        }
+        | kGET QualifiedId {
+            if (!driver.checkOnly) {
+                $$ = $2;
+            }
+        }
+        ;
+
+AttributeSetter
+        : kSET {
+            if (!driver.checkOnly) {
+                $$ = new IdentifierNode("default");
+            }
+        }
+        | kSET QualifiedId {
+            if (!driver.checkOnly) {
+                $$ = $2;
+            }
+        }
+        ;
+
+Invariants
+        : kINVARIANTS Condition {
+            if (!driver.checkOnly) {
+                $$ = $2;
+            }
+        }
+        ;
+
+Condition
+        : LogicExpression {
+            if (!driver.checkOnly) {
+                $$ = new ValidationNode($1, NULL);
+            }
+        }
+        | LogicExpression RaiseStatement {
+            if (!driver.checkOnly) {
+                $$ = new ValidationNode($1, $2);
+            }
+        }
+        ;
+
+EventDeclaration
+        : kEVENT IdentifierLiteral {
+            if (!driver.checkOnly) {
+                $$ = new EventNode($2);
+            }
+        }
+        | kEVENT IdentifierLiteral InterceptClause {
+            if (!driver.checkOnly) {
+                $$ = new EventNode($2);
+                ((EventNode *) $$)
+                  ->setEventIntercept($3);
+            }
+        }
+        ;
+
+FunctionDeclaration
+        : kDEF IdentifierLiteral FormalParamList {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($2, $3);
+            }
+        }
+        | kDEF IdentifierLiteral FormalParamList InterceptClause {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($2, $3);
+                ((FunctionNode *) $$)
+                  ->setFunctionIntercept($4);
+            }
+        }
+        | kDEF IdentifierLiteral FormalParamList ReturnType {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($2, $3);
+                ((FunctionNode *) $$)
+                  ->setFunctionReturn($4);
+            }
+        }
+        | kDEF IdentifierLiteral FormalParamList ReturnType InterceptClause {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($2, $3);
+                ((FunctionNode *) $$)
+                  ->setFunctionReturn($4)
+                  ->setFunctionIntercept($5);
+            }
+        }
+        | kASYNC kDEF IdentifierLiteral FormalParamList {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($3, $4);
+                ((FunctionNode *) $$)
+                  ->addSpecifier(SpecifierType::Async);
+            }
+        }
+        | kASYNC kDEF IdentifierLiteral FormalParamList InterceptClause {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($3, $4);
+                ((FunctionNode *) $$)
+                  ->setFunctionIntercept($5)
+                  ->addSpecifier(SpecifierType::Async);
+            }
+        }
+        | kASYNC kDEF IdentifierLiteral FormalParamList ReturnType {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($3, $4);
+                ((FunctionNode *) $$)
+                  ->setFunctionReturn($5)
+                  ->addSpecifier(SpecifierType::Async);
+            }
+        }
+        | kASYNC kDEF IdentifierLiteral FormalParamList ReturnType InterceptClause {
+            if (!driver.checkOnly) {
+                $$ = new FunctionNode($3, $4);
+                ((FunctionNode *) $$)
+                  ->setFunctionReturn($5)
+                  ->setFunctionIntercept($6)
+                  ->addSpecifier(SpecifierType::Async);
+            }
+        }
+        ;
+
+VariableDeclaration
         : kVAR VariableList {
             if (!driver.checkOnly) {
                 $$ = new VariableNode($2);
@@ -1286,26 +1276,26 @@ VariableList
         ;
 
 Variable
-        : Identifier {
+        : IdentifierLiteral {
             if (!driver.checkOnly) {
                 $$ = new ElementNode($1);
             }
         }
-        | Identifier InvariantsClause {
+        | IdentifierLiteral Invariants {
             if (!driver.checkOnly) {
                 $$ = new ElementNode($1);
                 ((ElementNode *) $$)
                   ->setElementInvariants($2);
             }
         }
-        | Identifier InitialValue {
+        | IdentifierLiteral InitialValue {
             if (!driver.checkOnly) {
                 $$ = new ElementNode($1);
                 ((ElementNode *) $$)
                   ->setElementInitialValue($2);
             }
         }
-        | Identifier InitialValue InvariantsClause {
+        | IdentifierLiteral InitialValue Invariants {
             if (!driver.checkOnly) {
                 $$ = new ElementNode($1);
                 ((ElementNode *) $$)
@@ -1313,14 +1303,14 @@ Variable
                   ->setElementInvariants($3);
             }
         }
-        | Identifier ReturnType {
+        | IdentifierLiteral ReturnType {
             if (!driver.checkOnly) {
                 $$ = new ElementNode($1);
                 ((ElementNode *) $$)
                   ->setElementType($2);
             }
         }
-        | Identifier ReturnType InvariantsClause {
+        | IdentifierLiteral ReturnType Invariants {
             if (!driver.checkOnly) {
                 $$ = new ElementNode($1);
                 ((ElementNode *) $$)
@@ -1328,7 +1318,7 @@ Variable
                   ->setElementInvariants($3);
             }
         }
-        | Identifier ReturnType InitialValue {
+        | IdentifierLiteral ReturnType InitialValue {
             if (!driver.checkOnly) {
                 $$ = new ElementNode($1);
                 ((ElementNode *) $$)
@@ -1336,7 +1326,7 @@ Variable
                   ->setElementInitialValue($3);
             }
         }
-        | Identifier ReturnType InitialValue InvariantsClause {
+        | IdentifierLiteral ReturnType InitialValue Invariants {
             if (!driver.checkOnly) {
                 $$ = new ElementNode($1);
                 ((ElementNode *) $$)
@@ -1347,26 +1337,7 @@ Variable
         }
         ;
 
-InitialValue
-        : '=' AssignValue {
-            if (!driver.checkOnly) {
-                $$ = $2;
-            }
-        }
-//         | '=' AssignValue ControlTypeExpr {
-//             if (!driver.checkOnly) {
-//                 $$ = new ConditionNode(
-//             }
-//         }
-        ;
-
-// ControlTypeExpr
-//        : kIF Expression
-//         | kUNLESS Expression
-//         // | kFOR QueryOrigin kWHERE Expression
-//         ;
-
-ConstantDecl
+ConstantDeclaration
         : kCONST ConstantList {
             if (!driver.checkOnly) {
                 $$ = new ConstantNode($2);
@@ -1389,14 +1360,14 @@ ConstantList
         ;
 
 Constant
-        : Identifier InitialValue {
+        : IdentifierLiteral InitialValue {
             if (!driver.checkOnly) {
                 $$ = new ElementNode($1);
                 ((ElementNode *) $$)
                   ->setElementInitialValue($2);
             }
         }
-        | Identifier ReturnType InitialValue {
+        | IdentifierLiteral ReturnType InitialValue {
             if (!driver.checkOnly) {
                 $$ = new ElementNode($1);
                 ((ElementNode *) $$)
@@ -1406,180 +1377,31 @@ Constant
         }
         ;
 
-StatementBlock
-        : kBEGIN kEND {
+ImportStatement
+        : kIMPORT IdentifierList {
             if (!driver.checkOnly) {
-                $$ = new BlockNode(new VectorNode());
+                $$ = new ImportNode($2);
             }
         }
-        | kBEGIN Statements kEND {
+        | kFROM QualifiedId kIMPORT IdentifierList {
             if (!driver.checkOnly) {
-                $$ = new BlockNode($2);
-            }
-        }
-        | kBEGIN Statements EnsureClause kEND {
-            if (!driver.checkOnly) {
-                $$ = new BlockNode($2);
-                ((BlockNode *) $$)
-                  ->setBlockEnsure($3);
-            }
-        }
-        | kBEGIN Statements RescueClause kEND {
-            if (!driver.checkOnly) {
-                $$ = new BlockNode($2);
-                ((BlockNode *) $$)
-                  ->setBlockRescue($3);
-            }
-        }
-        | kBEGIN Statements RescueClause EnsureClause kEND {
-            if (!driver.checkOnly) {
-                $$ = new BlockNode($2);
-                ((BlockNode *) $$)
-                  ->setBlockRescue($3)
-                  ->setBlockEnsure($4);
-            }
-        }
-        | RequireClause kBEGIN Statements kEND {
-            if (!driver.checkOnly) {
-                $$ = new BlockNode($3);
-                ((BlockNode *) $$)
-                  ->setBlockRequire($1);
-            }
-        }
-        | RequireClause kBEGIN Statements EnsureClause kEND {
-            if (!driver.checkOnly) {
-                $$ = new BlockNode($3);
-                ((BlockNode *) $$)
-                  ->setBlockRequire($1)
-                  ->setBlockEnsure($4);
-            }
-        }
-        | RequireClause kBEGIN Statements RescueClause kEND {
-            if (!driver.checkOnly) {
-                $$ = new BlockNode($3);
-                ((BlockNode *) $$)
-                  ->setBlockRequire($1)
-                  ->setBlockRescue($4);
-            }
-        }
-        | RequireClause kBEGIN Statements RescueClause EnsureClause kEND {
-            if (!driver.checkOnly) {
-                $$ = new BlockNode($3);
-                ((BlockNode *) $$)
-                  ->setBlockRequire($1)
-                  ->setBlockRescue($4)
-                  ->setBlockEnsure($5);
+                $$ = new ImportNode($4);
+                ((ImportNode *) $$)
+                  ->setImportOrigin($2);
             }
         }
         ;
 
-RequireClause
-        : kREQUIRE {
+IncludeStatement
+        : kINCLUDE QualifiedId {
+            // TODO Chamar comando do driver
             if (!driver.checkOnly) {
-                $$ = new VectorNode();
-            }
-        }
-        | kREQUIRE Conditions {
-            if (!driver.checkOnly) {
-                $$ = $2;
+                $$ = new IncludeNode($2);
             }
         }
         ;
 
-Conditions
-        : Condition ';' {
-            if (!driver.checkOnly) {
-                $$ = new VectorNode();
-                $$->push_back($1);
-            }
-        }
-        | Conditions Condition ';' {
-            if (!driver.checkOnly) {
-                $$->push_back($2);
-            }
-        }
-        ;
-
-Condition
-        : LogicExpr {
-            if (!driver.checkOnly) {
-                $$ = new ValidationNode($1, new ControlNode(ControlType::Continue));
-            }
-        }
-        | LogicExpr RaiseStatement {
-            if (!driver.checkOnly) {
-                $$ = new ValidationNode($1, $2);
-            }
-        }
-        ;
-
-EnsureClause
-        : kENSURE {
-            if (!driver.checkOnly) {
-                $$ = new VectorNode();
-            }
-        }
-        | kENSURE Statements {
-            if (!driver.checkOnly) {
-                $$ = $2;
-            }
-        }
-        ;
-
-RescueClause
-        : kRESCUE {
-            if (!driver.checkOnly) {
-                $$ = new VectorNode();
-            }
-        }
-        | kRESCUE WhenRescueClauseRepeat {
-            if (!driver.checkOnly) {
-                $$ = $2;
-            }
-        }
-        ;
-
-WhenRescueClauseRepeat
-        : WhenRescueClause {
-            if (!driver.checkOnly) {
-                $$ = new VectorNode();
-                $$->push_back($1);
-            }
-        }
-        | WhenRescueClauseRepeat WhenRescueClause {
-            if (!driver.checkOnly) {
-                $$->push_back($2);
-            }
-        }
-        ;
-
-WhenRescueClause
-        : kWHEN Expression kDO Statement {
-            if (!driver.checkOnly) {
-                $$ = new WhenNode($2, $4);
-            }
-        }
-        ;
-
-RetryStatement
-        : kRETRY {
-            if (!driver.checkOnly) {
-                $$ = new ControlNode(ControlType::Retry);
-            }
-        }
-//         | kRETRY QualifiedId {
-//             if (!driver.checkOnly) {
-//                 $$ = new ControlNode(ControlType::Retry, $2);
-//             }
-//         }
-//         | kRETRY INTEGER {
-//             if (!driver.checkOnly) {
-//                 $$ = new ControlNode(ControlType::Retry, new IntegerNode($2));
-//             }
-//         }
-        ;
-
-ConditionalStatement
+IfStatement
         : kIF Expression kTHEN Statement {
             if (!driver.checkOnly) {
                 $$ = new ConditionNode(ConditionType::If, $2, $4);
@@ -1600,33 +1422,6 @@ ConditionalStatement
             }
         }
         | kIF Expression kTHEN Statement ElifStatementRepeat kELSE Statement {
-            if (!driver.checkOnly) {
-                $$ = new ConditionNode(ConditionType::If, $2, $4);
-                ((ConditionNode *) $$)
-                  ->setElif($5)
-                  ->setElse($7);
-            }
-        }
-        | kUNLESS Expression kTHEN Statement {
-            if (!driver.checkOnly) {
-                $$ = new ConditionNode(ConditionType::Unless, $2, $4);
-            }
-        }
-        | kUNLESS Expression kTHEN Statement kELSE Statement {
-            if (!driver.checkOnly) {
-                $$ = new ConditionNode(ConditionType::Unless, $2, $4);
-                ((ConditionNode *) $$)
-                  ->setElse($6);
-            }
-        }
-        | kUNLESS Expression kTHEN Statement ElifStatementRepeat {
-            if (!driver.checkOnly) {
-                $$ = new ConditionNode(ConditionType::If, $2, $4);
-                ((ConditionNode *) $$)
-                  ->setElif($5);
-            }
-        }
-        | kUNLESS Expression kTHEN Statement ElifStatementRepeat kELSE Statement {
             if (!driver.checkOnly) {
                 $$ = new ConditionNode(ConditionType::If, $2, $4);
                 ((ConditionNode *) $$)
@@ -1656,11 +1451,34 @@ ElifStatement
                 $$ = new ConditionNode(ConditionType::If, $2, $4);
             }
         }
-        | kELIF Expression kTHEN Statement kELSE Statement {
+        ;
+
+UnlessStatement
+        : kUNLESS Expression kTHEN Statement {
+            if (!driver.checkOnly) {
+                $$ = new ConditionNode(ConditionType::Unless, $2, $4);
+            }
+        }
+        | kUNLESS Expression kTHEN Statement kELSE Statement {
+            if (!driver.checkOnly) {
+                $$ = new ConditionNode(ConditionType::Unless, $2, $4);
+                ((ConditionNode *) $$)
+                  ->setElse($6);
+            }
+        }
+        | kUNLESS Expression kTHEN Statement ElifStatementRepeat {
             if (!driver.checkOnly) {
                 $$ = new ConditionNode(ConditionType::If, $2, $4);
                 ((ConditionNode *) $$)
-                  ->setElse($6);
+                  ->setElif($5);
+            }
+        }
+        | kUNLESS Expression kTHEN Statement ElifStatementRepeat kELSE Statement {
+            if (!driver.checkOnly) {
+                $$ = new ConditionNode(ConditionType::If, $2, $4);
+                ((ConditionNode *) $$)
+                  ->setElif($5)
+                  ->setElse($7);
             }
         }
         ;
@@ -1671,7 +1489,7 @@ CaseStatement
                 $$ = new CaseNode($2);
             }
         }
-        | kCASE Expression kELSE Statement kEND {
+        | kCASE Expression kELSE StatementRepeat kEND {
             if (!driver.checkOnly) {
                 $$ = new CaseNode($2);
                 ((CaseNode *) $$)
@@ -1685,7 +1503,7 @@ CaseStatement
                   ->setWhen($3);
             }
         }
-        | kCASE Expression WhenClauseRepeat kELSE Statement kEND {
+        | kCASE Expression WhenClauseRepeat kELSE StatementRepeat kEND {
             if (!driver.checkOnly) {
                 $$ = new CaseNode($2);
                 ((CaseNode *) $$)
@@ -1720,69 +1538,58 @@ WhenClause
 ForStatement
         : kFOR Expression kASC Expression kDO Statement {
             if (!driver.checkOnly) {
-                $$ = new ForNode(LoopType::Ascending, $2, $4, $6);
+                $$ = new ForNode(LoopType::ForAscending, $2, $4, $6);
             }
         }
         | kFOR Expression kASC Expression kSTEP Expression kDO Statement {
             if (!driver.checkOnly) {
-                $$ = new ForNode(LoopType::Ascending, $2, $4, $8);
+                $$ = new ForNode(LoopType::ForAscending, $2, $4, $8);
                 ((ForNode *) $$)
                   ->setStep($6);
             }
         }
         | kFOR Expression kDESC Expression kDO Statement {
             if (!driver.checkOnly) {
-                $$ = new ForNode(LoopType::Descending, $2, $4, $6);
+                $$ = new ForNode(LoopType::ForDescending, $2, $4, $6);
             }
         }
         | kFOR Expression kDESC Expression kSTEP Expression kDO Statement {
             if (!driver.checkOnly) {
-                $$ = new ForNode(LoopType::Descending, $2, $4, $8);
+                $$ = new ForNode(LoopType::ForDescending, $2, $4, $8);
                 ((ForNode *) $$)
                   ->setStep($6);
             }
         }
-        | kFOR QueryOrigin kDO Statement {
+        | kFOR IdentifierLiteral kIN Expression kDO Statement {
             if (!driver.checkOnly) {
-                $$ = new ForNode(LoopType::Iteration, $2, new IdentifierNode("self"), $4);
-            }
-        }
-        // | kFOREACH QueryOrigin kDO Statement
-        ;
-
-YieldStatement
-        : kYIELD {
-            if (!driver.checkOnly) {
-                $$ = new ControlNode(ControlType::Yield);
-            }
-        }
-        | kYIELD Expression {
-            if (!driver.checkOnly) {
-                $$ = new ControlNode(ControlType::Yield, $2);
+                $$ = new ForNode(LoopType::ForIteration, $2, $4, $6);
             }
         }
         ;
 
-LoopStatement
+WhileStatement
         : kWHILE Expression kDO Statement {
             if (!driver.checkOnly) {
                 $$ = new LoopNode(LoopType::While, $2, $4);
             }
         }
-        | kUNTIL Expression kDO Statement {
+        ;
+
+UntilStatement
+        : kUNTIL Expression kDO Statement {
             if (!driver.checkOnly) {
                 $$ = new LoopNode(LoopType::Until, $2, $4);
             }
         }
         ;
 
-// AsyncStatement
-//         : kASYNC Statement {
-//             if (!driver.checkOnly) {
-//                 $$ = new AsyncNode(AsyncType::Statement, $2);
-//             }
-//         }
-//         ;
+BreakStatement
+        : kBREAK {
+            if (!driver.checkOnly) {
+                $$ = new ControlNode(ControlType::Break);
+            }
+        }
+        ;
 
 RaiseStatement
         : kRAISE {
@@ -1790,7 +1597,7 @@ RaiseStatement
                 $$ = new ControlNode(ControlType::Raise);
             }
         }
-        | kRAISE String {
+        | kRAISE StringLiteral {
             if (!driver.checkOnly) {
                 $$ = new ControlNode(ControlType::Raise, $2);
             }
@@ -1798,6 +1605,14 @@ RaiseStatement
         | kRAISE FunctionCall {
             if (!driver.checkOnly) {
                 $$ = new ControlNode(ControlType::Raise, $2);
+            }
+        }
+        ;
+
+RetryStatement
+        : kRETRY {
+            if (!driver.checkOnly) {
+                $$ = new ControlNode(ControlType::Retry);
             }
         }
         ;
@@ -1815,598 +1630,236 @@ ReturnStatement
         }
         ;
 
-Expression
-        : LambdaExpr {
+YieldStatement
+        : kYIELD {
             if (!driver.checkOnly) {
-                $$ = $1;
+                $$ = new ControlNode(ControlType::Yield);
             }
         }
-        | AssignExpr {
+        | kYIELD Expression {
             if (!driver.checkOnly) {
-                $$ = $1;
-            }
-        }
-//         | AssignExpr ControlTypeExpr // TODO Criar nó: $2 then $1 else nil
-        | TernaryExpr {
-            if (!driver.checkOnly) {
-                $$ = $1;
-            }
-        }
-        | QueryExpr {
-            if (!driver.checkOnly) {
-                $$ = $1;
+                $$ = new ControlNode(ControlType::Yield, $2);
             }
         }
         ;
 
-LambdaExpr
-        : kDEF FormalParamList '(' Expression ')' {
+BlockStatement
+        : kBEGIN kEND {
             if (!driver.checkOnly) {
-                $$ = new LambdaNode($2, $4);
+                $$ = new BlockNode(new VectorNode());
             }
         }
-//         | kDEF FormalParamList sDEF Expression {
-//             if (!driver.checkOnly) {
-//                 $$ = new LambdaNode($2, $4);
-//             }
-//         }
-        ;
-
-AssignExpr
-        : QualifiedId '=' AssignValue {
+        | kBEGIN StatementRepeat kEND {
             if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinaryAssign, $1, $3);
+                $$ = new BlockNode($2);
             }
         }
-        | QualifiedId sADE AssignValue {
+        | kBEGIN StatementRepeat EnsureClause kEND {
             if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinaryAde, $1, $3);
+                $$ = new BlockNode($2);
+                ((BlockNode *) $$)
+                  ->setBlockEnsure($3);
             }
         }
-        | QualifiedId sSUE AssignValue {
+        | kBEGIN StatementRepeat RescueClause kEND {
             if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinarySue, $1, $3);
+                $$ = new BlockNode($2);
+                ((BlockNode *) $$)
+                  ->setBlockRescue($3);
             }
         }
-        | QualifiedId sMUE AssignValue {
+        | kBEGIN StatementRepeat RescueClause EnsureClause kEND {
             if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinaryMue, $1, $3);
+                $$ = new BlockNode($2);
+                ((BlockNode *) $$)
+                  ->setBlockRescue($3)
+                  ->setBlockEnsure($4);
             }
         }
-        | QualifiedId sDIE AssignValue {
+        | RequireClause kBEGIN StatementRepeat kEND {
             if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinaryDie, $1, $3);
+                $$ = new BlockNode($3);
+                ((BlockNode *) $$)
+                  ->setBlockRequire($1);
             }
         }
-        ;
-
-AssignValue
-        : Expression {
+        | RequireClause kBEGIN StatementRepeat EnsureClause kEND {
             if (!driver.checkOnly) {
-                $$ = $1;
+                $$ = new BlockNode($3);
+                ((BlockNode *) $$)
+                  ->setBlockRequire($1)
+                  ->setBlockEnsure($4);
             }
         }
-        | kASYNC Expression {
+        | RequireClause kBEGIN StatementRepeat RescueClause kEND {
             if (!driver.checkOnly) {
-                $$ = new AsyncNode(AsyncType::Expression, $2);
+                $$ = new BlockNode($3);
+                ((BlockNode *) $$)
+                  ->setBlockRequire($1)
+                  ->setBlockRescue($4);
             }
         }
-        | StatementBlock {
+        | RequireClause kBEGIN StatementRepeat RescueClause EnsureClause kEND {
             if (!driver.checkOnly) {
-                $$ = $1;
-            }
-        }
-        | kASYNC StatementBlock {
-            if (!driver.checkOnly) {
-                $$ = new AsyncNode(AsyncType::Statement, $2);
-            }
-        }
-        ;
-
-TernaryExpr
-        : LogicExpr {
-            if (!driver.checkOnly) {
-                $$ = $1;
-            }
-        }
-        | TernaryExpr '?' Expression ':' Expression {
-            if (!driver.checkOnly) {
-                $$ = new TernaryNode(BaseOperator::TernaryIf, $1, $3, $5);
-            }
-        }
-        // TODO Se houver double comparison, isso fica inútil
-        | TernaryExpr kBETWEEN ComparisonExpr kAND ComparisonExpr {
-            if (!driver.checkOnly) {
-                // TODO Criar nó : $1 GEE $3 AND $1 LEE $1
-                $$ = new TernaryNode(BaseOperator::TernaryBetween, $1, $3, $5);
+                $$ = new BlockNode($3);
+                ((BlockNode *) $$)
+                  ->setBlockRequire($1)
+                  ->setBlockRescue($4)
+                  ->setBlockEnsure($5);
             }
         }
         ;
 
-LogicExpr
-        : ComparisonExpr {
+RequireClause
+        : kREQUIRE {
             if (!driver.checkOnly) {
-                $$ = $1;
+                $$ = new VectorNode();
             }
         }
-        | LogicExpr kAND ComparisonExpr {
-            if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinaryAnd, $1, $3);
-            }
-        }
-        | LogicExpr kOR ComparisonExpr {
-            if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinaryOr, $1, $3);
-            }
-        }
-        | LogicExpr kXOR ComparisonExpr {
-            if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinaryXor, $1, $3);
-            }
-        }
-        | LogicExpr kIMPLIES ComparisonExpr {
-            if (!driver.checkOnly) {
-                // TODO Criar nó : NOT $1 OR $3
-                $$ = new BinaryNode(BaseOperator::BinaryImplies, $1, $3);
-            }
-        }
-        ;
-
-// TODO simultaneous comparison
-
-ComparisonExpr
-        : RangeExpr {
-            if (!driver.checkOnly) {
-                $$ = $1;
-            }
-        }
-        | RangeExpr '<' RangeExpr {
-            if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinaryGet, $1, $3);
-            }
-        }
-        | RangeExpr sLEE RangeExpr {
-            if (!driver.checkOnly) {
-                // TODO Criar nó : LET OR EQL
-                $$ = new BinaryNode(BaseOperator::BinaryLee, $1, $3);
-            }
-        }
-        | RangeExpr '>' RangeExpr {
-            if (!driver.checkOnly) {
-                // TODO Criar nó : NOT LET
-                $$ = new BinaryNode(BaseOperator::BinaryGet, $1, $3);
-            }
-        }
-        | RangeExpr sGEE RangeExpr {
-            if (!driver.checkOnly) {
-                // TODO Criar nó para NOT LET OR EQL
-                $$ = new BinaryNode(BaseOperator::BinaryGee, $1, $3);
-            }
-        }
-        | RangeExpr sEQL RangeExpr {
-            if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinaryEql, $1, $3);
-            }
-        }
-        | RangeExpr sNEQ RangeExpr {
-            if (!driver.checkOnly) {
-                // TODO Criar nó : NOT EQL
-                $$ = new BinaryNode(BaseOperator::BinaryNeq, $1, $3);
-            }
-        }
-        | RangeExpr sIDE RangeExpr {
-            if (!driver.checkOnly) {
-                // TODO Criar nó : EQL AND IS
-                $$ = new BinaryNode(BaseOperator::BinaryIde, $1, $3);
-            }
-        }
-        | RangeExpr sNID RangeExpr {
-            if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinaryNid, $1, $3);
-            }
-        }
-        | RangeExpr sMAT RangeExpr {
-            if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinaryMat, $1, $3);
-            }
-        }
-        | RangeExpr sNMA RangeExpr {
-            if (!driver.checkOnly) {
-                // TODO Criar nó : NOT MAT
-                $$ = new BinaryNode(BaseOperator::BinaryNma, $1, $3);
-            }
-        }
-        | RangeExpr kHAS RangeExpr {
-            if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinaryIn, $3, $1);
-            }
-        }
-        | RangeExpr kIN RangeExpr {
-            if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinaryIn, $1, $3);
-            }
-        }
-        ;
-
-RangeExpr
-        : AddExpr {
-            if (!driver.checkOnly) {
-                $$ = $1;
-            }
-        }
-        | RangeExpr sRGO AddExpr {
-            if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinaryRangeOut, $1, $3);
-            }
-        }
-        | RangeExpr sRGI AddExpr {
-            if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinaryRangeIn, $1, $3);
-            }
-        }
-        ;
-
-AddExpr
-        : MultExpr {
-            if (!driver.checkOnly) {
-                $$ = $1;
-            }
-        }
-        | AddExpr '+' MultExpr {
-            if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinaryAdd, $1, $3);
-            }
-        }
-        | AddExpr '-' MultExpr {
-            if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinarySub, $1, $3);
-            }
-        }
-        ;
-
-MultExpr
-        : PowerExpr {
-            if (!driver.checkOnly) {
-                $$ = $1;
-            }
-        }
-        | MultExpr '*' PowerExpr {
-            if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinaryMul, $1, $3);
-            }
-        }
-        | MultExpr '/' PowerExpr {
-            if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinaryDiv, $1, $3);
-            }
-        }
-        | MultExpr '%' PowerExpr {
-            if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinaryMod, $1, $3);
-            }
-        }
-        // | MultExpr QualifiedId
-        ;
-
-PowerExpr
-        : PrefixExpr {
-            if (!driver.checkOnly) {
-                $$ = $1;
-            }
-        }
-        | PowerExpr sPOW PrefixExpr {
-            if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinaryPow, $1, $3);
-            }
-        }
-        ;
-
-PrefixExpr
-        : SuffixExpr {
-            if (!driver.checkOnly) {
-                $$ = $1;
-            }
-        }
-        | kNOT PrefixExpr %prec UNARY {
-            if (!driver.checkOnly) {
-                $$ = new UnaryNode(BaseOperator::UnaryNot, $2);
-            }
-        }
-        | '+' PrefixExpr %prec UNARY {
-            if (!driver.checkOnly) {
-                $$ = new UnaryNode(BaseOperator::UnaryAdd, $2);
-            }
-        }
-        | '-' PrefixExpr %prec UNARY {
-            if (!driver.checkOnly) {
-                $$ = new UnaryNode(BaseOperator::UnarySub, $2);
-            }
-        }
-        | '(' QualifiedId ')' PrefixExpr %prec UNARY {
-            if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinaryCast, $4, $2);
-            }
-        }
-        | kNEW FunctionCall %prec UNARY {
-            if (!driver.checkOnly) {
-                // $$ = new UnaryNode(BaseOperator::UnaryNew, $2);
-                $$ = new NewNode(NewType::InstanceOf, $2);
-            }
-        }
-        | kNEW kCLASS '(' NamedExpressionList ')' %prec UNARY {
-            if (!driver.checkOnly) {
-                // $$ = new UnaryNode(BaseOperator::UnaryNewClass, $4);
-                $$ = new NewNode(NewType::AnonymousClass, $4);
-            }
-        }
-        ;
-
-SuffixExpr
-        : Value {
-            if (!driver.checkOnly) {
-                $$ = $1;
-            }
-        }
-        | SuffixExpr '.' FunctionCall {
-            if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinaryAccess, $$, $3);
-            }
-        }
-        | SuffixExpr '.' QualifiedId {
-            if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinaryAccess, $$, $3);
-            }
-        }
-        | SuffixExpr '[' Expression ']' {
-            if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinaryAccess, $$, $3);
-            }
-        }
-        | SuffixExpr '[' Expression ':' ']' {
-            if (!driver.checkOnly) {
-                $$ = new TernaryNode(BaseOperator::TernarySlice, $$, $3, NULL);
-            }
-        }
-        | SuffixExpr '[' Expression ':' Expression ']' {
-            if (!driver.checkOnly) {
-                $$ = new TernaryNode(BaseOperator::TernarySlice, $$, $3, $5);
-            }
-        }
-        | SuffixExpr '[' ':' Expression ']' {
-            if (!driver.checkOnly) {
-                $$ = new TernaryNode(BaseOperator::TernarySlice, $$, NULL, $4);
-            }
-        }
-        ;
-
-Value
-        : kNIL {
-            if (!driver.checkOnly) {
-                $$ = new NilNode();
-            }
-        }
-//         | kSELF {
-//             if (!driver.checkOnly) {
-//                 $$ = new IdentifierNode("self");
-//             }
-//         }
-        | kFALSE {
-            if (!driver.checkOnly) {
-                $$ = new BooleanNode(false);
-            }
-        }
-        | kTRUE {
-            if (!driver.checkOnly) {
-                $$ = new BooleanNode(true);
-            }
-        }
-        | FLOAT {
-            if (!driver.checkOnly) {
-                $$ = new FloatNode($1);
-            }
-        }
-        | INTEGER {
-            if (!driver.checkOnly) {
-                $$ = new IntegerNode($1);
-            }
-        }
-        | REGEX {
-            if (!driver.checkOnly) {
-                $$ = new RegexNode(*$1);
-            }
-        }
-        | String {
-            if (!driver.checkOnly) {
-                $$ = $1;
-            }
-        }
-        | Array {
-            if (!driver.checkOnly) {
-                $$ = $1;
-            }
-        }
-        | Hash  {
-            if (!driver.checkOnly) {
-                $$ = $1;
-            }
-        }
-        | QualifiedId {
-            if (!driver.checkOnly) {
-                $$ = $1;
-            }
-        }
-        | FunctionCall {
-            if (!driver.checkOnly) {
-                $$ = $1;
-            }
-        }
-        | '(' Expression ')' {
+        | kREQUIRE ConditionRepeat {
             if (!driver.checkOnly) {
                 $$ = $2;
             }
         }
         ;
 
-String
-        : STRING {
-            if (!driver.checkOnly) {
-                $$ = new StringNode(*$1);
-            }
-        }
-        | String STRING {
-            if (!driver.checkOnly) {
-                ((StringNode *) $$)
-                  ->append(*$2);
-            }
-        }
-        ;
-
-Array
-        : '[' ExpressionList ']' {
-            if (!driver.checkOnly) {
-                $$ = new ArrayNode($2);
-            }
-        }
-        // | '[' NamedExpressionList ']' // Alternativa para criação de arranjos associativos
-        | '[' ']' {
-            if (!driver.checkOnly) {
-                $$ = new ArrayNode();
-            }
-        }
-        // | '[' Expression '|' QueryOrigin sDEF LogicExpr ']'
-        // | '[' Expression '|' QueryOrigin kWHERE LogicExpr ']'
-        ;
-
-ExpressionList
-        : Expression {
+ConditionRepeat
+        : Condition ';' {
             if (!driver.checkOnly) {
                 $$ = new VectorNode();
                 $$->push_back($1);
             }
         }
-        | ExpressionList ',' Expression {
+        | ConditionRepeat Condition ';' {
             if (!driver.checkOnly) {
-                $$->push_back($3);
+                $$->push_back($2);
             }
         }
         ;
 
-Hash
-        : '{' NamedExpressionList '}' {
-            if (!driver.checkOnly) {
-                $$ = new HashNode($2);
-            }
-        }
-        | '{' '}' {
-            if (!driver.checkOnly) {
-                $$ = new HashNode();
-            }
-        }
-        ;
-
-NamedExpressionList
-        : NamedExpression {
+EnsureClause
+        : kENSURE {
             if (!driver.checkOnly) {
                 $$ = new VectorNode();
-                $$->push_back($1);
             }
         }
-        | NamedExpressionList ',' NamedExpression {
+        | kENSURE StatementRepeat {
             if (!driver.checkOnly) {
-                $$->push_back($3);
+                $$ = $2;
             }
         }
         ;
 
-NamedExpression
-        : Identifier ':' Expression {
+RescueClause
+        : kRESCUE {
             if (!driver.checkOnly) {
-                $$ = new HashPairNode($1, $3);
+                $$ = new VectorNode();
             }
         }
-        | String ':' Expression {
+        | kRESCUE WhenClauseRepeat {
             if (!driver.checkOnly) {
-                $$ = new HashPairNode($1, $3);
+                $$ = $2;
             }
         }
         ;
 
-QualifiedId
-        : Identifier {
+Expression
+        : LambdaExpression {
             if (!driver.checkOnly) {
                 $$ = $1;
             }
         }
-        | QualifiedId '.' Identifier {
+        | AssignmentExpression {
             if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinaryAccess, $$, $3);
+                $$ = $1;
+            }
+        }
+        | QueryExpression {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | TernaryExpression {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | kASYNC LambdaExpression {
+            if (!driver.checkOnly) {
+                $$ = new AsyncNode($2);
+            }
+        }
+        | kASYNC QueryExpression {
+            if (!driver.checkOnly) {
+                $$ = new AsyncNode($2);
+            }
+        }
+        | kASYNC TernaryExpression {
+            if (!driver.checkOnly) {
+                $$ = new AsyncNode($2);
             }
         }
         ;
 
-Identifier
-        : ID {
+LambdaExpression
+        : kDEF FormalParamList '(' Expression ')' {
             if (!driver.checkOnly) {
-                $$ = new IdentifierNode(*$1);
+                $$ = new LambdaNode($2, $4);
             }
         }
         ;
 
-FunctionCall
-        : QualifiedId '(' ')' {
+AssignmentExpression
+        : QualifiedId '=' AssignmentValue {
             if (!driver.checkOnly) {
-                $$ = new FunctionCallNode($1, new VectorNode());
+                $$ = new BinaryNode(BaseOperator::BinaryAssignment, $1, $3);
             }
         }
-        | QualifiedId '(' ParamValueList ')' {
+        | QualifiedId sADE AssignmentValue {
             if (!driver.checkOnly) {
-                $$ = new FunctionCallNode($1, $3);
+                $$ = new BinaryNode(BaseOperator::BinaryAde, $1, $3);
+            }
+        }
+        | QualifiedId sSUE AssignmentValue {
+            if (!driver.checkOnly) {
+                $$ = new BinaryNode(BaseOperator::BinarySue, $1, $3);
+            }
+        }
+        | QualifiedId sMUE AssignmentValue {
+            if (!driver.checkOnly) {
+                $$ = new BinaryNode(BaseOperator::BinaryMue, $1, $3);
+            }
+        }
+        | QualifiedId sDIE AssignmentValue {
+            if (!driver.checkOnly) {
+                $$ = new BinaryNode(BaseOperator::BinaryDie, $1, $3);
             }
         }
         ;
 
-ParamValueList
-        : ParamValue {
-            if (!driver.checkOnly) {
-                $$ = new VectorNode();
-                $$->push_back($1);
-            }
-        }
-        | ParamValueList ',' ParamValue {
-            if (!driver.checkOnly) {
-                $$->push_back($3);
-            }
-        }
-        ;
-
-ParamValue
+AssignmentValue
         : Expression {
             if (!driver.checkOnly) {
                 $$ = $1;
             }
         }
-        | StatementBlock {
-            if (!driver.checkOnly) {
-                $$ = $1;
-            }
-        }
         ;
 
-QueryExpr
-        : kFROM QueryOrigin QueryBody {
-            if (!driver.checkOnly) {
-                $$ = new QueryNode($2, $3);
-            }
-        }
-        | kFROM QueryOrigin {
+QueryExpression
+        : kFROM QueryOrigin {
             if (!driver.checkOnly) {
                 $$ = new QueryNode($2, new SelectNode(new VectorNode()));
+            }
+        }
+        | kFROM QueryOrigin QueryBody {
+            if (!driver.checkOnly) {
+                $$ = new QueryNode($2, $3);
             }
         }
         ;
 
 QueryOrigin
-        : Identifier kIN Expression {
+        : IdentifierLiteral kIN Expression {
             if (!driver.checkOnly) {
                 $$ = new QueryOriginNode($1, $3);
             }
@@ -2414,7 +1867,7 @@ QueryOrigin
         ;
 
 QueryBody
-        : QueryBodyClauseRepeat SelectsOrGroupClause {
+        : QueryBodyMemberRepeat SelectOrGroupClause {
             if (!driver.checkOnly) {
                 $$ = new QueryBodyNode();
                 ((QueryBodyNode *) $$)
@@ -2422,14 +1875,14 @@ QueryBody
                   ->set_finally($2);
             }
         }
-        | QueryBodyClauseRepeat {
+        | QueryBodyMemberRepeat {
             if (!driver.checkOnly) {
                 $$ = new QueryBodyNode();
                 ((QueryBodyNode *) $$)
                   ->set_body($1);
             }
         }
-        | SelectsOrGroupClause {
+        | SelectOrGroupClause {
             if (!driver.checkOnly) {
                 $$ = new QueryBodyNode();
                 ((QueryBodyNode *) $$)
@@ -2438,22 +1891,22 @@ QueryBody
         }
         ;
 
-QueryBodyClauseRepeat
-        : QueryBodyClause {
+QueryBodyMemberRepeat
+        : QueryBodyMember {
             if (!driver.checkOnly) {
                 $$ = new VectorNode();
                 $$->push_back($1);
             }
         }
-        | QueryBodyClauseRepeat QueryBodyClause {
+        | QueryBodyMemberRepeat QueryBodyMember {
             if (!driver.checkOnly) {
                 $$->push_back($2);
             }
         }
         ;
 
-QueryBodyClause
-        : kWHERE LogicExpr {
+QueryBodyMember
+        : kWHERE LogicExpression {
             if (!driver.checkOnly) {
                 $$ = new WhereNode($2);
             }
@@ -2463,7 +1916,7 @@ QueryBodyClause
                 $$ = $1;
             }
         }
-        | kORDER kBY OrderingItemList {
+        | kORDER kBY OrderExpressionList {
             if (!driver.checkOnly) {
                 $$ = new OrderByNode($3);
             }
@@ -2476,38 +1929,38 @@ QueryBodyClause
         ;
 
 JoinClause
-        : kJOIN QueryOrigin kON LogicExpr {
+        : kJOIN QueryOrigin kON LogicExpression {
             if (!driver.checkOnly) {
                 $$ = new JoinNode(JoinType::None, $2, $4);
             }
         }
-        | kLEFT kJOIN QueryOrigin kON LogicExpr {
+        | kLEFT kJOIN QueryOrigin kON LogicExpression {
             if (!driver.checkOnly) {
                 $$ = new JoinNode(JoinType::Left, $3, $5);
             }
         }
-        | kRIGHT kJOIN QueryOrigin kON LogicExpr {
+        | kRIGHT kJOIN QueryOrigin kON LogicExpression {
             if (!driver.checkOnly) {
                 $$ = new JoinNode(JoinType::Right, $3, $5);
             }
         }
         ;
 
-OrderingItemList
-        : OrderingItem {
+OrderExpressionList
+        : OrderExpression {
             if (!driver.checkOnly) {
                 $$ = new VectorNode();
                 $$->push_back($1);
             }
         }
-        | OrderingItemList ',' OrderingItem {
+        | OrderExpressionList ',' OrderExpression {
             if (!driver.checkOnly) {
                 $$->push_back($3);
             }
         }
         ;
 
-OrderingItem
+OrderExpression
         : Expression {
             if (!driver.checkOnly) {
                 $$ = new OrderingNode(OrderType::None, $1);
@@ -2543,7 +1996,7 @@ RangeClause
         }
         ;
 
-SelectsOrGroupClause
+SelectOrGroupClause
         : kGROUP kBY Expression {
             if (!driver.checkOnly) {
                 $$ = new GroupByNode($3);
@@ -2552,6 +2005,488 @@ SelectsOrGroupClause
         | kSELECT ExpressionList {
             if (!driver.checkOnly) {
                 $$ = new SelectNode($2);
+            }
+        }
+        ;
+
+TernaryExpression
+        : LogicExpression {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | LogicExpression '?' Expression ':' Expression {
+            if (!driver.checkOnly) {
+                $$ = new TernaryNode(BaseOperator::TernaryIf, $1, $3, $5);
+            }
+        }
+        | LogicExpression kBETWEEN ComparisonExpression kAND ComparisonExpression {
+            if (!driver.checkOnly) {
+                // TODO Criar nó : $1 GEE $3 AND $1 LEE $1
+                $$ = new TernaryNode(BaseOperator::TernaryBetween, $1, $3, $5);
+            }
+        }
+        ;
+
+LogicExpression
+        : ComparisonExpression {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | LogicExpression kAND ComparisonExpression {
+            if (!driver.checkOnly) {
+                $$ = new BinaryNode(BaseOperator::BinaryAnd, $1, $3);
+            }
+        }
+        | LogicExpression kOR ComparisonExpression {
+            if (!driver.checkOnly) {
+                $$ = new BinaryNode(BaseOperator::BinaryOr, $1, $3);
+            }
+        }
+        | LogicExpression kXOR ComparisonExpression {
+            if (!driver.checkOnly) {
+                $$ = new BinaryNode(BaseOperator::BinaryXor, $1, $3);
+            }
+        }
+        | LogicExpression kIMPLIES ComparisonExpression {
+            if (!driver.checkOnly) {
+                // TODO Criar nó : NOT $1 OR $3
+                $$ = new BinaryNode(BaseOperator::BinaryImplies, $1, $3);
+            }
+        }
+        ;
+
+ComparisonExpression
+        : RangeExpression {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | RangeExpression '<' RangeExpression {
+            if (!driver.checkOnly) {
+                $$ = new BinaryNode(BaseOperator::BinaryGet, $1, $3);
+            }
+        }
+        | RangeExpression sLEE RangeExpression {
+            if (!driver.checkOnly) {
+                // TODO Criar nó : LET OR EQL
+                $$ = new BinaryNode(BaseOperator::BinaryLee, $1, $3);
+            }
+        }
+        | RangeExpression '>' RangeExpression {
+            if (!driver.checkOnly) {
+                // TODO Criar nó : NOT LET
+                $$ = new BinaryNode(BaseOperator::BinaryGet, $1, $3);
+            }
+        }
+        | RangeExpression sGEE RangeExpression {
+            if (!driver.checkOnly) {
+                // TODO Criar nó para NOT LET OR EQL
+                $$ = new BinaryNode(BaseOperator::BinaryGee, $1, $3);
+            }
+        }
+        | RangeExpression sEQL RangeExpression {
+            if (!driver.checkOnly) {
+                $$ = new BinaryNode(BaseOperator::BinaryEql, $1, $3);
+            }
+        }
+        | RangeExpression sNEQ RangeExpression {
+            if (!driver.checkOnly) {
+                // TODO Criar nó : NOT EQL
+                $$ = new BinaryNode(BaseOperator::BinaryNeq, $1, $3);
+            }
+        }
+        | RangeExpression sIDE RangeExpression {
+            if (!driver.checkOnly) {
+                // TODO Criar nó : EQL AND IS
+                $$ = new BinaryNode(BaseOperator::BinaryIde, $1, $3);
+            }
+        }
+        | RangeExpression sNID RangeExpression {
+            if (!driver.checkOnly) {
+                $$ = new BinaryNode(BaseOperator::BinaryNid, $1, $3);
+            }
+        }
+        | RangeExpression sMAT RangeExpression {
+            if (!driver.checkOnly) {
+                $$ = new BinaryNode(BaseOperator::BinaryMat, $1, $3);
+            }
+        }
+        | RangeExpression sNMA RangeExpression {
+            if (!driver.checkOnly) {
+                // TODO Criar nó : NOT MAT
+                $$ = new BinaryNode(BaseOperator::BinaryNma, $1, $3);
+            }
+        }
+        | RangeExpression kHAS RangeExpression {
+            if (!driver.checkOnly) {
+                $$ = new BinaryNode(BaseOperator::BinaryIn, $3, $1);
+            }
+        }
+        | RangeExpression kIN RangeExpression {
+            if (!driver.checkOnly) {
+                $$ = new BinaryNode(BaseOperator::BinaryIn, $1, $3);
+            }
+        }
+        ;
+
+RangeExpression
+        : AdditionExpression {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | AdditionExpression sRAE AdditionExpression {
+            if (!driver.checkOnly) {
+                $$ = new BinaryNode(BaseOperator::BinaryRangeOut, $1, $3);
+            }
+        }
+        | AdditionExpression sRAI AdditionExpression {
+            if (!driver.checkOnly) {
+                $$ = new BinaryNode(BaseOperator::BinaryRangeIn, $1, $3);
+            }
+        }
+        ;
+
+AdditionExpression
+        : MultiplicationExpression {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | AdditionExpression '+' MultiplicationExpression {
+            if (!driver.checkOnly) {
+                $$ = new BinaryNode(BaseOperator::BinaryAdd, $1, $3);
+            }
+        }
+        | AdditionExpression '-' MultiplicationExpression {
+            if (!driver.checkOnly) {
+                $$ = new BinaryNode(BaseOperator::BinarySub, $1, $3);
+            }
+        }
+        ;
+
+MultiplicationExpression
+        : PowerExpression {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | MultiplicationExpression '*' PowerExpression {
+            if (!driver.checkOnly) {
+                $$ = new BinaryNode(BaseOperator::BinaryMul, $1, $3);
+            }
+        }
+        | MultiplicationExpression '/' PowerExpression {
+            if (!driver.checkOnly) {
+                $$ = new BinaryNode(BaseOperator::BinaryDiv, $1, $3);
+            }
+        }
+        | MultiplicationExpression '%' PowerExpression {
+            if (!driver.checkOnly) {
+                $$ = new BinaryNode(BaseOperator::BinaryMod, $1, $3);
+            }
+        }
+        ;
+
+PowerExpression
+        : PrefixExpression {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | PowerExpression sPOW PrefixExpression {
+            if (!driver.checkOnly) {
+                $$ = new BinaryNode(BaseOperator::BinaryPow, $1, $3);
+            }
+        }
+        ;
+
+PrefixExpression
+        : SuffixExpression {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | kNOT PrefixExpression %prec UNARY {
+            if (!driver.checkOnly) {
+                $$ = new UnaryNode(BaseOperator::UnaryNot, $2);
+            }
+        }
+        | '+' PrefixExpression %prec UNARY {
+            if (!driver.checkOnly) {
+                $$ = new UnaryNode(BaseOperator::UnaryAdd, $2);
+            }
+        }
+        | '-' PrefixExpression %prec UNARY {
+            if (!driver.checkOnly) {
+                $$ = new UnaryNode(BaseOperator::UnarySub, $2);
+            }
+        }
+        | '(' QualifiedId ')' PrefixExpression %prec UNARY {
+            if (!driver.checkOnly) {
+                $$ = new BinaryNode(BaseOperator::BinaryCast, $4, $2);
+            }
+        }
+        | kNEW FunctionCall %prec UNARY {
+            if (!driver.checkOnly) {
+                // $$ = new UnaryNode(BaseOperator::UnaryNew, $2);
+                $$ = new NewNode(NewType::InstanceOf, $2);
+            }
+        }
+        | kNEW kCLASS '(' NamedExpressionList ')' %prec UNARY {
+            if (!driver.checkOnly) {
+                // $$ = new UnaryNode(BaseOperator::UnaryNewClass, $4);
+                $$ = new NewNode(NewType::AnonymousClass, $4);
+            }
+        }
+        ;
+
+SuffixExpression
+        : LiteralValue {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | SuffixExpression '.' FunctionCall {
+            if (!driver.checkOnly) {
+                $$ = new BinaryNode(BaseOperator::BinaryAccess, $$, $3);
+            }
+        }
+        | SuffixExpression '.' QualifiedId {
+            if (!driver.checkOnly) {
+                $$ = new BinaryNode(BaseOperator::BinaryAccess, $$, $3);
+            }
+        }
+        | SuffixExpression '[' Expression ']' {
+            if (!driver.checkOnly) {
+                $$ = new BinaryNode(BaseOperator::BinaryAccess, $$, $3);
+            }
+        }
+        | SuffixExpression '[' Expression ':' ']' {
+            if (!driver.checkOnly) {
+                $$ = new TernaryNode(BaseOperator::TernarySlice, $$, $3, NULL);
+            }
+        }
+        | SuffixExpression '[' Expression ':' Expression ']' {
+            if (!driver.checkOnly) {
+                $$ = new TernaryNode(BaseOperator::TernarySlice, $$, $3, $5);
+            }
+        }
+        | SuffixExpression '[' ':' Expression ']' {
+            if (!driver.checkOnly) {
+                $$ = new TernaryNode(BaseOperator::TernarySlice, $$, NULL, $4);
+            }
+        }
+        ;
+
+LiteralValue
+        : kNIL {
+            if (!driver.checkOnly) {
+                $$ = new NilNode();
+            }
+        }
+        | BooleanLiteral {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | FloatLiteral {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | IntegerLiteral {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | RegexLiteral {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | StringLiteral {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | ArrayLiteral {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | HashLiteral  {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | QualifiedId {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | FunctionCall {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | '(' Expression ')' {
+            if (!driver.checkOnly) {
+                $$ = $2;
+            }
+        }
+        ;
+
+BooleanLiteral
+        : kFALSE {
+            if (!driver.checkOnly) {
+                $$ = new BooleanNode(false);
+            }
+        }
+        | kTRUE {
+            if (!driver.checkOnly) {
+                $$ = new BooleanNode(true);
+            }
+        }
+        ;
+
+FloatLiteral
+        : FLOAT {
+            if (!driver.checkOnly) {
+                $$ = new FloatNode($1);
+            }
+        }
+        ;
+
+IntegerLiteral
+        : INTEGER {
+            if (!driver.checkOnly) {
+                $$ = new IntegerNode($1);
+            }
+        }
+        ;
+
+RegexLiteral
+        : REGEX {
+            if (!driver.checkOnly) {
+                $$ = new RegexNode(*$1);
+            }
+        }
+        ;
+
+StringLiteral
+        : STRING {
+            if (!driver.checkOnly) {
+                $$ = new StringNode(*$1);
+            }
+        }
+        | StringLiteral STRING {
+            if (!driver.checkOnly) {
+                ((StringNode *) $$)
+                  ->append(*$2);
+            }
+        }
+        ;
+
+ArrayLiteral
+        : '[' ']' {
+            if (!driver.checkOnly) {
+                $$ = new ArrayNode();
+            }
+        }
+        | '[' ExpressionList ']' {
+            if (!driver.checkOnly) {
+                $$ = new ArrayNode($2);
+            }
+        }
+        ;
+
+ExpressionList
+        : Expression {
+            if (!driver.checkOnly) {
+                $$ = new VectorNode();
+                $$->push_back($1);
+            }
+        }
+        | ExpressionList ',' Expression {
+            if (!driver.checkOnly) {
+                $$->push_back($3);
+            }
+        }
+        ;
+
+HashLiteral
+        : '{' '}' {
+            if (!driver.checkOnly) {
+                $$ = new HashNode();
+            }
+        }
+        | '{' NamedExpressionList '}' {
+            if (!driver.checkOnly) {
+                $$ = new HashNode($2);
+            }
+        }
+        ;
+
+NamedExpressionList
+        : NamedExpression {
+            if (!driver.checkOnly) {
+                $$ = new VectorNode();
+                $$->push_back($1);
+            }
+        }
+        | NamedExpressionList ',' NamedExpression {
+            if (!driver.checkOnly) {
+                $$->push_back($3);
+            }
+        }
+        ;
+
+NamedExpression
+        : IdentifierLiteral ':' Expression {
+            if (!driver.checkOnly) {
+                $$ = new HashPairNode($1, $3);
+            }
+        }
+        | StringLiteral ':' Expression {
+            if (!driver.checkOnly) {
+                $$ = new HashPairNode($1, $3);
+            }
+        }
+        ;
+
+FunctionCall
+        : QualifiedId '(' ')' {
+            if (!driver.checkOnly) {
+                $$ = new FunctionCallNode($1, new VectorNode());
+            }
+        }
+        | QualifiedId '(' ExpressionList ')' {
+            if (!driver.checkOnly) {
+                $$ = new FunctionCallNode($1, $3);
+            }
+        }
+        ;
+
+QualifiedId
+        : IdentifierLiteral {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | QualifiedId '.' IdentifierLiteral {
+            if (!driver.checkOnly) {
+                $$ = new BinaryNode(BaseOperator::BinaryAccess, $$, $3);
+            }
+        }
+        ;
+
+IdentifierLiteral
+        : ID {
+            if (!driver.checkOnly) {
+                $$ = new IdentifierNode(*$1);
             }
         }
         ;

@@ -7,23 +7,23 @@ import System.IO;
     begin
       # Gerar código automático
     end
-    var ID: Integer; # invariants not nil and > 0
+    attr ID: Integer; # invariants not nil and > 0
   end
 
   class RentalAgency > Base
-    var Address: String;
-    var PhoneNo: String;
-    var Manager: Pessoa;
+    attr Address: String;
+    attr PhoneNo: String;
+    attr Manager: Pessoa;
   end
   
   class Person > Base
-    var Name: String; # invariants not nil
-    var Address: String;
+    attr Name: String; # invariants not nil
+    attr Address: String;
   end
   
   class CustomerRecord
-    var CustomerID: Integer ;
-    var RentalHistory: Strings ;
+    attr CustomerID: Integer ;
+    attr RentalHistory: Strings ;
   private
     def Initialize()
     begin
@@ -54,17 +54,17 @@ import System.IO;
     
     end
 
-    var Phone: String ;
-    var BirthDate: Date ;
-    var LicenseNo: String ; # like \[0-9]+\ # Validado com regex
+    attr Phone: String ;
+    attr BirthDate: Date ;
+    attr LicenseNo: String ; # like \[0-9]+\ # Validado com regex
   end
   
   class Car > Base
-    var FleetNo: Integer ;
-    var Model: String ;
-    var RegNo: String ;
-    var Condition: String ;
-    var Status: String ;
+    attr FleetNo: Integer ;
+    attr Model: String ;
+    attr RegNo: String ;
+    attr Condition: String ;
+    attr Status: String ;
     
     def Reserved?(): Boolean
     begin
@@ -78,13 +78,13 @@ import System.IO;
   end
   
   class Employee > Person
-    var PhoneNo: String ;
-    var DateHired: Date ;
+    attr PhoneNo: String ;
+    attr DateHired: Date ;
   end
   
   class RentalAgent > Employee
-    var CommissionRate: Float ;
-    var Tar;
+    attr CommissionRate: Float;
+    attr Tar: foo;
     
     def Calculate()
     begin
@@ -93,8 +93,8 @@ import System.IO;
   end
   
   class Mechanic > Employee
-    var Skills: Strings ;
-    var Qualifications: String ;
+    attr Skills: Strings ;
+    attr Qualifications: String ;
   private
     def Initialize()
     begin
@@ -103,8 +103,8 @@ import System.IO;
   end
   
   class ServiceLog > Base
-    var ServiceHistory: String ;
-    var ProgressHistory: Strings ;
+    attr ServiceHistory: String ;
+    attr ProgressHistory: Strings ;
   private
     def Initialize()
     begin

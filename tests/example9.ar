@@ -1,12 +1,12 @@
 module Another
-# inline beginc "
+# inline doc "
   # Description of this module...
   # 
   # Accessible by Another.__Description
 # ";
   class Banco
-    var Nome: String ;
-    var Endereco: String ;
+    attr Nome: String ;
+    attr Endereco: String ;
     
     def AtualizarContas()
     begin
@@ -42,8 +42,8 @@ module Another
   end
 
   class GerenciabeginrDeTransacoes
-    var VetorDeTransacoesEmExecucao: Array;
-    var VetorDeTransacoesEsperanbegin: Array;
+    attr VetorDeTransacoesEmExecucao: Array;
+    attr VetorDeTransacoesEsperanbegin: Array;
     
     def EfetuarTransacao()
     begin
@@ -74,7 +74,7 @@ module Another
   end
 
   class Calendario
-    var DiasUteis: Array;
+    attr DiasUteis: Array;
     
     def EhDiaUtil?(): Boolean
     begin
@@ -95,8 +95,8 @@ module Another
   end
 
   class Cliente
-    var Nome: String;
-    var Endereco: String;
+    attr Nome: String;
+    attr Endereco: String;
     
     def Sacar(DaConta: Conta)
     begin
@@ -130,8 +130,8 @@ module Another
   end
 
   class Conta
-    var Salbegin: Float;
-     def Atualizar();
+    attr Saldo: Float;
+    def Atualizar();
   end
   
   class Poupanca > Conta;

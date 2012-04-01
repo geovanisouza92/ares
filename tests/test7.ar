@@ -13,8 +13,8 @@ a = a implies b;
 
 a and b;
 
-1 between 0 and 2 ? true : false ;
-1.0 between 0.0 and 2.0 ? true : false ;
+(1 between 0 and 2) ? true : false ;
+(1.0 between 0.0 and 2.0) ? true : false ;
 
 from item in [a, b, c];
 from item in [a, b, c] join sub in [d, e, f] on true;

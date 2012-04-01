@@ -6,11 +6,6 @@
 
 using namespace std;
 
-//#define BOOST_FILESYSTEM_VERSION 3
-//#include <boost/filesystem.hpp>
-//
-//namespace fileSystem = boost::filesystem3;
-
 #include "driver.h"
 #include "st.h"
 
@@ -32,14 +27,12 @@ namespace LANG_NAMESPACE {
             enviro->clear();
 #endif
             origin = sname;
-            // total_errors = total_warnings = total_hints = 0;
             bool result = false;
             try {
                 Scanner scanner(&in);
                 this->lexer = &scanner;
                 Parser parser(*this);
 #if defined(LANG_DEBUG)
-//        cout << "Setting debug mode..." << endl;
                 if (verboseMode == VerboseMode::MaximumForDebug) {
                     scanner.set_debug(true);
                     parser.set_debug_level(true);
@@ -139,16 +132,37 @@ namespace LANG_NAMESPACE {
             return result.str();
         }
 
+        void
+        Driver::syntaxOkFor(const string what) {
+            cout << "=> Syntax OK for " << COLOR_BGREEN << what << COLOR_RESET << endl;
+        }
+
+        void
+        Driver::resetLines() {
+            totalLines += lines;
+            lines = 0;
+        }
+
+        void
+        Driver::incLines() {
+            ++lines;
+        }
+
+        void
+        Driver::decLines() {
+            --lines;
+        }
+
         void Driver::produce(FinallyAction::Action action, ostream& out) {
             switch (action) {
             case FinallyAction::None:
                 break;
             case FinallyAction::PrintOnConsole:
                 if (errors == 0 && verboseMode >= VerboseMode::High) {
-                    syntaxOkFor(origin);
 #ifdef ENVIRONMENT
                     enviro->printUsing(out, 0);
 #endif
+                    syntaxOkFor(origin);
                 }
                 break;
             case FinallyAction::ExecuteOnTheFly:

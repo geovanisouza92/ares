@@ -10,9 +10,9 @@ module Banco
         raise "CPF Inválibegin!";
     end
     public
-    var CPF: String ;
-    var Nome: String ; # invariants not nil
-    var Telefone: String ;
+    attr CPF: String ;
+    attr Nome: String ; # invariants not nil
+    attr Telefone: String ;
     def MostrarCPF(): Integer
     begin
       # Código
@@ -24,8 +24,8 @@ module Banco
   end
 
   class Conta
-    var Agencia: Integer ;
-    var NumeroConta: String ;
+    attr Agencia: Integer ;
+    attr NumeroConta: String ;
     def Depositar(Valor: Float)
     begin
       # Código
@@ -37,7 +37,7 @@ module Banco
   end
 
   class ContaPoupanca > Conta
-    var DiaDeposito: Integer ;
+    attr DiaDeposito: Integer ;
     def VerLucro(): Float
     begin
       # Código

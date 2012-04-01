@@ -32,15 +32,6 @@ namespace LANG_NAMESPACE {
     } // Util
 } // LANG_NAMESPACE
 
-// #define CSTYLE
-
-#ifdef CSTYLE
-#define TRAIT_END \
-line = Util::trimString(line, ' '); \
-line = Util::trimString(line, '\t'); \
-line = Util::trimString(line, '\n'); \
-if (line[line.length() - 1] != ';' && line[line.length() - 1] != '}') line += ';';
-#else
 #define TRAIT_END \
 line = Util::trimString(line, ' '); \
 line = Util::trimString(line, '\t'); \
@@ -50,7 +41,6 @@ if (!line.empty()) { \
         if (line[line.length() - 1] != ';' && line.substr(line.length() - 3, 3) != "end") line += ';'; \
     } else if (line[line.length() - 1] != ';') line += ';'; \
 }
-#endif
 
 #define STATS(x) \
 if (driver.verboseMode >= VerboseMode::Low) { \
@@ -92,10 +82,6 @@ int main(int argc, char** argv) {
 
     if (options.count("eval")) {
         mode = InteractionMode::LineEval;
-        // if (!printed) {
-        //     cout << langVersionInfo() << endl;
-        //     printed = true;
-        // }
         line = options["eval"].as<string>();
         if (!line.empty()) {
             TRAIT_END
@@ -127,17 +113,14 @@ int main(int argc, char** argv) {
     if (options.count("version")) {
         cout << langVersionInfo() << endl;
         return 0;
-        // printed = true;
     }
 
-    // if (!printed) {
-    //     cout << langVersionInfo() << endl;
-    //     printed = true;
-    // }
-
-    if (driver.verboseMode >= VerboseMode::High && !messages.empty())
-        for (vector<string>::iterator message = messages.begin(); message < messages.end(); message++)
-            cout << *message << endl;
+    if (driver.verboseMode >= VerboseMode::High) {
+    	cout << langVersionInfo() << endl;
+    	if (!messages.empty())
+    		for (vector<string>::iterator message = messages.begin(); message < messages.end(); message++)
+    			cout << *message << endl;
+    }
 
     // TODO Transpor código para Driver
     if (!files.empty()) {
@@ -158,15 +141,15 @@ int main(int argc, char** argv) {
         string guide(">>> ");
         int blanks = 0;
         while (cout << COLOR_BGREEN<< LANG_SHELL_NAME << COLOR_RESET << guide &&getline(cin, line))
-        if (!line.empty()) {
-            TRAIT_END
-            bool parse_ok = driver.parseString(line, LANG_SHELL_NAME);
-            if (parse_ok) {
-                if (driver.errors > maxErrors) break;
-                driver.produce((driver.checkOnly ? FinallyAction::None : FinallyAction::PrintOnConsole), cout);
-            }
-            blanks = 0; line.clear();
-        } else if (++blanks && blanks >= 3) break;
+			if (!line.empty()) {
+				TRAIT_END
+				bool parse_ok = driver.parseString(line, LANG_SHELL_NAME);
+				if (parse_ok) {
+					if (driver.errors > maxErrors) break;
+					driver.produce((driver.checkOnly ? FinallyAction::None : FinallyAction::PrintOnConsole), cout);
+				}
+				blanks = 0; line.clear();
+			} else if (++blanks && blanks >= 3) break;
         STATS(false)
     }
 

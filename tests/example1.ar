@@ -6,7 +6,7 @@ module IdeaCloud.Vistem
             # begin getter
         end
     public
-        var Id: Integer ;
+        attr Id: Integer ;
     private
         def SetId(Value: Integer) # the order doesn't matter...
         begin
@@ -17,7 +17,7 @@ module IdeaCloud.Vistem
     private
         # general validations here
     public
-        var Name: String ; # invariants not nil; # read-only, with constance
+        attr Name: String ; # invariants not nil; # read-only, with constance
         def Update()
         begin
             # update

@@ -2,8 +2,8 @@ module Classes
 
    class Persistente
     # Atributos
-    var ObjectId: Integer ;
-    var Iter: RanbeginmAccessFile ;
+    attr ObjectId: Integer ;
+    attr Iter: RanbeginmAccessFile ;
 
     # Métodos abstratos
      def AtualizarDabegins();
@@ -44,8 +44,8 @@ module Classes
   
   class Agencia > Persistente
     # Atributos
-    var CodAgencia: String ;
-    var NomeAgencia: String ;
+    attr CodAgencia: String ;
+    attr NomeAgencia: String ;
     
     # Métobegins
     def Agencia()
@@ -70,11 +70,11 @@ module Classes
   end
   
   class ContaCorrente > Persistente
-    var Cod: String;
-    var Salbegin: Integer;
-    var AplicPrefix: Array;
-    var Historico: Array;
-    var Agencia: ObjectId;
+    attr Cod: String;
+    attr Salbegin: Integer;
+    attr AplicPrefix: Array;
+    attr Historico: Array;
+    attr Agencia: ObjectId;
     
     def Depositar(Quantia: Float)
     begin
@@ -133,9 +133,9 @@ module Classes
   end
 
   class Historico > Persistente
-    var Date: Date;
-    var Operacao: Array;
-    var Valor: Float;
+    attr Date: Date;
+    attr Operacao: Array;
+    attr Valor: Float;
     
     def Criar()
     begin
@@ -149,8 +149,8 @@ module Classes
   end
   
   class Operacao > Persistente
-    var Cobeginperacao: String;
-    var DescricaoOperacao: String;
+    attr Cobeginperacao: String;
+    attr DescricaoOperacao: String;
     
     def Operacao()
     begin
@@ -174,10 +174,10 @@ module Classes
   end
   
   class Dependente > Persistente
-    var Nome: String; # invariants not nil
-    var CPF: String;
-    var Parentesco: String;
-    var Poupancas: Array;
+    attr Nome: String; # invariants not nil
+    attr CPF: String;
+    attr Parentesco: String;
+    attr Poupancas: Array;
     
     def Dependente()
     begin
@@ -216,7 +216,7 @@ module Classes
   end
   
   class Poupanca > ContaCorrente
-    var DataVencimento: Date;
+    attr DataVencimento: Date;
     
     def Poupanca()
     begin
@@ -225,9 +225,9 @@ module Classes
   end
   
   class AplicacaoPreFixada > Persistente
-    var Valor: Float;
-    var DataVencimento: Date;
-    var Taxa: Float;
+    attr Valor: Float;
+    attr DataVencimento: Date;
+    attr Taxa: Float;
     
     def AplicacaoPreFixada()
     begin
@@ -246,17 +246,17 @@ module Classes
   end
   
   class Cliente > Persistente
-    var Nome: String; # invariants not nil
-    var CPF: String;
-    var Rua: String;
-    var Fone: String;
-    var Bairro: String;
-    var Cidade: String;
-    var CEP: String;
-    var Estabegin: String;
-    var Dependentes: Array;
-    var ContasCorrente: Array;
-    var Poupancas: Array;
+    attr Nome: String; # invariants not nil
+    attr CPF: String;
+    attr Rua: String;
+    attr Fone: String;
+    attr Bairro: String;
+    attr Cidade: String;
+    attr CEP: String;
+    attr Estabegin: String;
+    attr Dependentes: Array;
+    attr ContasCorrente: Array;
+    attr Poupancas: Array;
     
     def Cliente()
     begin

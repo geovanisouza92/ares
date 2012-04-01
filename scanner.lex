@@ -42,8 +42,8 @@ rgx \~\/(\\.|[^\/])*\/
 "-="    return token::sSUE;
 "*="    return token::sMUE;
 "/="    return token::sDIE;
-"..."   return token::sRGI;
-".."    return token::sRGO;
+"..."   return token::sRAI;
+".."    return token::sRAE;
 "**"    return token::sPOW;
 "==="   return token::sIDE;
 "!=="   return token::sNID;
@@ -68,7 +68,6 @@ rgx \~\/(\\.|[^\/])*\/
 "case"          return token::kCASE;
 "class"         return token::kCLASS;
 "const"         return token::kCONST;
-"continue"      return token::kCONTINUE;
 "def"           return token::kDEF;
 "desc"          return token::kDESC;
 "do"            return token::kDO;

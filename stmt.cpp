@@ -38,9 +38,7 @@ namespace LANG_NAMESPACE {
             }
         }
 
-        CaseNode::CaseNode(SyntaxNode * c) :
-                caseExpression(c), caseWhen(new VectorNode()), caseElse(NULL) {
-        }
+        CaseNode::CaseNode(SyntaxNode * c) : caseExpression(c), caseWhen(new VectorNode()), caseElse(NULL) { }
 
         CaseNode *
         CaseNode::setWhen(VectorNode * w) {
@@ -50,7 +48,7 @@ namespace LANG_NAMESPACE {
         }
 
         CaseNode *
-        CaseNode::setElse(SyntaxNode * e) {
+        CaseNode::setElse(VectorNode * e) {
             delete caseElse;
             caseElse = e;
             return this;
@@ -61,13 +59,14 @@ namespace LANG_NAMESPACE {
             caseExpression->printUsing(out, d + 1);
             if (caseWhen->size() > 0) {
             for (VectorNode::iterator when = caseWhen->begin(); when < caseWhen->end(); when++) {
-//            TAB << "When =>" << endl;
                     (*when)->printUsing(out, d + 1);
                 }
             }
             if (caseElse != NULL) {
                 TAB << "Else =>" << endl;
-                caseElse->printUsing(out, d + 1);
+                for (VectorNode::iterator Else = caseElse->begin(); Else < caseElse->end(); Else++) {
+                    (*Else)->printUsing(out, d + 1);
+                }
             }
         }
 
@@ -91,13 +90,13 @@ namespace LANG_NAMESPACE {
 
         void ForNode::printUsing(ostream & out, unsigned d) {
             switch (forType) {
-            case LoopType::Ascending:
+            case LoopType::ForAscending:
                 TAB << "Ascending expression from =>" << endl;
                 break;
-            case LoopType::Descending:
+            case LoopType::ForDescending:
                 TAB << "Descending expression from =>" << endl;
                 break;
-            case LoopType::Iteration:
+            case LoopType::ForIteration:
                 TAB << "Iteration expression from =>" << endl;
                 break;
             }
@@ -136,9 +135,6 @@ namespace LANG_NAMESPACE {
             switch (controlType) {
             case ControlType::Break:
                 TAB << "Break statement" << endl;
-                break;
-            case ControlType::Continue:
-                TAB << "Continue statement" << endl;
                 break;
             case ControlType::Private:
                 TAB << "Alter visibility of items below to PRIVATE" << endl;
@@ -237,9 +233,7 @@ namespace LANG_NAMESPACE {
             }
         }
 
-        VariableNode::VariableNode(VectorNode * v) :
-                variables(v) {
-        }
+        VariableNode::VariableNode(VectorNode * v) : variables(v) { }
 
         void VariableNode::printUsing(ostream & out, unsigned d) {
             TAB << "Declare variables =>" << endl;
@@ -284,9 +278,7 @@ namespace LANG_NAMESPACE {
             }
         }
 
-        ConstantNode::ConstantNode(VectorNode * v) :
-                constants(v) {
-        }
+        ConstantNode::ConstantNode(VectorNode * v) : constants(v) { }
 
         void ConstantNode::printUsing(ostream & out, unsigned d) {
             TAB << "Declare constants =>" << endl;
@@ -429,12 +421,6 @@ namespace LANG_NAMESPACE {
             attributeInvariants = i;
             return this;
         }
-
-//        AttributeNode *
-//        AttributeNode::addSpecifier(SpecifierType::Type s) {
-//            attributeSpecifiers.push_back(s);
-//            return this;
-//        }
 
         void AttributeNode::printUsing(ostream & out, unsigned d) {
             TAB << "Attribute named =>" << endl;

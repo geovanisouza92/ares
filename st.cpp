@@ -20,9 +20,7 @@ namespace LANG_NAMESPACE {
             nodeType = t;
         }
 
-        Environment::Environment(Environment * p) :
-                previous(p), statements(new VectorNode()) {
-        }
+        Environment::Environment(Environment * p) : previous(p), statements(new VectorNode()) { }
 
         Environment::~Environment() {
         }
@@ -32,12 +30,6 @@ namespace LANG_NAMESPACE {
             statements->clear();
             return this;
         }
-
-//        Environment *
-//        Environment::putStatement(SyntaxNode * v) {
-//            statements->push_back(v);
-//            return this;
-//        }
 
         Environment *
         Environment::putStatements(VectorNode * v) {
@@ -52,14 +44,14 @@ namespace LANG_NAMESPACE {
         }
 
         NilNode::NilNode() {
+        	setNodeType(NodeType::Nil);
         }
 
         void NilNode::printUsing(ostream & out, unsigned d) {
             TAB << "Nil" << endl;
         }
 
-        IdentifierNode::IdentifierNode(string v) :
-                value(v) {
+        IdentifierNode::IdentifierNode(string v) : value(v) {
             setNodeType(NodeType::Identifier);
         }
 
@@ -80,8 +72,7 @@ namespace LANG_NAMESPACE {
             TAB << "String => " << value << endl;
         }
 
-        RegexNode::RegexNode(string v) :
-                value(v) {
+        RegexNode::RegexNode(string v) : value(v) {
             setNodeType(NodeType::Regex);
         }
 
@@ -89,8 +80,7 @@ namespace LANG_NAMESPACE {
             TAB << "Regex => " << value << endl;
         }
 
-        FloatNode::FloatNode(double v) :
-                value(v) {
+        FloatNode::FloatNode(double v) : value(v) {
             setNodeType(NodeType::Float);
         }
 
@@ -98,8 +88,7 @@ namespace LANG_NAMESPACE {
             TAB << "Float => " << value << endl;
         }
 
-        IntegerNode::IntegerNode(int v) :
-                value(v) {
+        IntegerNode::IntegerNode(int v) : value(v) {
             setNodeType(NodeType::Integer);
         }
 
@@ -107,8 +96,7 @@ namespace LANG_NAMESPACE {
             TAB << "Integer => " << value << endl;
         }
 
-        BooleanNode::BooleanNode(bool v) :
-                value(v) {
+        BooleanNode::BooleanNode(bool v) : value(v) {
             setNodeType(NodeType::Boolean);
         }
 
@@ -185,16 +173,15 @@ namespace LANG_NAMESPACE {
             member1->printUsing(out, d + 1);
         }
 
-        UnaryNode::UnaryNode(BaseOperator::Operator op, SyntaxNode * m1) :op(op), member1(m1) {
+        UnaryNode::UnaryNode(BaseOperator::Operator op, SyntaxNode * m1) : op(op), member1(m1) {
             setNodeType(NodeType::Nil);
         }
 
-        UnaryNode::UnaryNode(BaseOperator::Operator op, VectorNode * m1) :op(op), vector1(m1) {
+        UnaryNode::UnaryNode(BaseOperator::Operator op, VectorNode * m1) : op(op), vector1(m1) {
             setNodeType(NodeType::Nil);
         }
 
-        BinaryNode::BinaryNode(BaseOperator::Operator op, SyntaxNode * m1, SyntaxNode * m2) :
-                op(op), member1(m1), member2(m2) {
+        BinaryNode::BinaryNode(BaseOperator::Operator op, SyntaxNode * m1, SyntaxNode * m2) : op(op), member1(m1), member2(m2) {
             setNodeType(NodeType::Nil);
         }
 
@@ -204,8 +191,7 @@ namespace LANG_NAMESPACE {
             member2->printUsing(out, d + 1);
         }
 
-        TernaryNode::TernaryNode(BaseOperator::Operator op, SyntaxNode *m1, SyntaxNode *m2, SyntaxNode *m3) :
-                op(op), member1(m1), member2(m2), member3(m3) {
+        TernaryNode::TernaryNode(BaseOperator::Operator op, SyntaxNode *m1, SyntaxNode *m2, SyntaxNode *m3) : op(op), member1(m1), member2(m2), member3(m3) {
             setNodeType(NodeType::Nil);
         }
 
@@ -238,16 +224,7 @@ namespace LANG_NAMESPACE {
                 TAB << "] without arguments" << endl;
         }
 
-        AsyncNode::AsyncNode(AsyncType::Type t, SyntaxNode * i) : asyncType(t), item(i) { }
-
-        void AsyncNode::printUsing(ostream & out, unsigned d) {
-            TAB << "Asyncronous element =>" << endl;
-            item->printUsing(out, d + 1);
-        }
-
-        LambdaNode::LambdaNode(VectorNode * a, SyntaxNode * e) :
-                lambdaArguments(a), lambdaExpression(e) {
-        }
+        LambdaNode::LambdaNode(VectorNode * a, SyntaxNode * e) : lambdaArguments(a), lambdaExpression(e) { }
 
         void LambdaNode::printUsing(ostream & out, unsigned d) {
             TAB << "Lambda expression ";
@@ -262,6 +239,14 @@ namespace LANG_NAMESPACE {
                 out << "without arguments ";
             out << "using expression =>" << endl;
             lambdaExpression->printUsing(out, d + 1);
+        }
+
+        AsyncNode::AsyncNode(SyntaxNode * i) : asyncItem(i) { }
+
+        void
+        AsyncNode::printUsing(ostream & out, unsigned d) {
+        	TAB << "Async =>" << endl;
+        	asyncItem->printUsing(out, d + 1);
         }
 
     } // SyntaxTree

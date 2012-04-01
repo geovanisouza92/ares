@@ -23,6 +23,8 @@ LIBS=[
   "boost_system"
 ]
 
+BINFLAGS="--verbose=2"
+
 task :default => :debug
 
 task :debug do
@@ -40,8 +42,6 @@ task :release do
   LFLAGS=""
   Rake::Task['build:default'].invoke
 end
-
-BINFLAGS="--verbose=2"
 
 namespace :build do
 

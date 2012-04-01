@@ -5,23 +5,20 @@
 namespace LANG_NAMESPACE {
     namespace SyntaxTree {
 
-        QueryNode::QueryNode(SyntaxNode * o, SyntaxNode * b) :
-                queryOrigin(o), queryBody(b) {
+        QueryNode::QueryNode(SyntaxNode * o, SyntaxNode * b) : queryOrigin(o), queryBody(b) {
             setNodeType(NodeType::Array);
         }
 
         void QueryNode::printUsing(ostream & out, unsigned d) {
-            TAB << "Query from [" << endl;
+            TAB << "Query [" << endl;
             queryOrigin->printUsing(out, d + 1);
-            TAB << "]" << endl;
+            out << string((d + 1) * 2, ' ') << "]" << endl;
             if (queryBody != NULL) {
-                TAB << "Producing => " << endl;
                 queryBody->printUsing(out, d + 1);
             }
         }
 
-        QueryOriginNode::QueryOriginNode(SyntaxNode * i, SyntaxNode * e) :
-                originIdentifier(i), originExpression(e) {
+        QueryOriginNode::QueryOriginNode(SyntaxNode * i, SyntaxNode * e) : originIdentifier(i), originExpression(e) {
             setNodeType(NodeType::Nil);
         }
 
@@ -32,8 +29,7 @@ namespace LANG_NAMESPACE {
             originExpression->printUsing(out, d + 1);
         }
 
-        QueryBodyNode::QueryBodyNode() :
-                queryBody(new VectorNode()), queryFinally(new SelectNode(new VectorNode())) {
+        QueryBodyNode::QueryBodyNode() : queryBody(new VectorNode()), queryFinally(new SelectNode(new VectorNode())) {
             setNodeType(NodeType::Nil);
         }
 
@@ -52,18 +48,18 @@ namespace LANG_NAMESPACE {
         }
 
         void QueryBodyNode::printUsing(ostream & out, unsigned d) {
-            TAB << "Operations =>" << endl;
+            TAB << "Operations => [" << endl;
             for (VectorNode::iterator b = queryBody->begin(); b < queryBody->end(); b++) {
-                (*b)->printUsing(out, d + 2);
+                (*b)->printUsing(out, d + 1);
             }
+            TAB << "]" << endl;
             if (queryFinally != NULL) {
                 TAB << "Finally =>" << endl;
                 queryFinally->printUsing(out, d + 1);
             }
         }
 
-        WhereNode::WhereNode(SyntaxNode * e) :
-                whereExpression(e) {
+        WhereNode::WhereNode(SyntaxNode * e) : whereExpression(e) {
             setNodeType(NodeType::Nil);
         }
 
@@ -133,8 +129,7 @@ namespace LANG_NAMESPACE {
             groupExpression->printUsing(out, d + 1);
         }
 
-        RangeNode::RangeNode(RangeType::Type t, SyntaxNode * r) :
-                rangeType(t), rangeRange(r) {
+        RangeNode::RangeNode(RangeType::Type t, SyntaxNode * r) : rangeType(t), rangeRange(r) {
             setNodeType(NodeType::Nil);
         }
 

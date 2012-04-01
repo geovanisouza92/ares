@@ -1,52 +1,52 @@
 module XNA
 
-   class Entidade
-    var X: Float ;
-    var Y: Float ;
+  class Entidade
+    attr X: Float ;
+    attr Y: Float ;
   end
 
-   class Nave > Entidade
-    var Estabegin: EstabeginNave ;
-    var Velocidade: Float ;
-    var Direcao: DirecaoNave ;
+  class Nave > Entidade
+    attr Estabegin: EstabeginNave ;
+    attr Velocidade: Float ;
+    attr Direcao: DirecaoNave ;
   end
   
   class Escubegin > Entidade
-    var X: Float ;
-    var Y: Float ;
+    attr X: Float ;
+    attr Y: Float ;
   end
   
   class JogoInvasores
-    var Estabegin: EstabeginJogo ;
+    attr Estabegin: EstabeginJogo ;
   end
   
   class CelulaEscubegin
-    var Energia: Integer ;
-    var Tipo: TipoDeCelula ;
+    attr Energia: Integer ;
+    attr Tipo: TipoDeCelula ;
   end
   
   class Tiro
-    var X: Float ;
-    var Y: Float ;
-    var Velocidade: Float ;
+    attr X: Float ;
+    attr Y: Float ;
+    attr Velocidade: Float ;
   end
   
   class NaveInvasor > Nave;
   
   class NaveBonus > Nave
-    var Contabeginr: Integer ;
+    attr Contabeginr: Integer ;
   end
   
   class NaveJogabeginr > Nave
-    var Vidas: Integer ;
-    var Pontos: Integer ;
-    var PodeAtirar?: Boolean ;
+    attr Vidas: Integer ;
+    attr Pontos: Integer ;
+    attr PodeAtirar?: Boolean ;
   end
   
   class ControlabeginrDeNaves
-    var InverterDirecao?: Boolean ;
-    var QuantidadeDeNaves: Integer ;
-    var TempoParaAtirar: Float ;
+    attr InverterDirecao?: Boolean ;
+    attr QuantidadeDeNaves: Integer ;
+    attr TempoParaAtirar: Float ;
   end
   
   # enum EstabeginNave

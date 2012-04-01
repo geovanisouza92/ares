@@ -3,8 +3,6 @@
 #ifndef LANG_COLORCON_H
 #define LANG_COLORCON_H
 
-//#define USE_COLORS
-
 /*  Coloring console syntax:
 
  \033[x;y;zm
@@ -37,7 +35,6 @@
  47 - White
  */
 
-//#ifdef USE_COLORS
 #ifndef LANG_DEBUG
 
 #define COLOR_RESET     "\033[0m"

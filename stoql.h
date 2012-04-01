@@ -9,7 +9,7 @@
 namespace LANG_NAMESPACE {
     namespace SyntaxTree {
 
-        class QueryNode: public ExpressionNode {
+        class QueryNode: public SyntaxNode {
         protected:
             SyntaxNode * queryOrigin;
             SyntaxNode * queryBody;

@@ -40,7 +40,6 @@ namespace LANG_NAMESPACE {
         Environment(Environment *);
         virtual ~Environment();
         virtual Environment * clear();
-//        virtual Environment * putStatement(SyntaxNode*);
         virtual Environment * putStatements(VectorNode*);
         virtual void printUsing(ostream &, unsigned );
     };
@@ -138,12 +137,7 @@ namespace LANG_NAMESPACE {
         virtual void printUsing(ostream &, unsigned);
     };
 
-    class ExpressionNode : public SyntaxNode {
-    public:
-        virtual void printUsing(ostream &, unsigned) = 0;
-    };
-
-    class UnaryNode : public ExpressionNode {
+    class UnaryNode : public SyntaxNode {
     protected:
         BaseOperator::Operator op;
         SyntaxNode * member1;
@@ -154,7 +148,7 @@ namespace LANG_NAMESPACE {
         virtual void printUsing(ostream &, unsigned );
     };
 
-    class BinaryNode : public ExpressionNode {
+    class BinaryNode : public SyntaxNode {
     protected:
         BaseOperator::Operator op;
         SyntaxNode * member1;
@@ -164,7 +158,7 @@ namespace LANG_NAMESPACE {
         virtual void printUsing(ostream &, unsigned);
     };
 
-    class TernaryNode : public ExpressionNode {
+    class TernaryNode : public SyntaxNode {
     protected:
         BaseOperator::Operator op;
         SyntaxNode *member1;
@@ -185,15 +179,6 @@ namespace LANG_NAMESPACE {
         virtual void printUsing(ostream &, unsigned);
     };
 
-    class AsyncNode : public SyntaxNode {
-    protected:
-        AsyncType::Type asyncType;
-        SyntaxNode * item;
-    public:
-        AsyncNode(AsyncType::Type, SyntaxNode *);
-        virtual void printUsing(ostream &, unsigned);
-    };
-
     class LambdaNode : public SyntaxNode {
     protected:
         VectorNode * lambdaArguments;
@@ -201,6 +186,14 @@ namespace LANG_NAMESPACE {
     public:
         LambdaNode(VectorNode *, SyntaxNode *);
         virtual void printUsing(ostream &, unsigned);
+    };
+
+    class AsyncNode : public SyntaxNode {
+    protected:
+    	SyntaxNode * asyncItem;
+    public:
+    	AsyncNode(SyntaxNode *);
+    	virtual void printUsing(ostream &, unsigned);
     };
 
 } // SyntaxTree

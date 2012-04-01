@@ -3,7 +3,7 @@
 module Clientes
 
   class Base
-    var _id: Integer ;
+    attr _id: Integer ;
   end
 
   # interface IPessoa
@@ -16,16 +16,16 @@ module Clientes
         # Retorna verdadeiro somente se a pessoa for de boa fé...
         Result = not Nome.IsEmpty?;
     end
-    var Nome: String ;
+    attr Nome: String ;
   end
 
   class PessoaFisica > Pessoa
-    var CPF: String ;
+    attr CPF: String ;
   end
 
   class PessoaJuridica
       > Pessoa
-    var CNPJ: String ;
+    attr CNPJ: String ;
   end
 
 # inline beginc "Lista tobegins os clientes ativos no sistema";
