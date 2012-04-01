@@ -12,15 +12,13 @@ using namespace std;
 namespace LANG_NAMESPACE {
     namespace Compiler {
 
-        Driver::Driver() :
-                origin(LANG_SHELL_NAME), checkOnly(false), verboseMode(VerboseMode::Normal), lines(0), totalLines(0), errors(0), warnings(0), hints(0) {
+        Driver::Driver() : origin(LANG_SHELL_NAME), checkOnly(false), verboseMode(VerboseMode::Normal), lines(0), totalLines(0), errors(0), warnings(0), hints(0) {
 #ifdef ENVIRONMENT
             enviro = new SyntaxTree::Environment(0);
 #endif
         }
 
-        Driver::~Driver() {
-        }
+        Driver::~Driver() { }
 
         bool Driver::parseStream(istream& in, const string& sname) {
 #ifdef ENVIRONMENT
@@ -69,7 +67,7 @@ namespace LANG_NAMESPACE {
         int Driver::error(const class location& l, const string& m) {
             if (verboseMode >= VerboseMode::Low) {
                 cout << "[" << l << "]: " << err_tail << m << endl;
-                errors++;
+                ++errors;
             }
 #ifdef ENVIRONMENT
             enviro->clear();
@@ -81,7 +79,7 @@ namespace LANG_NAMESPACE {
             if (verboseMode >= VerboseMode::Low) {
                 cout << "[" << origin << "] ";
                 cout << err_tail << m << endl;
-                errors++;
+                ++errors;
             }
 #ifdef ENVIRONMENT
             enviro->clear();
@@ -92,7 +90,7 @@ namespace LANG_NAMESPACE {
         void Driver::warning(const class location& l, const string& m) {
             if (verboseMode >= VerboseMode::Normal) {
                 cout << "[" << l << "]: " << war_tail << m << endl;
-                warnings++;
+                ++warnings;
             }
         }
 
@@ -100,14 +98,14 @@ namespace LANG_NAMESPACE {
             if (verboseMode >= VerboseMode::Normal) {
                 cout << "[" << origin << "] ";
                 cout << war_tail << m << endl;
-                warnings++;
+                ++warnings;
             }
         }
 
         void Driver::hint(const class location& l, const string& m) {
             if (verboseMode >= VerboseMode::High) {
                 cout << "[" << l << "]: " << hin_tail << m << endl;
-                hints++;
+                ++hints;
             }
         }
 
@@ -115,7 +113,7 @@ namespace LANG_NAMESPACE {
             if (verboseMode >= VerboseMode::High) {
                 cout << "[" << origin << "] ";
                 cout << hin_tail << m << endl;
-                hints++;
+                ++hints;
             }
         }
 

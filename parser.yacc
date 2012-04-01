@@ -325,6 +325,26 @@ Statement
                 $$ = $1;
             }
         }
+        | Expression kIF Expression ';' {
+            if (!driver.checkOnly) {
+                $$ = new ConditionNode(ConditionType::If, $3, $1);
+            }
+        }
+        | Expression kUNLESS Expression ';' {
+            if (!driver.checkOnly) {
+                $$ = new ConditionNode(ConditionType::Unless, $3, $1);
+            }
+        }
+        | Expression kWHILE Expression ';' {
+            if (!driver.checkOnly) {
+                $$ = new LoopNode(LoopType::While, $3, $1);
+            }
+        }
+        | Expression kUNTIL Expression ';' {
+            if (!driver.checkOnly) {
+                $$ = new LoopNode(LoopType::Until, $3, $1);
+            }
+        }
         | ImportStatement ';' {
             if (!driver.checkOnly) {
                 $$ = $1;

@@ -24,16 +24,16 @@ namespace LANG_NAMESPACE {
         void ConditionNode::printUsing(ostream & out, unsigned d) {
             TAB << "Condition =>" << endl;
             conditionExpression->printUsing(out, d + 2);
-            TAB << "Then =>" << endl;
+            out << string((d + 1) * 2, ' ') << "Then =>" << endl;
             conditionThen->printUsing(out, d + 2);
             if (conditionElifs->size() > 0) {
                 for (VectorNode::iterator elif = conditionElifs->begin(); elif < conditionElifs->end(); elif++) {
-                    TAB << "Elif =>" << endl;
+                	out << string((d + 1) * 2, ' ') << "Elif =>" << endl;
                     (*elif)->printUsing(out, d + 2);
                 }
             }
             if (conditionElse != NULL) {
-                TAB << "Else =>" << endl;
+            	out << string((d + 1) * 2, ' ') << "Else =>" << endl;
                 conditionElse->printUsing(out, d + 2);
             }
         }

@@ -17,6 +17,7 @@ Changelog
 
 [0.2.6]
     + Grammar reviewed
+    + Controlled expressions
 
 [0.2.4]
     + Generate AST for productions
