@@ -42,6 +42,8 @@ if (!line.empty()) { \
     } else if (line[line.length() - 1] != ';') line += ';'; \
 }
 
+#ifndef STATS
+#ifdef LANG_DEBUG
 #define STATS(x) \
 if (driver.verboseMode >= VerboseMode::Low) { \
     string errors = driver.resumeMessages(); \
@@ -49,9 +51,22 @@ if (driver.verboseMode >= VerboseMode::Low) { \
         cout << "=> " << errors; \
     if (driver.totalLines > 0) \
         cout << LANG_NAMESPACE::Util::statistics(filesProcessed, driver.totalLines, x); \
+    if (driver.verboseMode >= VerboseMode::High) { \
+		cout << "=> Elapsed miliseconds: " << LANG_NAMESPACE::Util::getMili() << endl; \
+	} \
 }
+#else
+if (driver.verboseMode >= VerboseMode::Low) { \
+    string errors = driver.resumeMessages(); \
+    if (!errors.empty()) \
+        cout << "=> " << errors; \
+    if (driver.totalLines > 0) \
+        cout << LANG_NAMESPACE::Util::statistics(filesProcessed, driver.totalLines, x); \
+}
+#endif
+#endif
 
-int main(int argc, char** argv) {
+int main(int argc, char ** argv) {
 
     int maxErrors = 3, filesProcessed = 0;
     Enum::InteractionMode::Mode mode = Enum::InteractionMode::None;

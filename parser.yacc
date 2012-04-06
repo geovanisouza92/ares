@@ -297,6 +297,8 @@ Statement
         }
         | ClassDeclaration ClassMemberRepeat kEND {
             if (!driver.checkOnly) {
+                ((ClassNode *) $1)
+                  ->addMembers($2);
                 $$ = $1;
             }
         }
@@ -468,7 +470,7 @@ ClassDeclaration
                 $$ = new ClassNode($2);
             }
         }
-        | kCLASS IdentifierLiteral '>' QualifiedId {
+        | kCLASS IdentifierLiteral '>' IdentifierList {
             if (!driver.checkOnly) {
                 $$ = new ClassNode($2);
                 ((ClassNode *) $$)
@@ -482,7 +484,7 @@ ClassDeclaration
                   ->addSpecifier(SpecifierType::Async);
             }
         }
-        | kASYNC kCLASS IdentifierLiteral '>' QualifiedId {
+        | kASYNC kCLASS IdentifierLiteral '>' IdentifierList {
             if (!driver.checkOnly) {
                 $$ = new ClassNode($3);
                 ((ClassNode *) $$)
@@ -497,7 +499,7 @@ ClassDeclaration
                   ->addSpecifier(SpecifierType::Sealed);
             }
         }
-        | kSEALED kCLASS IdentifierLiteral '>' QualifiedId {
+        | kSEALED kCLASS IdentifierLiteral '>' IdentifierList {
             if (!driver.checkOnly) {
                 $$ = new ClassNode($3);
                 ((ClassNode *) $$)
@@ -513,7 +515,7 @@ ClassDeclaration
                   ->addSpecifier(SpecifierType::Async);
             }
         }
-        | kSEALED kASYNC kCLASS IdentifierLiteral '>' QualifiedId {
+        | kSEALED kASYNC kCLASS IdentifierLiteral '>' IdentifierList {
             if (!driver.checkOnly) {
                 $$ = new ClassNode($4);
                 ((ClassNode *) $$)
@@ -529,7 +531,7 @@ ClassDeclaration
                   ->addSpecifier(SpecifierType::Abstract);
             }
         }
-        | kABSTRACT kCLASS IdentifierLiteral '>' QualifiedId {
+        | kABSTRACT kCLASS IdentifierLiteral '>' IdentifierList {
             if (!driver.checkOnly) {
                 $$ = new ClassNode($3);
                 ((ClassNode *) $$)
@@ -545,7 +547,7 @@ ClassDeclaration
                   ->addSpecifier(SpecifierType::Async);
             }
         }
-        | kABSTRACT kASYNC kCLASS IdentifierLiteral '>' QualifiedId {
+        | kABSTRACT kASYNC kCLASS IdentifierLiteral '>' IdentifierList {
             if (!driver.checkOnly) {
                 $$ = new ClassNode($4);
                 ((ClassNode *) $$)
@@ -562,7 +564,7 @@ ClassDeclaration
                   ->addSpecifier(SpecifierType::Sealed);
             }
         }
-        | kABSTRACT kSEALED kCLASS IdentifierLiteral '>' QualifiedId {
+        | kABSTRACT kSEALED kCLASS IdentifierLiteral '>' IdentifierList {
             if (!driver.checkOnly) {
                 $$ = new ClassNode($4);
                 ((ClassNode *) $$)
@@ -580,7 +582,7 @@ ClassDeclaration
                   ->addSpecifier(SpecifierType::Async);
             }
         }
-        | kABSTRACT kSEALED kASYNC kCLASS IdentifierLiteral '>' QualifiedId {
+        | kABSTRACT kSEALED kASYNC kCLASS IdentifierLiteral '>' IdentifierList {
             if (!driver.checkOnly) {
                 $$ = new ClassNode($5);
                 ((ClassNode *) $$)

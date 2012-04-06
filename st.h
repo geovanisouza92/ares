@@ -15,7 +15,7 @@ using namespace std;
 using namespace LANG_NAMESPACE::Enum;
 
 #define ENVIRONMENT
-#define TAB out << string(d * 2, ' ')
+#define TAB(x) out << string((x) * 2, ' ')
 
 namespace LANG_NAMESPACE {
     namespace SyntaxTree {

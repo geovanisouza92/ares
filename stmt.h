@@ -201,13 +201,13 @@ namespace LANG_NAMESPACE {
         protected:
             vector<SpecifierType::Type> classSpecifiers;
             SyntaxNode * className;
-            SyntaxNode * classHeritance;
-            VectorNode * classStatements;
+            VectorNode * classHeritance;
+            VectorNode * classMembers;
         public:
             ClassNode(SyntaxNode *);
-            virtual ClassNode * setClassHeritance(SyntaxNode *);
             virtual ClassNode * addSpecifier(SpecifierType::Type);
-            virtual ClassNode * addStatements(VectorNode *);
+            virtual ClassNode * setClassHeritance(VectorNode *);
+            virtual ClassNode * addMembers(VectorNode *);
             virtual void printUsing(ostream &, unsigned);
         };
 

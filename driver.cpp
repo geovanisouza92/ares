@@ -30,8 +30,8 @@ namespace LANG_NAMESPACE {
                 Scanner scanner(&in);
                 this->lexer = &scanner;
                 Parser parser(*this);
-#if defined(LANG_DEBUG)
-                if (verboseMode == VerboseMode::MaximumForDebug) {
+#ifdef LANG_DEBUG
+                if (verboseMode == VerboseMode::Debug) {
                     scanner.set_debug(true);
                     parser.set_debug_level(true);
                 }
@@ -117,6 +117,12 @@ namespace LANG_NAMESPACE {
             }
         }
 
+        void Driver::resetMessages() {
+        	errors = 0;
+        	warnings = 0;
+        	hints = 0;
+        }
+
         string Driver::resumeMessages() {
             stringstream result;
             if (errors > 0 || warnings > 0 || hints > 0) {
@@ -161,6 +167,8 @@ namespace LANG_NAMESPACE {
                     enviro->printUsing(out, 0);
 #endif
                     syntaxOkFor(origin);
+                } else {
+                	resetMessages();
                 }
                 break;
             case FinallyAction::ExecuteOnTheFly:

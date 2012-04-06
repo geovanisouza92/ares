@@ -47,7 +47,8 @@ namespace LANG_NAMESPACE {
             virtual void warning(const string&);
             virtual void hint(const class location&, const string&);
             virtual void hint(const string&);
-            virtual string resumeMessages();
+            virtual inline void resetMessages();
+            virtual inline string resumeMessages();
 
             virtual inline void syntaxOkFor(const string);
             virtual inline void resetLines();
