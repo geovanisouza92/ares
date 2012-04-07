@@ -30,7 +30,7 @@ typedef Parser::token_type token_type;
 
 id  [a-zA-Z_][a-zA-Z_\-0-9]*[?!]?
 str \"(\\.|[^\"])*\"
-rgx \~\/(\\.|[^\/])*\/
+rgx \/(\\.|[^\/\ ])*\/
 
 %%
 

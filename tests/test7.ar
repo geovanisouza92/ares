@@ -18,7 +18,7 @@ a and b;
 
 from item in [a, b, c];
 from item in [a, b, c] join sub in [d, e, f] on true;
-from f in foo join b in bar on "true" =~ ~/true/;
+from f in foo join b in bar on "true" =~ /true/;
 from f in foo where foo.x == 0 select f;
 from fb in foo.bar take 5 order by fb asc select fb;
 
