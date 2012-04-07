@@ -10,11 +10,11 @@ begin
   begin
     var cmd = "PAUSE";
     case pair.Key
-      when "git" do
+      on "git" do
         cmd = "git pull";
-      when "hg" do
+      on "hg" do
         cmd = "hg up";
-      when "svn" do
+      on "svn" do
         cmd = "svn up";
     else begin
         WriteLn("CVS nao reconhecibegin");
@@ -34,6 +34,9 @@ begin
       WriteLn;
       dirs.Add("${pair.Value}\\${subRepo}");
     end
+  rescue
+    on foo do
+      foo();
   end
   Result = dirs;
 end

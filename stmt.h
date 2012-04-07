@@ -37,12 +37,12 @@ namespace LANG_NAMESPACE {
             virtual void printUsing(ostream &, unsigned);
         };
 
-        class WhenNode: public SyntaxNode {
+        class CaseOptionNode: public SyntaxNode {
         protected:
             SyntaxNode * whenExpression;
             SyntaxNode * whenBlock;
         public:
-            WhenNode(SyntaxNode *, SyntaxNode *);
+            CaseOptionNode(SyntaxNode *, SyntaxNode *);
             virtual void printUsing(ostream &, unsigned);
         };
 

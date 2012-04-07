@@ -1,7 +1,11 @@
 
 BINARY=:arc
-MODULES=[ :st, :stoql, :stmt, :parser, :scanner, :driver, :main ]
-files_to_clean=[ "parser.cpp", "parser.h", "scanner.cpp" ]
+if ENV["mod"]
+  MODULES = ENV["mod"]
+else
+  MODULES = [ :st, :stoql, :stmt, :parser, :scanner, :driver, :main ]
+end
+files_to_clean = [ "parser.cpp", "parser.h", "scanner.cpp" ]
 files_to_clean.push(Dir.glob("*.hh"))
 files_to_clean.push(Dir.glob("*.out*"))
 files_to_clean.push(Dir.glob("*.results"))
@@ -10,36 +14,36 @@ files_to_clean.push("#{BINARY}") if File.exists?("#{BINARY}")
 files_to_clean.push("#{BINARY}.s") if File.exists?("#{BINARY}.s")
 files_to_clean.push("#{BINARY}.bc") if File.exists?("#{BINARY}.bc")
 
-LIBDIRS=[
+LIBDIRS = [
   "/usr/lib/gcc/i686-linux-gnu/4.6/",
   "/home/geovani/dev/boost_1_48_0/bin.v2/libs/program_options/build/gcc-4.6.1/release/link-static/threading-multi",
   "/home/geovani/dev/boost_1_48_0/bin.v2/libs/system/build/gcc-4.6.1/release/link-static/threading-multi",
   "/home/geovani/dev/boost_1_48_0/bin.v2/libs/filesystem/build/gcc-4.6.1/release/link-static/threading-multi"
 ]
-LIBS=[
+LIBS = [
   "stdc++",
   "boost_filesystem",
   "boost_program_options",
   "boost_system"
 ]
 
-BINFLAGS="--verbose=2"
+BINFLAGS = "--verbose=2"
 
 task :default => :debug
 
 task :debug do
-  CXXFLAGS="-O0 -g3 -emit-llvm -Wall -c -fmessage-length=0 -Wno-unused-function -Wno-logical-op-parentheses -Wno-switch-enum -DLANG_DEBUG=1"
-  LDFLAGS="-v -native"
-  YFLAGS="--debug -v --defines=parser.h"
-  LFLAGS="--debug"
+  CXXFLAGS = "-O0 -g3 -emit-llvm -Wall -c -fmessage-length=0 -Wno-unused-function -Wno-logical-op-parentheses -Wno-switch-enum -DLANG_DEBUG=1"
+  LDFLAGS = "-v -native"
+  YFLAGS = "--debug -v --defines=parser.h"
+  LFLAGS = "--debug"
   Rake::Task['build:default'].invoke
 end
 
 task :release do
-  CXXFLAGS="-O3 -emit-llvm -Wall -c -fmessage-length=0 -Wno-unused-function -Wno-logical-op-parentheses -Wno-switch-enum"
-  LDFLAGS="-v"
-  YFLAGS="-v --defines=parser.h"
-  LFLAGS=""
+  CXXFLAGS = "-O3 -emit-llvm -Wall -c -fmessage-length=0 -Wno-unused-function -Wno-logical-op-parentheses -Wno-switch-enum"
+  LDFLAGS = "-v"
+  YFLAGS = "-v --defines=parser.h"
+  LFLAGS = ""
   Rake::Task['build:default'].invoke
 end
 
@@ -62,7 +66,7 @@ namespace :build do
     # Check for each bitcode module
     MODULES.each do |mod|
       unless File.exists? "#{mod}.cpp"
-        case mod
+        case mod.to_sym
           when :parser
             cmd = "bison #{YFLAGS} -o #{mod}.cpp #{mod}.yacc"
             # puts cmd
