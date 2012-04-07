@@ -205,6 +205,7 @@ using namespace SyntaxTree;
 %type   <v_node>    ReturnStatement
 %type   <v_node>    YieldStatement
 %type   <v_node>    BlockStatement
+%type   <v_node>    RescueClause
 %type   <v_node>    Expression
 %type   <v_node>    LambdaExpression
 %type   <v_node>    AssignmentExpression
@@ -250,7 +251,7 @@ using namespace SyntaxTree;
 %type   <v_list>    RequireClause
 %type   <v_list>    ConditionRepeat
 %type   <v_list>    EnsureClause
-%type   <v_list>    RescueClause
+%type   <v_list>    RescueClauseRepeat
 %type   <v_list>    QueryBodyMemberRepeat
 %type   <v_list>    OrderExpressionList
 %type   <v_list>    ExpressionList
@@ -1683,14 +1684,14 @@ BlockStatement
                   ->setBlockEnsure($3);
             }
         }
-        | kBEGIN StatementRepeat RescueClause kEND {
+        | kBEGIN StatementRepeat RescueClauseRepeat kEND {
             if (!driver.checkOnly) {
                 $$ = new BlockNode($2);
                 ((BlockNode *) $$)
                   ->setBlockRescue($3);
             }
         }
-        | kBEGIN StatementRepeat RescueClause EnsureClause kEND {
+        | kBEGIN StatementRepeat RescueClauseRepeat EnsureClause kEND {
             if (!driver.checkOnly) {
                 $$ = new BlockNode($2);
                 ((BlockNode *) $$)
@@ -1713,7 +1714,7 @@ BlockStatement
                   ->setBlockEnsure($4);
             }
         }
-        | RequireClause kBEGIN StatementRepeat RescueClause kEND {
+        | RequireClause kBEGIN StatementRepeat RescueClauseRepeat kEND {
             if (!driver.checkOnly) {
                 $$ = new BlockNode($3);
                 ((BlockNode *) $$)
@@ -1721,7 +1722,7 @@ BlockStatement
                   ->setBlockRescue($4);
             }
         }
-        | RequireClause kBEGIN StatementRepeat RescueClause EnsureClause kEND {
+        | RequireClause kBEGIN StatementRepeat RescueClauseRepeat EnsureClause kEND {
             if (!driver.checkOnly) {
                 $$ = new BlockNode($3);
                 ((BlockNode *) $$)
@@ -1772,15 +1773,31 @@ EnsureClause
         }
         ;
 
-RescueClause
-        : kRESCUE {
+RescueClauseRepeat
+        : RescueClause {
             if (!driver.checkOnly) {
                 $$ = new VectorNode();
+                $$->push_back($1);
             }
         }
-        | kRESCUE WhenClauseRepeat {
+        | RescueClauseRepeat RescueClause {
             if (!driver.checkOnly) {
-                $$ = $2;
+                $$->push_back($2);
+            }
+        }
+        ;
+
+RescueClause
+        : kRESCUE kDO Statement {
+            if (!driver.checkOnly) {
+                $$ = new RescueNode($3);
+            }
+        }
+        | kRESCUE QualifiedId kDO Statement {
+            if (!driver.checkOnly) {
+                $$ = new RescueNode($4);
+                ((RescueNode *) $$)
+                  ->setException($2);
             }
         }
         ;

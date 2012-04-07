@@ -241,6 +241,23 @@ namespace LANG_NAMESPACE {
                 (*var)->printUsing(out, d + 1);
         }
 
+        RescueNode::RescueNode(SyntaxNode * s) : rescueStatement(s) { }
+
+        RescueNode *
+        RescueNode::setException(SyntaxNode * e) {
+        	delete rescueException;
+        	rescueException = e;
+        	return this;
+        }
+
+        void
+        RescueNode::printUsing(ostream & out, unsigned d) {
+        	TAB(d) << "On exception =>";
+        	if (rescueException)
+        		rescueException->printUsing(out, d + 1);
+        	rescueStatement->printUsing(out, d + 2);
+        }
+
         ElementNode::ElementNode(SyntaxNode * n) : elementName(n), elementType(NULL), elementInitialValue(NULL), elementInvariants(NULL) { }
 
         ElementNode *

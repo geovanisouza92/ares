@@ -103,6 +103,16 @@ namespace LANG_NAMESPACE {
             virtual void printUsing(ostream &, unsigned);
         };
 
+        class RescueNode : public SyntaxNode {
+        protected:
+        	SyntaxNode * rescueStatement;
+        	SyntaxNode * rescueException;
+        public:
+        	RescueNode(SyntaxNode *);
+        	virtual RescueNode * setException(SyntaxNode *);
+        	virtual void printUsing(ostream &, unsigned);
+        };
+
         class VariableNode: public SyntaxNode {
         protected:
             VectorNode * variables;
