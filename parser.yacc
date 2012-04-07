@@ -118,6 +118,7 @@ using namespace SyntaxTree;
 %token  kUNLESS     "unless"
 %token  kUNTIL      "until"
 %token  kVAR        "var"
+%token  kWHEN       "when"
 %token  kWHERE      "where"
 %token  kWHILE      "while"
 %token  kXOR        "xor"
@@ -194,7 +195,7 @@ using namespace SyntaxTree;
 %type   <v_node>    ElifStatement
 %type   <v_node>    UnlessStatement
 %type   <v_node>    CaseStatement
-%type   <v_node>    CaseOption
+%type   <v_node>    WhenClause
 %type   <v_node>    ForStatement
 %type   <v_node>    WhileStatement
 %type   <v_node>    UntilStatement
@@ -245,7 +246,7 @@ using namespace SyntaxTree;
 %type   <v_list>    VariableList
 %type   <v_list>    ConstantList
 %type   <v_list>    ElifStatementRepeat
-%type   <v_list>    CaseOptionRepeat
+%type   <v_list>    WhenClauseRepeat
 %type   <v_list>    RequireClause
 %type   <v_list>    ConditionRepeat
 %type   <v_list>    EnsureClause
@@ -1517,14 +1518,14 @@ CaseStatement
                   ->setElse($4);
             }
         }
-        | kCASE Expression CaseOptionRepeat kEND {
+        | kCASE Expression WhenClauseRepeat kEND {
             if (!driver.checkOnly) {
                 $$ = new CaseNode($2);
                 ((CaseNode *) $$)
                   ->setWhen($3);
             }
         }
-        | kCASE Expression CaseOptionRepeat kELSE StatementRepeat kEND {
+        | kCASE Expression WhenClauseRepeat kELSE StatementRepeat kEND {
             if (!driver.checkOnly) {
                 $$ = new CaseNode($2);
                 ((CaseNode *) $$)
@@ -1534,24 +1535,24 @@ CaseStatement
         }
         ;
 
-CaseOptionRepeat
-        : CaseOption {
+WhenClauseRepeat
+        : WhenClause {
             if (!driver.checkOnly) {
                 $$ = new VectorNode();
                 $$->push_back($1);
             }
         }
-        | CaseOptionRepeat CaseOption {
+        | WhenClauseRepeat WhenClause {
             if (!driver.checkOnly) {
                 $$->push_back($2);
             }
         }
         ;
 
-CaseOption
-        : kON Expression kDO Statement {
+WhenClause
+        : kWHEN Expression kDO Statement {
             if (!driver.checkOnly) {
-                $$ = new CaseOptionNode($2, $4);
+                $$ = new WhenNode($2, $4);
             }
         }
         ;
@@ -1777,7 +1778,7 @@ RescueClause
                 $$ = new VectorNode();
             }
         }
-        | kRESCUE CaseOptionRepeat {
+        | kRESCUE WhenClauseRepeat {
             if (!driver.checkOnly) {
                 $$ = $2;
             }

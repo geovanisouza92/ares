@@ -70,9 +70,9 @@ namespace LANG_NAMESPACE {
             }
         }
 
-        CaseOptionNode::CaseOptionNode(SyntaxNode * e, SyntaxNode * b) : whenExpression(e), whenBlock(b) { }
+        WhenNode::WhenNode(SyntaxNode * e, SyntaxNode * b) : whenExpression(e), whenBlock(b) { }
 
-        void CaseOptionNode::printUsing(ostream & out, unsigned d) {
+        void WhenNode::printUsing(ostream & out, unsigned d) {
             TAB(d) << "When =>" << endl;
             whenExpression->printUsing(out, d + 1);
             TAB(d + 1) << "Block =>" << endl;

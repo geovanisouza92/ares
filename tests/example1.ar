@@ -26,11 +26,11 @@ module IdeaCloud.Vistem
 
             end
             case Sky.Color
-                on "blue" do
+                when "blue" do
                     print("Uau!");
-                on "red" do
+                when "red" do
                     print("Oh not!");
-                on "yellow" do
+                when "yellow" do
                     print("Superman will lose his powers!");
             end
         end

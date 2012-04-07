@@ -118,6 +118,7 @@ rgx \/(\\.|[^\/\ ])*\/
 "unless"        return token::kUNLESS;
 "until"         return token::kUNTIL;
 "var"           return token::kVAR;
+"when"          return token::kWHEN;
 "where"         return token::kWHERE;
 "while"         return token::kWHILE;
 "xor"           return token::kXOR;
