@@ -101,11 +101,11 @@ namespace LANG_NAMESPACE {
                 break;
             }
             forLhs->printUsing(out, d + 1);
-            TAB(d) << "To =>" << endl;
+            TAB(d + 1) << "To =>" << endl;
             forRhs->printUsing(out, d + 1);
             if (forStep != NULL) {
-                TAB(d) << "By step =>" << endl;
-                forStep->printUsing(out, d + 1);
+                TAB(d + 1) << "By step =>" << endl;
+                forStep->printUsing(out, d + 2);
             }
             TAB(d + 1) << "Block =>" << endl;
             forBlock->printUsing(out, d + 2);
@@ -356,7 +356,7 @@ namespace LANG_NAMESPACE {
             functionName->printUsing(out, d + 1);
             if (functionSpecifiers.size() > 0) {
                 for (vector<SpecifierType::Type>::iterator spec = functionSpecifiers.begin(); spec < functionSpecifiers.end(); spec++)
-                    TAB(d) << "With specifier =>" << SpecifierType::getEnumName(*spec) << endl;
+                    TAB(d + 1) << "With specifier =>" << SpecifierType::getEnumName(*spec) << endl;
             }
             if (functionParams->size() > 0) {
                 TAB(d) << "With parameters =>" << endl;

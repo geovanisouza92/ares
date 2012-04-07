@@ -10,9 +10,8 @@ namespace LANG_NAMESPACE {
         }
 
         void QueryNode::printUsing(ostream & out, unsigned d) {
-            TAB(d) << "Query [" << endl;
+            TAB(d) << "Query =>" << endl;
             queryOrigin->printUsing(out, d + 1);
-            TAB(d + 1) << "]" << endl;
             if (queryBody != NULL) {
                 queryBody->printUsing(out, d + 1);
             }
@@ -48,11 +47,10 @@ namespace LANG_NAMESPACE {
         }
 
         void QueryBodyNode::printUsing(ostream & out, unsigned d) {
-            TAB(d) << "Operations => [" << endl;
+            TAB(d) << "Operations =>" << endl;
             for (VectorNode::iterator b = queryBody->begin(); b < queryBody->end(); b++) {
                 (*b)->printUsing(out, d + 1);
             }
-            TAB(d) << "]" << endl;
             if (queryFinally != NULL) {
                 TAB(d + 1) << "Finally =>" << endl;
                 queryFinally->printUsing(out, d + 2);
@@ -116,7 +114,7 @@ namespace LANG_NAMESPACE {
             TAB(d) << "Ordering =>" << endl;
             for (VectorNode::iterator order = orders->begin(); order < orders->end(); order++) {
                 (*order)->printUsing(out, d + 1);
-                TAB(d + 1) << ((order != orders->end() - 1) ? ", " : " ") << endl;
+                if (order != orders->end() - 1) TAB(d + 2) << ", " << endl;
             }
         }
 
@@ -158,7 +156,7 @@ namespace LANG_NAMESPACE {
             TAB(d) << "Select =>" << endl;
             for (VectorNode::iterator select = selection->begin(); select < selection->end(); select++) {
                 (*select)->printUsing(out, d + 1);
-                TAB(d) << ((select != selection->end() - 1) ? ", " : " ") << endl;
+                if (select != selection->end() - 1) TAB(d + 2) << ", " << endl;
             }
         }
 

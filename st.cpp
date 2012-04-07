@@ -116,7 +116,7 @@ namespace LANG_NAMESPACE {
             TAB(d) << "Array => [" << endl;
             for (VectorNode::iterator elem = value->begin(); elem < value->end(); elem++) {
                 (*elem)->printUsing(out, d + 1);
-                TAB(d + 1) << ((elem != value->end() - 1) ? ", " : " ") << endl;
+                if (elem != value->end() - 1) TAB(d + 2) << ", " << endl;
             }
             TAB(d) << "]" << endl;
         }
@@ -143,7 +143,7 @@ namespace LANG_NAMESPACE {
             TAB(d) << "Hash => {" << endl;
             for (VectorNode::iterator elem = value->begin(); elem < value->end(); elem++) {
                 (*elem)->printUsing(out, d + 1);
-                TAB(d + 1) << ((elem != value->end() - 1) ? ", " : " ") << endl;
+                if (elem != value->end() - 1) TAB(d + 2) << ", " << endl;
             }
             TAB(d) << "}" << endl;
         }
@@ -211,17 +211,16 @@ namespace LANG_NAMESPACE {
         }
 
         void FunctionCallNode::printUsing(ostream & out, unsigned d) {
-            TAB(d) << "Function call for [" << endl;
+            TAB(d) << "Function call for =>" << endl;
             functionName->printUsing(out, d + 1);
             if (functionArguments->size() > 0) {
-                TAB(d) << "] with arguments (" << endl;
+                TAB(d + 1) << "with arguments (" << endl;
                 for (VectorNode::iterator arg = functionArguments->begin(); arg < functionArguments->end(); arg++) {
-                    (*arg)->printUsing(out, d + 1);
-                    TAB(d + 1) << ((arg != functionArguments->end() - 1) ? ", " : " ") << endl;
+                    (*arg)->printUsing(out, d + 2);
+                    if (arg != functionArguments->end() - 1) TAB(d + 2) << ", " << endl;
                 }
                 TAB(d) << ")" << endl;
-            } else
-                TAB(d) << "] without arguments" << endl;
+            }
         }
 
         LambdaNode::LambdaNode(VectorNode * a, SyntaxNode * e) : lambdaArguments(a), lambdaExpression(e) { }
@@ -232,11 +231,10 @@ namespace LANG_NAMESPACE {
                 out << "with arguments (" << endl;
                 for (VectorNode::iterator arg = lambdaArguments->begin(); arg < lambdaArguments->end(); arg++) {
                     (*arg)->printUsing(out, d + 1);
-                    TAB(d + 1) << ((arg != lambdaArguments->end() - 1) ? ", " : " ") << endl;
+                    if (arg != lambdaArguments->end() - 1) TAB(d + 2) << ", " << endl;
                 }
-                TAB(d) << ") " << endl;
-            } else
-                out << "without arguments ";
+                TAB(d) << ") ";
+            }
             out << "using expression =>" << endl;
             lambdaExpression->printUsing(out, d + 1);
         }
