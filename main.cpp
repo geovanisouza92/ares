@@ -56,6 +56,7 @@ if (driver.verboseMode >= VerboseMode::Low) { \
 	} \
 }
 #else
+#define STATS(x) \
 if (driver.verboseMode >= VerboseMode::Low) { \
     string errors = driver.resumeMessages(); \
     if (!errors.empty()) \
