@@ -1,7 +1,13 @@
 # Main script
-var repos = updateUsing({git : "E:\\Repos\\GIT", hg : "E:\\Repos\\HG", svn : "E:\\Repos\\SVN"});
+var repos = updateUsing(
+  {
+    git : Path.Join(["E:", "Repos", "GIT"]), 
+    hg : Path.Join(["E:", "Repos", "HG"]), 
+    svn : Path.Join(["E:", "Repos", "SVN"])
+  }
+);
 WriteLn(repos);
-System("PAUSE");
+System.Console.WaitUserKey();
 
 def updateUsing(args: Array)
 begin
@@ -32,7 +38,7 @@ begin
       WriteLn("<<< ${subRepo}");
       System.Directory.Chan;
       WriteLn;
-      dirs.Add("${pair.Value}\\${subRepo}");
+      dirs.Add(Path.Join([pair.Value, subRepo]));
     end
   rescue foo do
     foo();

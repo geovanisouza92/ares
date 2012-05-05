@@ -1,0 +1,31 @@
+% Formato do documento
+\documentclass[12pt, a4paper, tocpage=plain, pagestart=firstcapter, header=plain]{abnt} % Fonte tamanho 12, papel A4
+
+\include{config}
+\include{metainfo}
+\include{comandos}
+
+\begin{document} % Começo do TCC
+\include{capa} % Cria a capa
+\include{rosto} % Cria a folha de rosto
+\include{aprovacao} % Cria a folha de aprovação
+\include{dedicatoria}  % Cria a folha de dedicatória
+\include{agradecimentos} % Cria a folha de agradecimentos
+\include{epigrafe} % Cria a epígrafe (onde se coloca um pensamento)
+\include{resumo} % Resumo do trabalho
+\include{abstract} % Resumo em língua estrangeira
+%\listoffigures % Gera o índice de figuras
+%\include{siglas}
+\tableofcontents % Gera o sumário
+%\include{introducao}
+
+%% Incluir capitulos
+
+%\include{conclusao}
+
+Segundo \cite{aho}, compiladores...
+
+\bibliography{bibliografia} % Gera as referências bibliográficas
+%\include{apendices}
+%\include{anexos}
+\end{document} % Fim do TCC

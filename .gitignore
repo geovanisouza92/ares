@@ -9,3 +9,13 @@ parser.cpp
 scanner.cpp
 *.results
 *.out*
+
+*.aux
+*.toc
+*.log
+*.bbl
+*.blg
+*.out
+*.pdf
+*.bb
+*.doc

@@ -69,9 +69,9 @@ namespace LANG_NAMESPACE {
                 cout << "[" << l << "]: " << err_tail << m << endl;
                 ++errors;
             }
-#ifdef ENVIRONMENT
-            enviro->clear();
-#endif
+// #ifdef ENVIRONMENT
+//             enviro->clear();
+// #endif
             return 1;
         }
 
@@ -81,9 +81,9 @@ namespace LANG_NAMESPACE {
                 cout << err_tail << m << endl;
                 ++errors;
             }
-#ifdef ENVIRONMENT
-            enviro->clear();
-#endif
+// #ifdef ENVIRONMENT
+//             enviro->clear();
+// #endif
             return 1;
         }
 

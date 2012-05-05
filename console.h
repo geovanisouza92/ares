@@ -50,15 +50,13 @@ namespace LANG_NAMESPACE {
             return s.str();
         }
 
-#ifdef LANG_DEBUG
         static inline double getMili() {
         	return (double) ( (clock() - start) / (CLOCKS_PER_SEC / 1000) );
         }
-#endif
 
         static inline string statistics(unsigned total_files, unsigned total_lines, bool print_time = false) {
-            clock_t stop = clock();
-            double elapsed = (double) (((stop - start) / (CLOCKS_PER_SEC / 1000))) / 1000;
+//            clock_t stop = clock();
+            double elapsed = getMili() / 1000;
             stringstream s;
             s << "=> Statistics: "
               << COLOR_BCYAN

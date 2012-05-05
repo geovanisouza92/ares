@@ -27,23 +27,61 @@ LIBS = [
   "boost_system"
 ]
 
-BINFLAGS = "--verbose=2"
+BINFLAGS = [
+  "--verbose=1"
+]
 
 task :default => :debug
 
 task :debug do
-  CXXFLAGS = "-O0 -g3 -emit-llvm -Wall -c -fmessage-length=0 -Wno-unused-function -Wno-logical-op-parentheses -Wno-switch-enum -DLANG_DEBUG=1"
-  LDFLAGS = "-v -native"
-  YFLAGS = "--debug -v --defines=parser.h"
-  LFLAGS = "--debug"
+  CXXFLAGS = [ 
+    "-O0", 
+    "-g3",
+    "-emit-llvm",
+    "-Wall",
+    "-c",
+    "-fmessage-length=0",
+    "-Wno-unused-function",
+    "-Wno-logical-op-parentheses",
+    "-Wno-switch-enum",
+    "-DLANG_DEBUG=1"
+  ]
+  LDFLAGS = [
+    "-v",
+    "-native"
+  ]
+  YFLAGS = [
+    "--debug",
+    "-v",
+    "--defines=parser.h"
+  ]
+  LFLAGS = [
+    "--debug"
+  ]
   Rake::Task['build:default'].invoke
 end
 
 task :release do
-  CXXFLAGS = "-O3 -emit-llvm -Wall -c -fmessage-length=0 -Wno-unused-function -Wno-logical-op-parentheses -Wno-switch-enum"
-  LDFLAGS = "-v"
-  YFLAGS = "-v --defines=parser.h"
-  LFLAGS = ""
+  CXXFLAGS = [
+    "-O3",
+    "-emit-llvm",
+    "-Wall",
+    "-c",
+    "-fmessage-length=0",
+    "-Wno-unused-function",
+    "-Wno-logical-op-parentheses",
+    "-Wno-switch-enum"
+  ]
+  LDFLAGS = [
+    "-v"
+  ]
+  YFLAGS = [
+    "-v",
+    "--defines=parser.h"
+  ]
+  LFLAGS = [
+    ""
+  ]
   Rake::Task['build:default'].invoke
 end
 
@@ -68,17 +106,17 @@ namespace :build do
       unless File.exists? "#{mod}.cpp"
         case mod.to_sym
           when :parser
-            cmd = "bison #{YFLAGS} -o #{mod}.cpp #{mod}.yacc"
+            cmd = "bison #{YFLAGS.join(" ")} -o #{mod}.cpp #{mod}.yacc"
             # puts cmd
             system cmd
           when :scanner
-            cmd = "flex #{LFLAGS} -o#{mod}.cpp #{mod}.lex"
+            cmd = "flex #{LFLAGS.join(" ")} -o#{mod}.cpp #{mod}.lex"
             # puts cmd
             system cmd
           end
         end
       # Generate bitcode for each file.cpp
-      cmd = "clang++ #{CXXFLAGS} -o #{mod}.bc #{mod}.cpp"
+      cmd = "clang++ #{CXXFLAGS.join(" ")} -o #{mod}.bc #{mod}.cpp"
       # puts cmd
       system cmd
     end
@@ -87,7 +125,7 @@ namespace :build do
   task :link do
     # Link bitcode files into one bitcode
     cmd = "llvm-ld "
-    cmd << "#{LDFLAGS} "
+    cmd << "#{LDFLAGS.join(" ")} "
     cmd << "-o #{BINARY} "
     MODULES.each do |mod|
       cmd << "#{mod}.bc "
@@ -124,7 +162,7 @@ namespace :build do
 
   task :test do
     test_files=Dir.glob("tests/*.ar")
-    cmd = "./#{BINARY} #{BINFLAGS} #{test_files.flatten.join(" ")}"
+    cmd = "./#{BINARY} #{BINFLAGS.join(" ")} #{test_files.flatten.join(" ")}"
     # puts cmd
     system cmd
   end

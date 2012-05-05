@@ -2303,21 +2303,21 @@ SuffixExpression
                 $$ = new BinaryNode(BaseOperator::BinaryAccess, $$, $3);
             }
         }
-        | SuffixExpression '[' Expression ':' ']' {
-            if (!driver.checkOnly) {
-                $$ = new TernaryNode(BaseOperator::TernarySlice, $$, $3, NULL);
-            }
-        }
-        | SuffixExpression '[' Expression ':' Expression ']' {
-            if (!driver.checkOnly) {
-                $$ = new TernaryNode(BaseOperator::TernarySlice, $$, $3, $5);
-            }
-        }
-        | SuffixExpression '[' ':' Expression ']' {
-            if (!driver.checkOnly) {
-                $$ = new TernaryNode(BaseOperator::TernarySlice, $$, NULL, $4);
-            }
-        }
+        // | SuffixExpression '[' Expression ':' ']' {
+        //     if (!driver.checkOnly) {
+        //         $$ = new TernaryNode(BaseOperator::TernarySlice, $$, $3, NULL);
+        //     }
+        // }
+        // | SuffixExpression '[' Expression ':' Expression ']' {
+        //     if (!driver.checkOnly) {
+        //         $$ = new TernaryNode(BaseOperator::TernarySlice, $$, $3, $5);
+        //     }
+        // }
+        // | SuffixExpression '[' ':' Expression ']' {
+        //     if (!driver.checkOnly) {
+        //         $$ = new TernaryNode(BaseOperator::TernarySlice, $$, NULL, $4);
+        //     }
+        // }
         ;
 
 LiteralValue
