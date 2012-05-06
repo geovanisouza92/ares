@@ -1,6 +1,6 @@
 % Configurações
 
-\usepackage{ucs}
+% \usepackage{ucs}
 \usepackage[utf8]{inputenc} % Dá suporte para caracteres especiais como acentos e cedilha
 \usepackage[brazil]{babel} % Gera datas e nomes em português com estilo brasileiro
 \usepackage{hyperref} % Permite a criação de hyperlink no documento, como os links usados na referência
@@ -17,11 +17,17 @@
 \setlength{\parindent}{1.5cm} % Define o recuo da primeira linha dos parágrafos para 1.5 cm
 \onehalfspacing % Define o espaçamento de 1.5cm entre linhas
 
+% \renewcommand{\rmdefault}{phv} % Fonte Arial
+% \renewcommand{\sfdefault}{phv} % Fonte Arial
+
 \renewcommand{\ABNTchapterfont}{\bfseries} % Define a fonte do \chapter
 \renewcommand{\ABNTchaptersize}{\large} % Define o tamanho da fonte do \chapter
 \renewcommand{\ABNTsectionfontsize}{\large} % Define o tamanho da fonte da \section
 \renewcommand{\ABNTsubsectionfontsize}{\large} % Define o tamanho da fonte do \subsection
 \renewcommand{\ABNTsubsubsectionfontsize}{\large} % Define o tamanho da fonte do \subsubsection
-\renewcommand{\contentsname}{SUM\AH RIO} % Modifica o nome do sumário
-\renewcommand{\ABNTbibliographyname}{REFER\EN NCIAS BIBLIOGR\AH FICAS} % Modifica o título gerado pelo \bibliographys
-%\renewcommand{\listfigurename}{LISTA DE FIGURAS} % Modifica o nome da lista de figuras
+\renewcommand{\ABNTbibliographyname}{REFER\^ENCIAS BIBLIOGR\'AFICAS} % Modifica o título gerado pelo \bibliographys
+
+\newcommand{\cc}{\c{c}} % ç
+\newcommand{\ca}{\cc\~a} % çã
+\newcommand{\CC}{\c{C}} % Ç
+\newcommand{\CA}{\CC\~A} % ÇÃ
