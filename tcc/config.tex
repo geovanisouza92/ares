@@ -1,21 +1,21 @@
-% Configurações
 
-% \usepackage{ucs}
+\usepackage{ucs}
 \usepackage[utf8]{inputenc} % Dá suporte para caracteres especiais como acentos e cedilha
 \usepackage[brazil]{babel} % Gera datas e nomes em português com estilo brasileiro
-\usepackage{hyperref} % Permite a criação de hyperlink no documento, como os links usados na referência
-\usepackage[alf, abnt-full-initials=yes]{abntcite} % Define o estilo de referência bibliográfica
-\usepackage{graphicx} % Permite a utilização de imagens no documento
+\usepackage{hyperref} % Permite a cria{\c c}ão de hyperlink no documento, como os links usados na referência
+\usepackage{url}
+\usepackage[alf, abnt-emphasize=bf, abnt-full-initials=yes, abnt-thesis-year=final, key="x"]{abntcite} % Define o estilo de referência bibliográfica
+\usepackage{graphicx} % Permite a utiliza{\c c}ão de imagens no documento
 \usepackage[small]{caption} % Define as legendas das figuras com fontes menores do que o texto
 \usepackage{pslatex} % Define que o formato da letra será Times New Roman
-\usepackage{epigraph} % Permite a criação de epígrafes
-\usepackage{setspace} % Permite a definição de espaçamento entre linhas
+\usepackage{epigraph} % Permite a cria{\c c}ão de epígrafes
+\usepackage{setspace} % Permite a defini{\c c}ão de espa{\c c}amento entre linhas
 \usepackage[top=3cm, left=3cm, right=2cm, bottom=2cm]{geometry} % Define as margens da folha
 
 \setcounter{secnumdepth}{3} % Até três subsubsections numeradas
 \setcounter{tocdepth}{3} % Até trẽs subsubsections numeradas
 \setlength{\parindent}{1.5cm} % Define o recuo da primeira linha dos parágrafos para 1.5 cm
-\onehalfspacing % Define o espaçamento de 1.5cm entre linhas
+\onehalfspacing % Define o espa{\c c}amento de 1.5cm entre linhas
 
 % \renewcommand{\rmdefault}{phv} % Fonte Arial
 % \renewcommand{\sfdefault}{phv} % Fonte Arial
@@ -26,8 +26,3 @@
 \renewcommand{\ABNTsubsectionfontsize}{\large} % Define o tamanho da fonte do \subsection
 \renewcommand{\ABNTsubsubsectionfontsize}{\large} % Define o tamanho da fonte do \subsubsection
 \renewcommand{\ABNTbibliographyname}{REFER\^ENCIAS BIBLIOGR\'AFICAS} % Modifica o título gerado pelo \bibliographys
-
-\newcommand{\cc}{\c{c}} % ç
-\newcommand{\ca}{\cc\~a} % çã
-\newcommand{\CC}{\c{C}} % Ç
-\newcommand{\CA}{\CC\~A} % ÇÃ
