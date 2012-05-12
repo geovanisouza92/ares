@@ -16,7 +16,7 @@ namespace LANG_NAMESPACE {
 
         ConditionNode *
         ConditionNode::setElse(SyntaxNode * e) {
-            delete conditionElse;
+//            delete conditionElse;
             conditionElse = e;
             return this;
         }
@@ -49,7 +49,7 @@ namespace LANG_NAMESPACE {
 
         CaseNode *
         CaseNode::setElse(VectorNode * e) {
-            delete caseElse;
+//            delete caseElse;
             caseElse = e;
             return this;
         }
@@ -83,7 +83,7 @@ namespace LANG_NAMESPACE {
 
         ForNode *
         ForNode::setStep(SyntaxNode * s) {
-            delete forStep;
+//            delete forStep;
             forStep = s;
             return this;
         }
@@ -245,7 +245,7 @@ namespace LANG_NAMESPACE {
 
         RescueNode *
         RescueNode::setException(SyntaxNode * e) {
-        	delete rescueException;
+//        	delete rescueException;
         	rescueException = e;
         	return this;
         }
@@ -326,14 +326,14 @@ namespace LANG_NAMESPACE {
 
         FunctionNode *
         FunctionNode::setFunctionReturn(SyntaxNode * r) {
-            delete functionReturnType;
+//            delete functionReturnType;
             functionReturnType = r;
             return this;
         }
 
         FunctionNode *
         FunctionNode::setFunctionIntercept(SyntaxNode * i) {
-            delete functionIntercept;
+//            delete functionIntercept;
             functionIntercept = i;
             return this;
         }
@@ -346,7 +346,7 @@ namespace LANG_NAMESPACE {
 
         FunctionNode *
         FunctionNode::setBlock(SyntaxNode * s) {
-            delete functionBlock;
+//            delete functionBlock;
             functionBlock = s;
             return this;
         }
@@ -380,14 +380,14 @@ namespace LANG_NAMESPACE {
 
         EventNode *
         EventNode::setEventIntercept(SyntaxNode * i) {
-            delete eventIntercept;
+//            delete eventIntercept;
             eventIntercept = i;
             return this;
         }
 
         EventNode *
         EventNode::setEventInitialValue(SyntaxNode * v) {
-            delete eventInitialValue;
+//            delete eventInitialValue;
             eventInitialValue = v;
             return this;
         }
@@ -406,35 +406,35 @@ namespace LANG_NAMESPACE {
 
         AttributeNode *
         AttributeNode::setAttributeReturnType(SyntaxNode * r) {
-            delete attributeReturnType;
+//            delete attributeReturnType;
             attributeReturnType = r;
             return this;
         }
 
         AttributeNode *
         AttributeNode::setAttributeInitialValue(SyntaxNode * i) {
-            delete attributeInitialValue;
+//            delete attributeInitialValue;
             attributeInitialValue = i;
             return this;
         }
 
         AttributeNode *
         AttributeNode::setAttributeGetter(SyntaxNode * g) {
-            delete attributeGetter;
+//            delete attributeGetter;
             attributeGetter = g;
             return this;
         }
 
         AttributeNode *
         AttributeNode::setAttributeSetter(SyntaxNode * s) {
-            delete attributeSetter;
+//            delete attributeSetter;
             attributeSetter = s;
             return this;
         }
 
         AttributeNode *
         AttributeNode::setAttributeInvariants(SyntaxNode * i) {
-            delete attributeInvariants;
+//            delete attributeInvariants;
             attributeInvariants = i;
             return this;
         }
@@ -481,7 +481,7 @@ namespace LANG_NAMESPACE {
 
         ClassNode *
         ClassNode::setClassHeritance(VectorNode * h) {
-            delete classHeritance;
+//            delete classHeritance;
             classHeritance = h;
             return this;
         }
@@ -518,7 +518,7 @@ namespace LANG_NAMESPACE {
 
         ImportNode *
         ImportNode::setImportOrigin(SyntaxNode * o) {
-            delete importOrigin;
+//            delete importOrigin;
             importOrigin = o;
             return this;
         }

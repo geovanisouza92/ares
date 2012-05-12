@@ -21,8 +21,8 @@
 #define LANG_BIRTH_DAY          21
 
 #define LANG_RELEASE_YEAR       2012
-#define LANG_RELEASE_MONTH      4
-#define LANG_RELEASE_DAY        21
+#define LANG_RELEASE_MONTH      5
+#define LANG_RELEASE_DAY        12
 
 #define LANG_VERSION_MAJOR      0
 #define LANG_VERSION_MINOR      2

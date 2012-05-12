@@ -1,21 +1,22 @@
 
-\usepackage{ucs}
+% \usepackage{ucs}
 \usepackage[utf8]{inputenc} % Dá suporte para caracteres especiais como acentos e cedilha
 \usepackage[brazil]{babel} % Gera datas e nomes em português com estilo brasileiro
+% \usepackage{supertabular}
 \usepackage{hyperref} % Permite a cria{\c c}ão de hyperlink no documento, como os links usados na referência
-\usepackage{url}
-\usepackage[alf, abnt-emphasize=bf, abnt-full-initials=yes, abnt-thesis-year=final, key="x"]{abntcite} % Define o estilo de referência bibliográfica
-\usepackage{graphicx} % Permite a utiliza{\c c}ão de imagens no documento
+\usepackage[alf, abnt-emphasize=bf, abnt-full-initials=yes, abnt-thesis-year=final, abnt-doi=link, abnt-url-package=hyperref]{abntcite} % Define o estilo de referência bibliográfica
+\usepackage[estilo=UFPR]{tabela-simbolos}
+\usepackage[pdftex]{graphicx} % Permite a utiliza\cc ão de imagens no documento
 \usepackage[small]{caption} % Define as legendas das figuras com fontes menores do que o texto
 \usepackage{pslatex} % Define que o formato da letra será Times New Roman
-\usepackage{epigraph} % Permite a cria{\c c}ão de epígrafes
-\usepackage{setspace} % Permite a defini{\c c}ão de espa{\c c}amento entre linhas
+\usepackage{epigraph} % Permite a cria\cc ão de epígrafes
+\usepackage{setspace} % Permite a defini\cc ão de espa\cc amento entre linhas
 \usepackage[top=3cm, left=3cm, right=2cm, bottom=2cm]{geometry} % Define as margens da folha
 
 \setcounter{secnumdepth}{3} % Até três subsubsections numeradas
-\setcounter{tocdepth}{3} % Até trẽs subsubsections numeradas
+\setcounter{tocdepth}{3} % Até três subsubsections numeradas
 \setlength{\parindent}{1.5cm} % Define o recuo da primeira linha dos parágrafos para 1.5 cm
-\onehalfspacing % Define o espa{\c c}amento de 1.5cm entre linhas
+\onehalfspacing % Define o espa\cc amento de 1.5cm entre linhas
 
 % \renewcommand{\rmdefault}{phv} % Fonte Arial
 % \renewcommand{\sfdefault}{phv} % Fonte Arial
@@ -26,3 +27,10 @@
 \renewcommand{\ABNTsubsectionfontsize}{\large} % Define o tamanho da fonte do \subsection
 \renewcommand{\ABNTsubsubsectionfontsize}{\large} % Define o tamanho da fonte do \subsubsection
 \renewcommand{\ABNTbibliographyname}{REFER\^ENCIAS BIBLIOGR\'AFICAS} % Modifica o título gerado pelo \bibliographys
+
+\newcommand{\cc}{{\c c}}
+\newcommand{\CC}{{\c C}}
+\newcommand{\ca}{\cc\~a}
+\newcommand{\CA}{\CC\~A}
+\newcommand{\co}{\cc\~o}
+\newcommand{\CO}{\CC\~O}

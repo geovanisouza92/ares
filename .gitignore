@@ -10,6 +10,7 @@ scanner.cpp
 *.results
 *.out*
 
+*.doc
 *.aux
 *.toc
 *.log
@@ -18,4 +19,10 @@ scanner.cpp
 *.out
 *.pdf
 *.bb
-*.doc
+figuras/*.bb
+*.ilg
+*.symb*
+*.sig*
+*.roma*
+*.gree*
+*.misc*

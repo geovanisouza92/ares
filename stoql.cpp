@@ -41,7 +41,7 @@ namespace LANG_NAMESPACE {
 
         QueryBodyNode *
         QueryBodyNode::set_finally(SyntaxNode * f) {
-            delete queryFinally;
+//            delete queryFinally;
             queryFinally = f;
             return this;
         }

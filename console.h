@@ -55,7 +55,6 @@ namespace LANG_NAMESPACE {
         }
 
         static inline string statistics(unsigned total_files, unsigned total_lines, bool print_time = false) {
-//            clock_t stop = clock();
             double elapsed = getMili() / 1000;
             stringstream s;
             s << "=> Statistics: "
