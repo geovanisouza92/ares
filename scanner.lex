@@ -1,15 +1,12 @@
-
-%{
-
-/* Ares Programming Language */
+%{ /* Ares Programming Language */
 
 #include <string>
 
 using namespace std;
 
-#include "scanner.h"
-#include "parser.h"
-#include "version.h"
+#include "scanner.hpp"
+#include "parser.hpp"
+#include "version.hpp"
 
 using namespace LANG_NAMESPACE;
 using namespace LANG_NAMESPACE::Compiler;
@@ -30,7 +27,7 @@ typedef Parser::token_type token_type;
 
 %{
 // Expressão regular para interpolação de strings
-inp (?:\".*)(#\{.*\})(?:.*\")
+// inp (?:\".*)(#\{.*\})(?:.*\")
 %}
 
 id  [a-zA-Z_][a-zA-Z_\-0-9]*[?!]?

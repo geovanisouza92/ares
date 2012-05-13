@@ -1,10 +1,9 @@
-
 /* Ares Programming Language */
 
 #ifndef LANG_ENUM_H
 #define LANG_ENUM_H
 
-#include "langconfig.h"
+#include "langconfig.hpp"
 
 namespace LANG_NAMESPACE {
 namespace Enum {

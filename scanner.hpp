@@ -7,8 +7,8 @@
 
 using namespace std;
 
-#include "driver.h"
-#include "parser.h"
+#include "driver.hpp"
+#include "parser.hpp"
 
 using namespace LANG_NAMESPACE;
 

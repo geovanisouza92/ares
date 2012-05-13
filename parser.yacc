@@ -1,4 +1,3 @@
-
 /* Ares Programming Language */
 
 %{
@@ -8,10 +7,10 @@
 
 using namespace std;
 
-#include "driver.h"
-#include "st.h"
-#include "stoql.h"
-#include "stmt.h"
+#include "driver.hpp"
+#include "st.hpp"
+#include "stoql.hpp"
+#include "stmt.hpp"
 
 using namespace SyntaxTree;
 
@@ -40,7 +39,7 @@ using namespace SyntaxTree;
 }
 
 %{
-#include "scanner.h"
+#include "scanner.hpp"
 
 #undef yylex
 #define yylex driver.lexer->lex
@@ -219,7 +218,9 @@ using namespace SyntaxTree;
 %type   <v_node>    RangeClause
 %type   <v_node>    SelectOrGroupClause
 %type   <v_node>    TernaryExpression
-%type   <v_node>    LogicExpression
+%type   <v_node>    LogicExpressionHigh
+%type   <v_node>    LogicExpressionMedium
+%type   <v_node>    LogicExpressionLow
 %type   <v_node>    ComparisonExpression
 %type   <v_node>    RangeExpression
 %type   <v_node>    AdditionExpression
@@ -1187,12 +1188,12 @@ Invariants
         ;
 
 Condition
-        : LogicExpression {
+        : LogicExpressionHigh {
             if (!driver.checkOnly) {
                 $$ = new ValidationNode($1, NULL);
             }
         }
-        | LogicExpression RaiseStatement {
+        | LogicExpressionHigh RaiseStatement {
             if (!driver.checkOnly) {
                 $$ = new ValidationNode($1, $2);
             }
@@ -1945,7 +1946,7 @@ QueryBodyMemberRepeat
         ;
 
 QueryBodyMember
-        : kWHERE LogicExpression {
+        : kWHERE LogicExpressionHigh {
             if (!driver.checkOnly) {
                 $$ = new WhereNode($2);
             }
@@ -1968,17 +1969,17 @@ QueryBodyMember
         ;
 
 JoinClause
-        : kJOIN QueryOrigin kON LogicExpression {
+        : kJOIN QueryOrigin kON LogicExpressionHigh {
             if (!driver.checkOnly) {
                 $$ = new JoinNode(JoinType::None, $2, $4);
             }
         }
-        | kLEFT kJOIN QueryOrigin kON LogicExpression {
+        | kLEFT kJOIN QueryOrigin kON LogicExpressionHigh {
             if (!driver.checkOnly) {
                 $$ = new JoinNode(JoinType::Left, $3, $5);
             }
         }
-        | kRIGHT kJOIN QueryOrigin kON LogicExpression {
+        | kRIGHT kJOIN QueryOrigin kON LogicExpressionHigh {
             if (!driver.checkOnly) {
                 $$ = new JoinNode(JoinType::Right, $3, $5);
             }
@@ -2049,17 +2050,17 @@ SelectOrGroupClause
         ;
 
 TernaryExpression
-        : LogicExpression {
+        : LogicExpressionHigh {
             if (!driver.checkOnly) {
                 $$ = $1;
             }
         }
-        | LogicExpression '?' Expression ':' Expression {
+        | LogicExpressionHigh '?' Expression ':' Expression {
             if (!driver.checkOnly) {
                 $$ = new TernaryNode(BaseOperator::TernaryIf, $1, $3, $5);
             }
         }
-        | LogicExpression kBETWEEN ComparisonExpression kAND ComparisonExpression {
+        | LogicExpressionHigh kBETWEEN ComparisonExpression kAND ComparisonExpression {
             if (!driver.checkOnly) {
                 // TODO Criar nó : $1 GEE $3 AND $1 LEE $1
                 $$ = new TernaryNode(BaseOperator::TernaryBetween, $1, $3, $5);
@@ -2067,31 +2068,47 @@ TernaryExpression
         }
         ;
 
-LogicExpression
+LogicExpressionHigh
+        : LogicExpressionMedium {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | LogicExpressionMedium kOR LogicExpressionMedium {
+            if (!driver.checkOnly) {
+                $$ = new BinaryNode(BaseOperator::BinaryOr, $1, $3);
+            }
+        }
+        | LogicExpressionMedium kIMPLIES LogicExpressionMedium {
+            if (!driver.checkOnly) {
+                // TODO Criar nó : NOT $1 OR $3
+                $$ = new BinaryNode(BaseOperator::BinaryImplies, $1, $3);
+            }
+        }
+        ;
+
+LogicExpressionMedium
+        : LogicExpressionLow {
+            if (!driver.checkOnly) {
+                $$ = $1;
+            }
+        }
+        | LogicExpressionLow kAND LogicExpressionLow {
+            if (!driver.checkOnly) {
+                $$ = new BinaryNode(BaseOperator::BinaryAnd, $1, $3);
+            }
+        }
+        ;
+
+LogicExpressionLow
         : ComparisonExpression {
             if (!driver.checkOnly) {
                 $$ = $1;
             }
         }
-        | LogicExpression kAND ComparisonExpression {
-            if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinaryAnd, $1, $3);
-            }
-        }
-        | LogicExpression kOR ComparisonExpression {
-            if (!driver.checkOnly) {
-                $$ = new BinaryNode(BaseOperator::BinaryOr, $1, $3);
-            }
-        }
-        | LogicExpression kXOR ComparisonExpression {
+        | LogicExpressionLow kXOR ComparisonExpression {
             if (!driver.checkOnly) {
                 $$ = new BinaryNode(BaseOperator::BinaryXor, $1, $3);
-            }
-        }
-        | LogicExpression kIMPLIES ComparisonExpression {
-            if (!driver.checkOnly) {
-                // TODO Criar nó : NOT $1 OR $3
-                $$ = new BinaryNode(BaseOperator::BinaryImplies, $1, $3);
             }
         }
         ;

@@ -10,7 +10,7 @@
 
 using namespace std;
 
-#include "colorcon.h"
+#include "colorcon.hpp"
 
 #define err_tail COLOR_BRED "error" COLOR_RESET ": "
 #define war_tail COLOR_BPURPLE "warning" COLOR_RESET ": "

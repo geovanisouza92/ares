@@ -115,7 +115,7 @@ task :default do
   YFLAGS = [
     "--debug",
     "-v",
-    "--defines=parser.h"
+    "--defines=parser.hpp"
   ]
 
   # Flags do Lex
@@ -147,7 +147,7 @@ task :release => :clean do
   # Flags do Yacc
   YFLAGS = [
     "-v",
-    "--defines=parser.h"
+    "--defines=parser.hpp"
   ]
 
   # Flags do Lex
@@ -250,7 +250,7 @@ require 'rake/clean'
 
 CLEAN.include(BINARY)
 CLEAN.include("parser.cpp")
-CLEAN.include("parser.h")
+CLEAN.include("parser.hpp")
 CLEAN.include("scanner.cpp")
 CLEAN.include("*.hh")
 CLEAN.include("*.out*")

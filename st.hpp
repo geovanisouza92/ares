@@ -10,7 +10,7 @@
 
 using namespace std;
 
-#include "enum.h"
+#include "enum.hpp"
 
 using namespace LANG_NAMESPACE::Enum;
 

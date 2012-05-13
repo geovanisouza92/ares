@@ -88,8 +88,7 @@
 
 #else
 #define LANG_PLATFORM "Unknown"
-// TODO Raise platform error?
-
+  #error "Plataform unknown"
 #endif
 #endif
 

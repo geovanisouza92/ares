@@ -1,6 +1,6 @@
 /* Ares Programming Language */
 
-#include "stoql.h"
+#include "stoql.hpp"
 
 namespace LANG_NAMESPACE {
     namespace SyntaxTree {

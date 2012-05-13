@@ -14,9 +14,9 @@ using namespace std;
 
 namespace fileSystem = boost::filesystem3;
 
-#include "st.h"
-#include "console.h"
-#include "scanner.h"
+#include "st.hpp"
+#include "console.hpp"
+#include "scanner.hpp"
 
 using namespace LANG_NAMESPACE::Enum;
 

@@ -1,6 +1,6 @@
 /* Ares Programming Language */
 
-#include "codegen.h"
+#include "codegen.hpp"
 
 namespace LANG_NAMESPACE {
 namespace CodeGen {
@@ -43,8 +43,6 @@ CodeGenContext::popBlock() {
 }
 
 /*
- *
- *
  * Compile the AST into a module
 
 void CodeGenContext::generateCode(NBlock& root)

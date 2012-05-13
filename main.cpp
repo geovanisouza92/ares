@@ -9,10 +9,10 @@ using namespace std;
 
 namespace programOptions = boost::program_options;
 
-#include "enum.h"
-#include "console.h"
-#include "driver.h"
-#include "version.h"
+#include "enum.hpp"
+#include "console.hpp"
+#include "driver.hpp"
+#include "version.hpp"
 
 using namespace LANG_NAMESPACE;
 

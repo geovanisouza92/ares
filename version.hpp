@@ -8,7 +8,7 @@
 
 using namespace std;
 
-#include "langconfig.h"
+#include "langconfig.hpp"
 
 namespace LANG_NAMESPACE {
 

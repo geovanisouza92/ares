@@ -3,7 +3,7 @@
 #include <string>
 #include <ostream>
 
-#include "st.h"
+#include "st.hpp"
 
 namespace LANG_NAMESPACE {
     namespace SyntaxTree {

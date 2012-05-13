@@ -19,7 +19,7 @@ using namespace std;
 
 using namespace llvm;
 
-#include "st.h"
+#include "st.hpp"
 
 using namespace LANG_NAMESPACE::SyntaxTree;
 

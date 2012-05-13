@@ -4,7 +4,7 @@ arc
 *.bc
 *.s
 *.hh
-parser.h
+parser.hpp
 parser.cpp
 scanner.cpp
 *.results

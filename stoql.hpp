@@ -3,8 +3,8 @@
 #ifndef LANG_STOQL_H
 #define LANG_STOQL_H
 
-#include "st.h"
-#include "enum.h"
+#include "st.hpp"
+#include "enum.hpp"
 
 namespace LANG_NAMESPACE {
     namespace SyntaxTree {
