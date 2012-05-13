@@ -1,5 +1,5 @@
 % Formato do documento
-\documentclass[12pt, a4paper, tocpage=prefix, pagestart=folhaderosto, floatnumber=chapter, chapter=TITLE, section=Title, header=ruled]{abnt}
+\documentclass[12pt,a4paper,tocpage=prefix,pagestart=folhaderosto,floatnumber=chapter,chapter=TITLE,section=Title,header=ruled]{abnt}
 
 \include{config}
 \include{metainfo}
@@ -16,41 +16,21 @@
     % \include{epigrafe} % Cria a epígrafe (onde se coloca um pensamento)
     % \include{resumo} % Resumo do trabalho
     % \include{abstract} % Resumo em língua estrangeira
-    \renewcommand{\contentsname}{SUM\'ARIO} % Modifica o nome do sumário
-    \sumario % Gera o sumário
     %\renewcommand{\listfigurename}{LISTA DE FIGURAS} % Modifica o nome da lista de figuras
     %\listoffigures % Gera o índice de figuras
-    \include{siglas}
-
+    % Tabelas
+    \renewcommand{\listofabreviationsname}{LISTA DE SIGLAS} % Modifica o nome da lista de siglas
+    \listadesiglas
+    \renewcommand{\contentsname}{SUM\'ARIO} % Modifica o nome do sumário
+    \sumario
     %\include{introducao}
-    
-    \begin{espacosimples}
-    \begin{itemize}
-      \item \cite{Aaby04}
-      \item \cite{Aho08}
-      \item \cite{Bison11}
-      \item \cite{Cantu08}
-      \item \cite{Crenshaw88}
-      \item \cite{Franz94}
-      \item \cite{Jargas01}
-      \item \cite{Machado07}
-      \item \cite{Mello08}
-      \item \cite{Mossenbock00}
-      \item \cite{Niemann10}
-      \item \cite{Passos07}
-      \item \cite{Posix04}
-      \item \cite{Rufino08}
-      \item \cite{Saade04}
-      \item \cite{Uncol12}
-      \item \cite{Wirth96}
-    \end{itemize}
-    \end{espacosimples}
-    
+    \include{cap1}
     %\include{conclusao}
-
-    \begin{espacosimples}
-      \bibliography{bibliografia} % Gera as referências bibliográficas
-    \end{espacosimples}
+  \end{espacoumemeio}
+  \begin{espacosimples}
+    \bibliography{bibliografia} % Gera as referências bibliográficas
+  \end{espacosimples}
+  \begin{espacoumemeio}
     %\include{apendices}
     %\include{anexos}
   \end{espacoumemeio}

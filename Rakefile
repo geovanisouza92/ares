@@ -8,6 +8,7 @@ MODULES = [
   "parser",
   "scanner",
   "driver",
+  "codegen",
   "main"
 ]
 
@@ -84,14 +85,13 @@ BINFLAGS = [
 TCC = "tcc"
 
 TCCINDEX = [
-  "siglas"
+  "sigla"
 ]
 
 desc "Gerar protótipo versão debug"
 task :default do
   # Flags de compilação do C++
   CXXFLAGS = [ 
-    "-O0", 
     "-g3",
     "-emit-llvm",
     "-Wall",
@@ -101,12 +101,14 @@ task :default do
     "-Wno-logical-op-parentheses",
     "-Wno-switch-enum",
     "-DLANG_DEBUG=1"
+    # , "`llvm-config --cxxflags engine`"
   ]
 
   # Flags de ligação
   LDFLAGS = [
     "-v",
     "-native"
+    # , "`llvm-config --ldflags --libs engine`"
   ]
 
   # Flags do Yacc
@@ -128,7 +130,6 @@ desc "Gerar protótipo versão release"
 task :release => :clean do
   # Flags de compilação do C++
   CXXFLAGS = [
-    "-O3",
     "-emit-llvm",
     "-Wall",
     "-c",
@@ -220,7 +221,7 @@ task :tcc do
   Rake::Task['bibtex'].invoke
   Rake::Task['tex'].invoke
   Rake::Task['tex'].invoke
-  Dir.chdir("..")
+  Dir.chdir('..')
 end
 
 # Gera meta-info das imagens
@@ -230,19 +231,19 @@ end
 
 # Compila o PdfLaTeX
 task :tex do
-  sh "pdflatex -interaction=nonstopmode -output-directory=#{File.join(File.dirname(__FILE__), TCC)} -output-format=pdf #{File.join(File.dirname(__FILE__), TCC, TCC)}"
+  sh "pdflatex -interaction=nonstopmode -output-directory=#{File.join(File.dirname(__FILE__), TCC)} -output-format=pdf #{File.join(File.dirname(__FILE__), TCC, TCC.ext('tex'))}"
 end
 
 # Gera os índices
 task :indexes do
   TCCINDEX.each do |index|
-    sh "makeindex -s tabela-simbolos.ist -o #{File.join(File.dirname(__FILE__, TCC))}#{TCC.ext(index)} #{File.join(File.dirname(__FILE__), TCC)}#{TCC.ext(index + "x")}"
+    sh "makeindex -s tabela-simbolos.ist -o #{File.join(File.dirname(__FILE__), TCC, TCC.ext(index))} #{File.join(File.dirname(__FILE__), TCC, TCC.ext(index + "x"))}"
   end
 end
 
 # Gera as referências bibliográficas
 task :bibtex do
-  sh "bibtex #{File.join(File.dirname(__FILE__, TCC))}#{TCC}"
+  sh "bibtex #{File.join(File.dirname(__FILE__), TCC, TCC)}"
 end
 
 require 'rake/clean'
@@ -257,17 +258,18 @@ CLEAN.include("*.results")
 CLEAN.include("*.diff")
 CLEAN.include("*.s")
 CLEAN.include("*.bc")
-CLEAN.include("*.aux")
-CLEAN.include("*.toc")
-CLEAN.include("*.log")
-CLEAN.include("*.bbl")
-CLEAN.include("*.blg")
-CLEAN.include("*.out*")
-CLEAN.include("#{TCC}.pdf")
-CLEAN.include("*.bb")
-CLEAN.include("*.ilg")
-CLEAN.include("*.sym*")
-CLEAN.include("*.sig*")
-CLEAN.include("*.rom*")
-CLEAN.include("*.gre*")
-CLEAN.include("*.mis*")
+
+CLEAN.include(File.join(TCC, "*.aux"))
+CLEAN.include(File.join(TCC, "*.log"))
+CLEAN.include(File.join(TCC, "*.toc"))
+CLEAN.include(File.join(TCC, "*.bbl"))
+CLEAN.include(File.join(TCC, "*.blg"))
+CLEAN.include(File.join(TCC, "*.out*"))
+CLEAN.include(File.join(TCC, "#{TCC}.pdf"))
+CLEAN.include(File.join(TCC, "figuras", "*.bb"))
+CLEAN.include(File.join(TCC, "*.ilg"))
+CLEAN.include(File.join(TCC, "*.sym*"))
+CLEAN.include(File.join(TCC, "*.sig*"))
+CLEAN.include(File.join(TCC, "*.rom*"))
+CLEAN.include(File.join(TCC, "*.gre*"))
+CLEAN.include(File.join(TCC, "*.mis*"))

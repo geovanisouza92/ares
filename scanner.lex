@@ -28,6 +28,11 @@ typedef Parser::token_type token_type;
 #define YY_USER_ACTION yylloc->columns(yyleng);
 %}
 
+%{
+// Expressão regular para interpolação de strings
+inp (?:\".*)(#\{.*\})(?:.*\")
+%}
+
 id  [a-zA-Z_][a-zA-Z_\-0-9]*[?!]?
 str \"(\\.|[^\"])*\"
 rgx \/(\\.|[^\/\ ])*\/
