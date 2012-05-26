@@ -90,6 +90,8 @@ TCCINDEX = [
 
 desc "Gerar protótipo versão debug"
 task :default do
+  Dir.chdir('src')
+
   # Flags de compilação do C++
   CXXFLAGS = [ 
     "-g3",
@@ -116,19 +118,25 @@ task :default do
     "--debug",
     "-v",
     "-x",
-    "--defines=parser.hpp"
+    "--defines=#{File.join(File.dirname(__FILE__), 'src', 'parser.hpp')}",
+    "-o #{File.join(File.dirname(__FILE__), 'src', 'parser.cpp')}"
   ]
 
   # Flags do Lex
   LFLAGS = [
-    "--debug"
+    "--debug",
+    "-o#{File.join(File.dirname(__FILE__), 'src', 'scanner.cpp')}"
   ]
 
   Rake::Task['link'].invoke
+
+  Dir.chdir('..')
 end
 
 desc "Gerar protótipo versão release"
 task :release => :clean do
+  Dir.chdir('src')
+
   # Flags de compilação do C++
   CXXFLAGS = [
     "-emit-llvm",
@@ -149,12 +157,13 @@ task :release => :clean do
   YFLAGS = [
     "-v",
     "-x",
-    "--defines=parser.hpp"
+    "--defines=#{File.join(File.dirname(__FILE__), 'src', 'parser.hpp')}",
+    "-o #{File.join(File.dirname(__FILE__), 'src', 'parser.cpp')}"
   ]
 
   # Flags do Lex
   LFLAGS = [
-    ""
+    "-o#{File.join(File.dirname(__FILE__), 'src', 'scanner.cpp')}"
   ]
 
   Rake::Task['link'].invoke
@@ -170,35 +179,32 @@ task :release => :clean do
   end
   sh cmd
 
+  Dir.chdir('..')
+
 end
 
 file 'parser.cpp' do |f|
-  # unless YFLAGS
-    YFLAGS = [
-      "--debug",
-      "-v",
-      "-x",
-      "--defines=parser.hpp"
-    ]
-  # end
-  sh "bison #{YFLAGS.join(' ')} -o #{f.name} parser.yacc"
+  sh "bison #{YFLAGS.join(' ')} #{File.join(File.dirname(__FILE__), 'src', 'parser.yacc')}" unless File.exists?(File.join(File.dirname(__FILE__), 'src', 'parser.cpp'))
 end
 
 file 'scanner.cpp' do |f|
-  sh "flex #{LFLAGS.join(' ')} -o#{f.name} scanner.lex"
+  # LFLAGS = [
+  #   "-o#{f.name}"
+  # ]
+  sh "flex #{LFLAGS.join(' ')} #{File.join(File.dirname(__FILE__), 'src', 'scanner.lex')}"
 end
 
 rule '.bc' => '.cpp' do |f|
-  sh "clang++ #{CXXFLAGS.join(' ')} -o #{f.name} #{f.source}"
+  sh "clang++ #{CXXFLAGS.join(' ')} -o #{File.join(File.dirname(__FILE__), 'src', f.name)} #{File.join(File.dirname(__FILE__), 'src', f.source)}"
 end
 
 bc = []
-MODULES.each { |mod| bc << "#{mod}.bc" }
+MODULES.each { |mod| bc << "#{mod.ext('bc')}" }
 
 task :link => bc do
-  cmd = "llvm-ld #{LDFLAGS.join(' ')} -o #{BINARY} "
+  cmd = "llvm-ld #{LDFLAGS.join(' ')} -o #{File.join(File.dirname(__FILE__), 'bin', BINARY)} "
   MODULES.each do |mod|
-    cmd << "#{mod}.bc "
+    cmd << "#{File.join(File.dirname(__FILE__), 'src', mod.ext('bc'))} "
   end
   LIBDIRS.each do |libdir|
     cmd << "-L#{libdir} "
@@ -211,9 +217,9 @@ end
 
 desc "Realiza os testes de compilação básicos"
 task :test do
-  if File.exists?(BINARY)
+  if File.exists?(File.join(File.dirname(__FILE__), 'bin', BINARY))
     test_files = Dir.glob("tests/*.ar")
-    cmd = "#{File.join(File.dirname(__FILE__), BINARY)} "
+    cmd = "#{File.join(File.dirname(__FILE__), 'bin', BINARY)} "
     cmd << "#{BINFLAGS.join(' ')} "
     cmd << "#{test_files.flatten.join(' ')}"
     sh cmd
@@ -224,7 +230,7 @@ end
 
 desc "Gerar TCC"
 task :tcc do
-  Rake::Task['docs'].invoke unless File.exists?(File.join(Dir.getwd, 'tcc', 'grammar.tex'))
+  Rake::Task['docs'].invoke unless File.exists?(File.join(File.dirname(__FILE__), 'tcc', 'grammar.tex'))
   Dir.chdir(TCC)
   Rake::Task['bb'].invoke
   Rake::Task['tex'].invoke
@@ -248,7 +254,7 @@ end
 # Gera os índices
 task :indexes do
   TCCINDEX.each do |index|
-    sh "makeindex -s tabela-simbolos.ist -o #{File.join(File.dirname(__FILE__), TCC, TCC.ext(index))} #{File.join(File.dirname(__FILE__), TCC, TCC.ext(index + "x"))}"
+    sh "makeindex -s tabela-simbolos.ist -o #{File.join(File.dirname(__FILE__), TCC, TCC.ext(index))} #{File.join(File.dirname(__FILE__), TCC, TCC.ext(index + 'x'))}"
   end
 end
 
@@ -258,42 +264,55 @@ task :bibtex do
 end
 
 desc "Gera a documentação da gramática"
-task :docs => [ 'parser.cpp' ] do
-  Y2LFLAGS = [
-    "-p",
-    File.join(Dir.getwd, 'parser.yacc')
-  ]
-  sh "xsltproc #{File.join(Dir.getwd, 'docs', 'xslt', 'xml2xhtml.xsl')} #{File.join(Dir.getwd, 'parser.xml')} > #{File.join(Dir.getwd, 'docs', 'Grammar.html')}" unless File.exists?(File.join(Dir.getwd, 'docs', 'Grammar.html'))
-  # sh "y2l #{Y2LFLAGS.join(" ")}" unless File.exists?(File.join(Dir.getwd, 'tcc', 'grammar.tex'))
+task :docs do
+  # Y2LFLAGS = [
+  #   "-p",
+  #   File.join(File.dirname(__FILE__), 'src', 'parser.yacc')
+  # ]
+  unless File.exists?(File.join(File.dirname(__FILE__), 'src', 'parser.xml'))
+      YFLAGS = [
+        "--debug",
+        "-v",
+        "-x",
+        "--defines=#{File.join(File.dirname(__FILE__), 'src', 'parser.hpp')}",
+        "-o #{File.join(File.dirname(__FILE__), 'src', 'parser.cpp')}"
+      ]
+    Dir.chdir('src')
+    Rake::Task['parser.cpp'].invoke
+    Dir.chdir('..')
+  end
+  sh "xsltproc #{File.join(File.dirname(__FILE__), 'docs', 'xslt', 'xml2xhtml.xsl')} #{File.join(File.dirname(__FILE__), 'src', 'parser.xml')} > #{File.join(File.dirname(__FILE__), 'docs', 'Grammar.html')}" unless File.exists?(File.join(File.dirname(__FILE__), 'docs', 'Grammar.html'))
+  # sh "y2l #{Y2LFLAGS.join(" ")}" unless File.exists?(File.join(File.dirname(__FILE__), 'tcc', 'grammar.tex'))
 end
 
 require 'rake/clean'
 
-CLEAN.include(BINARY)
-CLEAN.include("parser.cpp")
-CLEAN.include("parser.hpp")
-CLEAN.include("parser.xml")
-CLEAN.include("scanner.cpp")
-CLEAN.include("*.hh")
-CLEAN.include("*.out*")
-CLEAN.include("*.results")
-CLEAN.include("*.diff")
-CLEAN.include("*.s")
-CLEAN.include("*.bc")
-CLEAN.include(File.join("docs", "Grammar.html"))
+CLEAN.include(File.join('bin', BINARY))
+CLEAN.include(File.join('bin', BINARY.ext('bc')))
+CLEAN.include(File.join('src', 'parser.cpp'))
+CLEAN.include(File.join('src', 'parser.hpp'))
+CLEAN.include(File.join('src', 'parser.xml'))
+CLEAN.include(File.join('src', 'scanner.cpp'))
+CLEAN.include(File.join('src', '*.hh'))
+CLEAN.include(File.join('src', '*.out*'))
+CLEAN.include(File.join('src', '*.results'))
+CLEAN.include(File.join('src', '*.diff'))
+CLEAN.include(File.join('src', '*.s'))
+CLEAN.include(File.join('src', '*.bc'))
+CLEAN.include(File.join('docs', 'Grammar.html'))
 
-CLEAN.include(File.join(TCC, "*.aux"))
-CLEAN.include(File.join(TCC, "*.log"))
-CLEAN.include(File.join(TCC, "*.toc"))
-CLEAN.include(File.join(TCC, "*.bbl"))
-CLEAN.include(File.join(TCC, "*.blg"))
-CLEAN.include(File.join(TCC, "*.out*"))
+CLEAN.include(File.join(TCC, '*.aux'))
+CLEAN.include(File.join(TCC, '*.log'))
+CLEAN.include(File.join(TCC, '*.toc'))
+CLEAN.include(File.join(TCC, '*.bbl'))
+CLEAN.include(File.join(TCC, '*.blg'))
+CLEAN.include(File.join(TCC, '*.out*'))
 CLEAN.include(File.join(TCC, "#{TCC}.pdf"))
-CLEAN.include(File.join(TCC, "figuras", "*.bb"))
-CLEAN.include(File.join(TCC, "*.ilg"))
-CLEAN.include(File.join(TCC, "*.sym*"))
-CLEAN.include(File.join(TCC, "*.sig*"))
-CLEAN.include(File.join(TCC, "*.rom*"))
-CLEAN.include(File.join(TCC, "*.gre*"))
-CLEAN.include(File.join(TCC, "*.mis*"))
-CLEAN.include(File.join(TCC, "grammar.tex"))
+CLEAN.include(File.join(TCC, 'figuras', '*.bb'))
+CLEAN.include(File.join(TCC, '*.ilg'))
+CLEAN.include(File.join(TCC, '*.sym*'))
+CLEAN.include(File.join(TCC, '*.sig*'))
+CLEAN.include(File.join(TCC, '*.rom*'))
+CLEAN.include(File.join(TCC, '*.gre*'))
+CLEAN.include(File.join(TCC, '*.mis*'))
+CLEAN.include(File.join(TCC, 'grammar.tex'))
