@@ -10,6 +10,7 @@ parser.xml
 scanner.cpp
 *.results
 *.out*
+*.diff
 
 *.doc
 *.aux
