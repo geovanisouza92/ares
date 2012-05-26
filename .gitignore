@@ -6,6 +6,7 @@ arc
 *.hh
 parser.hpp
 parser.cpp
+parser.xml
 scanner.cpp
 *.results
 *.out*
@@ -26,3 +27,5 @@ figuras/*.bb
 *.roma*
 *.gree*
 *.misc*
+
+docs/Grammar.html

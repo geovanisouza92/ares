@@ -91,8 +91,8 @@ using namespace SyntaxTree;
 %token  kLEFT       "left"
 %token  kMODULE     "module"
 %token  kNEW        "new"
-%token  kNIL        "nil"
 %token  kNOT        "not"
+%token  kNULL       "null"
 %token  kON         "on"
 %token  kORDER      "order"
 %token  kOR         "or"
@@ -2338,7 +2338,7 @@ SuffixExpression
         ;
 
 LiteralValue
-        : kNIL {
+        : kNULL {
             if (!driver.checkOnly) {
                 $$ = new NilNode();
             }

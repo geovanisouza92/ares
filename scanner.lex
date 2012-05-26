@@ -94,8 +94,8 @@ rgx \/(\\.|[^\/\ ])*\/
 "left"          return token::kLEFT;
 "module"        return token::kMODULE;
 "new"           return token::kNEW;
-"nil"           return token::kNIL;
 "not"           return token::kNOT;
+"null"          return token::kNULL;
 "on"            return token::kON;
 "order"         return token::kORDER;
 "or"            return token::kOR;

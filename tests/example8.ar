@@ -8,7 +8,7 @@ for tweet in tweets do begin
   tweet.replyTo("another_user", "Message");
   WriteLn(tweet);
 end
-# "async" é aconselhabegin para execução assíncrona, melhoranbegin desempenho
+# "async" é aconselhado para execução assíncrona, melhorando desempenho
 var another_tweets = async from tweet in twitter.mentions()
 where (tweet.timestamp between Date.Now - 7 and Date.Now - 1)
 select tweet;

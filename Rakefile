@@ -115,6 +115,7 @@ task :default do
   YFLAGS = [
     "--debug",
     "-v",
+    "-x",
     "--defines=parser.hpp"
   ]
 
@@ -147,6 +148,7 @@ task :release => :clean do
   # Flags do Yacc
   YFLAGS = [
     "-v",
+    "-x",
     "--defines=parser.hpp"
   ]
 
@@ -171,6 +173,14 @@ task :release => :clean do
 end
 
 file 'parser.cpp' do |f|
+  # unless YFLAGS
+    YFLAGS = [
+      "--debug",
+      "-v",
+      "-x",
+      "--defines=parser.hpp"
+    ]
+  # end
   sh "bison #{YFLAGS.join(' ')} -o #{f.name} parser.yacc"
 end
 
@@ -214,6 +224,7 @@ end
 
 desc "Gerar TCC"
 task :tcc do
+  Rake::Task['docs'].invoke unless File.exists?(File.join(Dir.getwd, 'tcc', 'grammar.tex'))
   Dir.chdir(TCC)
   Rake::Task['bb'].invoke
   Rake::Task['tex'].invoke
@@ -246,11 +257,22 @@ task :bibtex do
   sh "bibtex #{File.join(File.dirname(__FILE__), TCC, TCC)}"
 end
 
+desc "Gera a documentação da gramática"
+task :docs => [ 'parser.cpp' ] do
+  Y2LFLAGS = [
+    "-p",
+    File.join(Dir.getwd, 'parser.yacc')
+  ]
+  sh "xsltproc #{File.join(Dir.getwd, 'docs', 'xslt', 'xml2xhtml.xsl')} #{File.join(Dir.getwd, 'parser.xml')} > #{File.join(Dir.getwd, 'docs', 'Grammar.html')}" unless File.exists?(File.join(Dir.getwd, 'docs', 'Grammar.html'))
+  # sh "y2l #{Y2LFLAGS.join(" ")}" unless File.exists?(File.join(Dir.getwd, 'tcc', 'grammar.tex'))
+end
+
 require 'rake/clean'
 
 CLEAN.include(BINARY)
 CLEAN.include("parser.cpp")
 CLEAN.include("parser.hpp")
+CLEAN.include("parser.xml")
 CLEAN.include("scanner.cpp")
 CLEAN.include("*.hh")
 CLEAN.include("*.out*")
@@ -258,6 +280,7 @@ CLEAN.include("*.results")
 CLEAN.include("*.diff")
 CLEAN.include("*.s")
 CLEAN.include("*.bc")
+CLEAN.include(File.join("docs", "Grammar.html"))
 
 CLEAN.include(File.join(TCC, "*.aux"))
 CLEAN.include(File.join(TCC, "*.log"))
@@ -273,3 +296,4 @@ CLEAN.include(File.join(TCC, "*.sig*"))
 CLEAN.include(File.join(TCC, "*.rom*"))
 CLEAN.include(File.join(TCC, "*.gre*"))
 CLEAN.include(File.join(TCC, "*.mis*"))
+CLEAN.include(File.join(TCC, "grammar.tex"))
