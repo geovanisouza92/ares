@@ -188,9 +188,6 @@ file 'parser.cpp' do |f|
 end
 
 file 'scanner.cpp' do |f|
-  # LFLAGS = [
-  #   "-o#{f.name}"
-  # ]
   sh "flex #{LFLAGS.join(' ')} #{File.join(File.dirname(__FILE__), 'src', 'scanner.lex')}"
 end
 
@@ -230,7 +227,7 @@ end
 
 desc "Gerar TCC"
 task :tcc do
-  Rake::Task['docs'].invoke unless File.exists?(File.join(File.dirname(__FILE__), 'tcc', 'grammar.tex'))
+  Rake::Task['docs'].invoke unless File.exists?(File.join(File.dirname(__FILE__), TCC, 'grammar.tex'))
   Dir.chdir(TCC)
   Rake::Task['bb'].invoke
   Rake::Task['tex'].invoke
@@ -265,24 +262,56 @@ end
 
 desc "Gera a documentação da gramática"
 task :docs do
-  # Y2LFLAGS = [
-  #   "-p",
-  #   File.join(File.dirname(__FILE__), 'src', 'parser.yacc')
-  # ]
   unless File.exists?(File.join(File.dirname(__FILE__), 'src', 'parser.xml'))
-      YFLAGS = [
-        "--debug",
-        "-v",
-        "-x",
-        "--defines=#{File.join(File.dirname(__FILE__), 'src', 'parser.hpp')}",
-        "-o #{File.join(File.dirname(__FILE__), 'src', 'parser.cpp')}"
-      ]
+    YFLAGS = [
+      "--debug",
+      "-v",
+      "-x",
+      "--defines=#{File.join(File.dirname(__FILE__), 'src', 'parser.hpp')}",
+      "-o #{File.join(File.dirname(__FILE__), 'src', 'parser.cpp')}"
+    ]
     Dir.chdir('src')
     Rake::Task['parser.cpp'].invoke
     Dir.chdir('..')
   end
-  sh "xsltproc #{File.join(File.dirname(__FILE__), 'docs', 'xslt', 'xml2xhtml.xsl')} #{File.join(File.dirname(__FILE__), 'src', 'parser.xml')} > #{File.join(File.dirname(__FILE__), 'docs', 'Grammar.html')}" unless File.exists?(File.join(File.dirname(__FILE__), 'docs', 'Grammar.html'))
-  # sh "y2l #{Y2LFLAGS.join(" ")}" unless File.exists?(File.join(File.dirname(__FILE__), 'tcc', 'grammar.tex'))
+  # Seção bruxaria
+  org = File.new File.join(File.dirname(__FILE__), 'src', 'parser.xml'), 'r'
+  dest = File.new File.join(File.dirname(__FILE__), 'docs', 'grammar.xml'), 'w'
+  dest.write "<?xml version=\"1.0\"?>\n<bison-xml-report version=\"2.5\" bug-report=\"bug-bison@gnu.org\" url=\"http://www.gnu.org/software/bison/\">\n<filename>Ares</filename><grammar>"
+  while line = org.gets
+    if line =~ /^.*<rules>.*$/
+      dest.write line
+      dest.write line while line = org.gets and line !~ /^.*<\/rules>.*$/
+      dest.write line
+    end
+  end
+  dest.write "</grammar></bison-xml-report>\n"
+  dest.close
+  org.close
+  # Fim do copiar arquivo
+  # Gera HTML
+  xslflags = [
+    File.join(File.dirname(__FILE__), 'docs', 'xslt', 'xml2xhtml.xsl'),
+    File.join(File.dirname(__FILE__), 'docs', 'grammar.xml'),
+    "> #{File.join(File.dirname(__FILE__), 'docs', 'grammar.html')}"
+  ]
+  sh "xsltproc #{xslflags.join(" ")} "
+  # Gera Tex
+  xslflags = [
+    File.join(File.dirname(__FILE__), 'docs', 'xslt', 'xml2text.xsl'),
+    File.join(File.dirname(__FILE__), 'docs', 'grammar.xml'),
+    "> #{File.join(File.dirname(__FILE__), TCC, 'grammar.tex.in')}" # Enviar direto para tcc
+  ]
+  sh "xsltproc #{xslflags.join(" ")} "
+  dest = File.new File.join(File.dirname(__FILE__), TCC, 'grammar.tex'), 'w'
+  dest.write "\\apendice\\chapter{Gram\\'atica BNF da linguagem de programa\\ca o do prot\\'otipo}\\begin{espacosimples}\\begin{scriptsize}\\begin{verbatim}"
+  org = File.new File.join(File.dirname(__FILE__), TCC, 'grammar.tex.in'), 'r'
+  while line = org.gets
+    dest.write line unless line =~ /Grammar/
+  end
+  dest.write "\\end{verbatim}\\end{scriptsize}\\end{espacosimples}"
+  dest.close
+  org.close
 end
 
 require 'rake/clean'
@@ -299,8 +328,16 @@ CLEAN.include(File.join('src', '*.results'))
 CLEAN.include(File.join('src', '*.diff'))
 CLEAN.include(File.join('src', '*.s'))
 CLEAN.include(File.join('src', '*.bc'))
-CLEAN.include(File.join('docs', 'Grammar.html'))
-
+CLEAN.include(File.join('docs', 'grammar.html'))
+CLEAN.include(File.join('docs', 'grammar.txt'))
+CLEAN.include(File.join(TCC, 'grammar.tex'))
+CLEAN.include(File.join(TCC, 'grammar.tex.in'))
+CLEAN.include(File.join('docs', 'grammar.xml'))
+CLEAN.include(File.join('docs', '*.aux'))
+CLEAN.include(File.join('docs', '*.log'))
+CLEAN.include(File.join('docs', '*.out'))
+CLEAN.include(File.join('docs', '*.pdf'))
+CLEAN.include(File.join('docs', '*.syn*'))
 CLEAN.include(File.join(TCC, '*.aux'))
 CLEAN.include(File.join(TCC, '*.log'))
 CLEAN.include(File.join(TCC, '*.toc'))
@@ -315,4 +352,3 @@ CLEAN.include(File.join(TCC, '*.sig*'))
 CLEAN.include(File.join(TCC, '*.rom*'))
 CLEAN.include(File.join(TCC, '*.gre*'))
 CLEAN.include(File.join(TCC, '*.mis*'))
-CLEAN.include(File.join(TCC, 'grammar.tex'))

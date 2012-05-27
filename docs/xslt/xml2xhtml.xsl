@@ -522,7 +522,8 @@
       <span class="i">
         <xsl:value-of select="lhs"/>
       </span>
-      <xsl:text> &#8594;</xsl:text>
+      <!-- <xsl:text> &#8594;</xsl:text> -->
+      <xsl:text> ::=</xsl:text><!-- '::=' para ser compatível com BNF -->
     </xsl:otherwise>
   </xsl:choose>
 
@@ -546,8 +547,7 @@
   <xsl:if test="$lookaheads">
     <xsl:value-of select="$lookaheads"/>
   </xsl:if>
-
-  <xsl:text>&#10;</xsl:text>
+  <xsl:text>&#10;</xsl:text><!-- <br/> -->
 </xsl:template>
 
 <xsl:template match="symbol">

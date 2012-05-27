@@ -363,8 +363,9 @@
   <xsl:if test="$lookaheads">
     <xsl:value-of select="$lookaheads"/>
   </xsl:if>
-
-  <xsl:text>&#10;</xsl:text>
+  <xsl:text>
+  </xsl:text>
+  <!-- <xsl:text>&#10;</xsl:text> -->
 </xsl:template>
 
 <xsl:template match="symbol">

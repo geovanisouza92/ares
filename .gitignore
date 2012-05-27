@@ -11,7 +11,6 @@ scanner.cpp
 *.results
 *.out*
 *.diff
-
 *.doc
 *.aux
 *.toc
@@ -28,5 +27,7 @@ figuras/*.bb
 *.roma*
 *.gree*
 *.misc*
-
-docs/Grammar.html
+docs/grammar.html
+grammar.xml
+grammar.tex
+*.tex.in

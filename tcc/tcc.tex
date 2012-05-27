@@ -1,5 +1,5 @@
 % Formato do documento
-\documentclass[12pt,a4paper,tocpage=prefix,pagestart=folhaderosto,floatnumber=chapter,chapter=TITLE,section=Title,header=ruled]{abnt}
+\documentclass[12pt,a4paper,tocpage=prefix,pagestart=folhaderosto,floatnumber=chapter,chapter=TITLE,section=Title,header=plain]{abnt}
 
 \include{config}
 \include{metainfo}
@@ -31,7 +31,8 @@
     \bibliography{bibliografia} % Gera as referências bibliográficas
   \end{espacosimples}
   \begin{espacoumemeio}
-    %\include{apendices}
+    \include{grammar}
+    \include{apendices}
     %\include{anexos}
   \end{espacoumemeio}
 \end{document} % Fim do TCC
