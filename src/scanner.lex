@@ -55,6 +55,7 @@ rgx \/(\\.|[^\/\ ])*\/
 ">="    return token::sGEE;
 "=~"    return token::sMAT;
 "!~"    return token::sNMA;
+"=>"    return token::sFAR;
 
 "abstract"      return token::kABSTRACT;
 "after"         return token::kAFTER;

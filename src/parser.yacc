@@ -141,6 +141,7 @@ using namespace SyntaxTree;
 %token  sGEE    ">="
 %token  sMAT    "=~"
 %token  sNMA    "!~"
+%token  sFAR    "=>"
 %token  sRAE    ".."
 %token  sRAI    "..."
 %token  '+'     "+"
@@ -270,6 +271,11 @@ Program
                 driver.enviro->putStatements($1);
             }
         }
+        // | Expression {
+        //     if (!driver.checkOnly) {
+        //         driver.enviro->putStatements($1);
+        //     }
+        // }
         ;
 
 StatementRepeat
@@ -1842,7 +1848,7 @@ Expression
         ;
 
 LambdaExpression
-        : kDEF FormalParamList '(' Expression ')' {
+        : kDEF FormalParamList sFAR Expression {
             if (!driver.checkOnly) {
                 $$ = new LambdaNode($2, $4);
             }

@@ -184,14 +184,29 @@ task :release => :clean do
 end
 
 file 'parser.cpp' do |f|
+  puts "Gerando parser"
+  unless File.exists?(File.join(File.dirname(__FILE__), 'src', 'parser.xml')) and (!YFLAGS)
+    YFLAGS = [
+      "--debug",
+      "-v",
+      "-x",
+      "--defines=#{File.join(File.dirname(__FILE__), 'src', 'parser.hpp')}",
+      "-o #{File.join(File.dirname(__FILE__), 'src', 'parser.cpp')}"
+    ]
+    # Dir.chdir('src')
+    # Rake::Task['parser.cpp'].invoke
+    # Dir.chdir('..')
+  end
   sh "bison #{YFLAGS.join(' ')} #{File.join(File.dirname(__FILE__), 'src', 'parser.yacc')}" unless File.exists?(File.join(File.dirname(__FILE__), 'src', 'parser.cpp'))
 end
 
 file 'scanner.cpp' do |f|
+  puts "Gerando scanner"
   sh "flex #{LFLAGS.join(' ')} #{File.join(File.dirname(__FILE__), 'src', 'scanner.lex')}"
 end
 
 rule '.bc' => '.cpp' do |f|
+  puts "Gerando módulo #{f.name}"
   sh "clang++ #{CXXFLAGS.join(' ')} -o #{File.join(File.dirname(__FILE__), 'src', f.name)} #{File.join(File.dirname(__FILE__), 'src', f.source)}"
 end
 
@@ -199,6 +214,7 @@ bc = []
 MODULES.each { |mod| bc << "#{mod.ext('bc')}" }
 
 task :link => bc do
+  puts "Linkando binário"
   cmd = "llvm-ld #{LDFLAGS.join(' ')} -o #{File.join(File.dirname(__FILE__), 'bin', BINARY)} "
   MODULES.each do |mod|
     cmd << "#{File.join(File.dirname(__FILE__), 'src', mod.ext('bc'))} "
@@ -214,12 +230,14 @@ end
 
 desc "Realiza os testes de compilação básicos"
 task :test do
+  puts "Iniciando testes"
   if File.exists?(File.join(File.dirname(__FILE__), 'bin', BINARY))
     test_files = Dir.glob("tests/*.ar")
     cmd = "#{File.join(File.dirname(__FILE__), 'bin', BINARY)} "
     cmd << "#{BINFLAGS.join(' ')} "
     cmd << "#{test_files.flatten.join(' ')}"
     sh cmd
+    puts "Testes concluídos"
   else
     puts "Compile o protótipo antes de testar"
   end
@@ -227,6 +245,7 @@ end
 
 desc "Gerar TCC"
 task :tcc do
+  puts "Gerando TCC"
   Rake::Task['docs'].invoke unless File.exists?(File.join(File.dirname(__FILE__), TCC, 'grammar.tex'))
   Dir.chdir(TCC)
   Rake::Task['bb'].invoke
@@ -261,20 +280,15 @@ task :bibtex do
 end
 
 desc "Gera a documentação da gramática"
-task :docs do
-  unless File.exists?(File.join(File.dirname(__FILE__), 'src', 'parser.xml'))
-    YFLAGS = [
-      "--debug",
-      "-v",
-      "-x",
-      "--defines=#{File.join(File.dirname(__FILE__), 'src', 'parser.hpp')}",
-      "-o #{File.join(File.dirname(__FILE__), 'src', 'parser.cpp')}"
-    ]
-    Dir.chdir('src')
-    Rake::Task['parser.cpp'].invoke
-    Dir.chdir('..')
-  end
-  # Seção bruxaria
+task :docs => [ :clean, 'parser.cpp' ] do
+  puts "Gerando documentação"
+  resumir_relatorio unless ENV['completo']
+  gerar_relatorios
+  gerar_tex
+end
+
+def resumir_relatorio
+  puts "Resumindo relatório do parser"
   org = File.new File.join(File.dirname(__FILE__), 'src', 'parser.xml'), 'r'
   dest = File.new File.join(File.dirname(__FILE__), 'docs', 'grammar.xml'), 'w'
   dest.write "<?xml version=\"1.0\"?>\n<bison-xml-report version=\"2.5\" bug-report=\"bug-bison@gnu.org\" url=\"http://www.gnu.org/software/bison/\">\n<filename>Ares</filename><grammar>"
@@ -288,28 +302,39 @@ task :docs do
   dest.write "</grammar></bison-xml-report>\n"
   dest.close
   org.close
-  # Fim do copiar arquivo
-  # Gera HTML
-  xslflags = [
-    File.join(File.dirname(__FILE__), 'docs', 'xslt', 'xml2xhtml.xsl'),
-    File.join(File.dirname(__FILE__), 'docs', 'grammar.xml'),
-    "> #{File.join(File.dirname(__FILE__), 'docs', 'grammar.html')}"
-  ]
+end
+
+def gerar_relatorios
+  puts "Gerando relatórios HTML e TXT do parser"
+
+  xslflags = [ File.join(File.dirname(__FILE__), 'docs', 'xslt', 'xml2xhtml.xsl') ]
+  unless ENV['completo']
+    xslflags << [ File.join(File.dirname(__FILE__), 'docs', 'grammar.xml') ]
+  else
+    xslflags << [ File.join(File.dirname(__FILE__), 'src', 'parser.xml') ]
+  end
+  xslflags << [ "> #{File.join(File.dirname(__FILE__), 'docs', 'grammar.html')}" ]
   sh "xsltproc #{xslflags.join(" ")} "
-  # Gera Tex
-  xslflags = [
-    File.join(File.dirname(__FILE__), 'docs', 'xslt', 'xml2text.xsl'),
-    File.join(File.dirname(__FILE__), 'docs', 'grammar.xml'),
-    "> #{File.join(File.dirname(__FILE__), TCC, 'grammar.tex.in')}" # Enviar direto para tcc
-  ]
+
+  xslflags = [ File.join(File.dirname(__FILE__), 'docs', 'xslt', 'xml2text.xsl') ]
+  unless ENV['completo']
+    xslflags << [ File.join(File.dirname(__FILE__), 'docs', 'grammar.xml') ]
+  else
+    xslflags << [ File.join(File.dirname(__FILE__), 'src', 'parser.xml') ]
+  end
+  xslflags << [ "> #{File.join(File.dirname(__FILE__), 'docs', 'grammar.bnf')}" ]
   sh "xsltproc #{xslflags.join(" ")} "
+end
+
+def gerar_tex
   dest = File.new File.join(File.dirname(__FILE__), TCC, 'grammar.tex'), 'w'
-  dest.write "\\apendice\\chapter{Gram\\'atica BNF da linguagem de programa\\ca o do prot\\'otipo}\\begin{espacosimples}\\begin{scriptsize}\\begin{verbatim}"
-  org = File.new File.join(File.dirname(__FILE__), TCC, 'grammar.tex.in'), 'r'
+  dest.write "\\apendice\\chapter{Gram\\'atica BNF da linguagem de programa\\ca o do prot\\'otipo}\\begin{espacosimples}\\begin{scriptsize}\\begin{lstlisting}"
+  org = File.new File.join(File.dirname(__FILE__), 'docs', 'grammar.bnf'), 'r'
   while line = org.gets
+    line = line.gsub(/\$/, '\\$') if line =~ /\$/
     dest.write line unless line =~ /Grammar/
   end
-  dest.write "\\end{verbatim}\\end{scriptsize}\\end{espacosimples}"
+  dest.write "\\end{lstlisting}\\end{scriptsize}\\end{espacosimples}"
   dest.close
   org.close
 end
@@ -331,7 +356,7 @@ CLEAN.include(File.join('src', '*.bc'))
 CLEAN.include(File.join('docs', 'grammar.html'))
 CLEAN.include(File.join('docs', 'grammar.txt'))
 CLEAN.include(File.join(TCC, 'grammar.tex'))
-CLEAN.include(File.join(TCC, 'grammar.tex.in'))
+CLEAN.include(File.join('docs', 'grammar.bnf'))
 CLEAN.include(File.join('docs', 'grammar.xml'))
 CLEAN.include(File.join('docs', '*.aux'))
 CLEAN.include(File.join('docs', '*.log'))

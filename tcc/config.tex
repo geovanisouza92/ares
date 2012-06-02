@@ -4,17 +4,89 @@
 \usepackage[hyperindex=false,pdftex]{hyperref} % Permite a criação de hyperlink no documento, como os links usados na referência
 \usepackage[alf,abnt-emphasize=bf,abnt-full-initials=yes,abnt-thesis-year=final,abnt-doi=link,abnt-url-package=hyperref]{abntcite} % Define o estilo de referência bibliográfica
 \usepackage{tabela-simbolos}
+\usepackage[usenames,dvipsnames]{color}
 \usepackage[pdftex]{graphicx} % Permite a utiliza\cc ão de imagens no documento
 \usepackage[small]{caption} % Define as legendas das figuras com fontes menores do que o texto
 \usepackage{pslatex} % Define que o formato da letra será Times New Roman
 \usepackage{epigraph} % Permite a cria\cc ão de epígrafes
 \usepackage{setspace} % Permite a defini\cc ão de espa\cc amento entre linhas
 \usepackage[top=3cm,left=3cm,right=2cm,bottom=2cm]{geometry} % Define as margens da folha
+\usepackage{listings} % Pacote para exibição de trechos de código
+\lstset{
+  language=Ruby, % Ruby é a sintaxe mais próxima da linguagem do protótipo
+  basicstyle=\footnotesize, % Tamanho da fonte dos trechos
+  numbers=left, % Numeração das linhas
+  numberstyle=\tiny\color{Gray}, % Estilo de numerações
+  stepnumber=2, % Quantidade de linhas para aparecer a numeração; Se 1, cada linha é numerada
+%
+  numbersep=7pt, % Separação entre as numerações e o código
+  backgroundcolor=\color{White},
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  % frame=single,
+  rulecolor=\color{Gray},
+  tabsize=2,
+  captionpos=b, % Ajusta a legenda para a parte de baixo (bottom)
+  breaklines=true, % Word-wrap
+  breakatwhitespace=false, % Se as quebras ocorrem somente nos espaçamentos
+  title=\lstname,
+%
+  keywordstyle=\color{OliveGreen}\bfseries,
+  commentstyle=\color{Gray},
+  stringstyle=\color{Bittersweet},
+  morestring=[b]",
+  morekeywords={
+    abstract,
+    after,
+    async,
+    asc,
+    before,
+    between,
+    break,
+    by,
+    case,
+    const,
+    desc,
+    elif,
+    ensure,
+    event,
+    false,
+    from,
+    get,
+    group,
+    has,
+    implies,
+    import,
+    invariants,
+    in,
+    join,
+    left,
+    new,
+    null,
+    on,
+    order,
+    retry,
+    right,
+    sealed,
+    select,
+    set,
+    signal,
+    skip,
+    step,
+    take,
+    then,
+    true,
+    var,
+    when,
+    where,
+    xor
+  }
+}
 
 \setcounter{secnumdepth}{3} % Até três subsubsections numeradas
 \setcounter{tocdepth}{3} % Até três subsubsections numeradas
 \setlength{\parindent}{1.5cm} % Define o recuo da primeira linha dos parágrafos para 1.5 cm
-\onehalfspacing % Define o espa\cc amento de 1.5cm entre linhas
 
 % \renewcommand{\rmdefault}{phv} % Fonte Arial
 % \renewcommand{\sfdefault}{phv} % Fonte Arial
@@ -25,6 +97,10 @@
 \renewcommand{\ABNTsubsectionfontsize}{\large} % Define o tamanho da fonte do \subsection
 \renewcommand{\ABNTsubsubsectionfontsize}{\large} % Define o tamanho da fonte do \subsubsection
 \renewcommand{\ABNTbibliographyname}{REFER\^ENCIAS BIBLIOGR\'AFICAS} % Modifica o título gerado pelo \bibliographys
+\renewcommand{\listofabreviationsname}{LISTA DE SIGLAS} % Modifica o nome da lista de siglas
+\renewcommand{\contentsname}{SUM\'ARIO} % Modifica o nome do sumário
+\renewcommand{\lstlistingname}{Listagem}
+\renewcommand{\lstlistlistingname}{LISTA DE FRAGMENTOS DE C\'ODIGO}
 
 \newcommand{\cc}{{\c c}}
 \newcommand{\CC}{{\c C}}

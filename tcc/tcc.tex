@@ -16,15 +16,15 @@
     % \include{epigrafe} % Cria a epígrafe (onde se coloca um pensamento)
     % \include{resumo} % Resumo do trabalho
     % \include{abstract} % Resumo em língua estrangeira
-    %\renewcommand{\listfigurename}{LISTA DE FIGURAS} % Modifica o nome da lista de figuras
-    %\listoffigures % Gera o índice de figuras
-    % Tabelas
-    \renewcommand{\listofabreviationsname}{LISTA DE SIGLAS} % Modifica o nome da lista de siglas
+    % \renewcommand{\listfigurename}{LISTA DE FIGURAS} % Modifica o nome da lista de figuras
+    % \listoffigures % Gera o índice de figuras
     \listadesiglas
-    \renewcommand{\contentsname}{SUM\'ARIO} % Modifica o nome do sumário
+    \lstlistoflistings % Lista de fragmentos de código
     \sumario
     %\include{introducao}
     \include{cap1}
+    \lstinputlisting[language=Ruby,caption={Teste Lambda 1},name={Lambda 1}]{../tests/lambda1.ar}
+    \lstinputlisting[language=Ruby,caption={Teste Lambda 2},name={Lambda 2}]{../tests/lambda2.ar}
     %\include{conclusao}
   \end{espacoumemeio}
   \begin{espacosimples}

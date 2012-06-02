@@ -1,0 +1,19 @@
+
+def my_computation(a: Integer, b: Integer)
+begin
+  var c = a + 10 ;
+  c = c * 20 ;
+  c = c * c ;
+  return c + 30 ;
+end
+
+def my_abs(a: Integer)
+begin
+  var b ;
+  if a < 0 then
+    b = - a ;
+  else
+    b = a ;
+  # end
+  return b ;
+end

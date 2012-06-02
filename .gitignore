@@ -30,4 +30,6 @@ figuras/*.bb
 docs/grammar.html
 grammar.xml
 grammar.tex
-*.tex.in
+*.bnf
+*.lof
+*.lol
