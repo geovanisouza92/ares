@@ -16,7 +16,6 @@ using namespace std;
 namespace fileSystem = boost::filesystem3;
 
 #include "st.hpp"
-// #include "console.hpp"
 #include "scanner.hpp"
 #include "colorcon.hpp"
 

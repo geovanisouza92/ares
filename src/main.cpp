@@ -10,7 +10,6 @@ using namespace std;
 namespace programOptions = boost::program_options;
 
 #include "enum.hpp"
-// #include "console.hpp"
 #include "driver.hpp"
 #include "version.hpp"
 
