@@ -4,7 +4,6 @@
 #define LANG_STOQL_H
 
 #include "st.hpp"
-#include "enum.hpp"
 
 namespace LANG_NAMESPACE {
     namespace SyntaxTree {

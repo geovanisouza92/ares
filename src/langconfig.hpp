@@ -18,15 +18,15 @@
 
 #define LANG_BIRTH_YEAR         2011
 #define LANG_BIRTH_MONTH        1
-#define LANG_BIRTH_DAY          21
+#define LANG_BIRTH_DAY          14
 
 #define LANG_RELEASE_YEAR       2012
-#define LANG_RELEASE_MONTH      5
-#define LANG_RELEASE_DAY        12
+#define LANG_RELEASE_MONTH      6
+#define LANG_RELEASE_DAY        2
 
 #define LANG_VERSION_MAJOR      0
 #define LANG_VERSION_MINOR      2
-#define LANG_VERSION_PATCH      8
+#define LANG_VERSION_PATCH      9
 
 #define LANG_VERSION_COMMENT    "proto"
 
@@ -91,28 +91,5 @@
   #error "Plataform unknown"
 #endif
 #endif
-
-#define DECLARE_ENUM_START(n,e) \
-namespace n { \
-  enum e { \
-    FIRST = -1,
-#define DECLARE_ENUM_MEMBER(x) \
-    x,
-#define DECLARE_ENUM_END \
-    LAST \
-  }; \
-}
-
-#define DECLARE_ENUM_NAMES_START(n) \
-namespace n { \
-  static string EnumNames[LAST] = {
-#define DECLARE_ENUM_MEMBER_NAME(x) \
-    x,
-#define DECLARE_ENUM_NAMES_END(e) \
-  }; \
-  static string getEnumName(e value) { \
-    return EnumNames[value]; \
-  } \
-}
 
 #endif
