@@ -1,0 +1,114 @@
+
+YACC=bison
+LEX=flex
+CXX=clang++
+LD=llvm-ld
+
+ifeq ($(RELEASE),1)
+CXXFLAGS= \
+  -emit-llvm \
+  -Wall \
+  -c \
+  -fmessage-length=0 \
+  -Wno-unused-function \
+  -Wno-logical-op-parentheses \
+  -Wno-switch-enum
+LDFLAGS= \
+  -v \
+  -native \
+  -lstdc++ \
+  -lboost_filesystem \
+  -lboost_program_options \
+  -lboost_system \
+  -L/usr/lib/gcc/i686-linux-gnu/4.6/ \
+  -L/home/geovani/dev/boost_1_48_0/bin.v2/libs/program_options/build/gcc-4.6.1/release/link-static/threading-multi \
+  -L/home/geovani/dev/boost_1_48_0/bin.v2/libs/system/build/gcc-4.6.1/release/link-static/threading-multi \
+  -L/home/geovani/dev/boost_1_48_0/bin.v2/libs/filesystem/build/gcc-4.6.1/release/link-static/threading-multi
+LFLAGS=
+YFLAGS= \
+  -v \
+  -x \
+  --defines=src/parser.hpp
+else
+CXXFLAGS= \
+  -emit-llvm \
+  -Wall \
+  -c \
+  -fmessage-length=0 \
+  -Wno-unused-function \
+  -Wno-logical-op-parentheses \
+  -Wno-switch-enum \
+  -DLANG_DEBUG \
+  -g3
+LDFLAGS= \
+  -v \
+  -native \
+  -lstdc++ \
+  -lboost_filesystem \
+  -lboost_program_options \
+  -lboost_system \
+  -L/usr/lib/gcc/i686-linux-gnu/4.6/ \
+  -L/home/geovani/dev/boost_1_48_0/bin.v2/libs/program_options/build/gcc-4.6.1/release/link-static/threading-multi \
+  -L/home/geovani/dev/boost_1_48_0/bin.v2/libs/system/build/gcc-4.6.1/release/link-static/threading-multi \
+  -L/home/geovani/dev/boost_1_48_0/bin.v2/libs/filesystem/build/gcc-4.6.1/release/link-static/threading-multi
+LFLAGS=--debug
+YFLAGS= \
+  -v \
+  -x \
+  --debug \
+  --defines=src/parser.hpp
+endif
+
+BINARY=arc
+MODULES= \
+  src/st.bc \
+  src/stoql.bc \
+  src/stmt.bc \
+  src/parser.bc \
+  src/scanner.bc \
+  src/driver.bc \
+  src/codegen.bc \
+  src/main.bc
+CLEAN= \
+  src/parser.cpp \
+  src/parser.hpp \
+  src/scanner.cpp \
+  src/*.out* \
+  src/*.hh \
+  *.results \
+  *.s \
+  src/*.bc \
+  bin/*.bc \
+  src/*.xml \
+  docs/grammar.*
+TEST_MODULES=`ls tests/*.ar`
+
+all: link
+	@ echo "Concluído"
+
+src/parser.cpp:
+	@ $(YACC) $(YFLAGS) -o $@ src/parser.yacc
+
+src/scanner.cpp:
+	@ $(LEX) $(LFLAGS) -o$@ src/scanner.lex
+
+%.bc: %.cpp
+	@ echo "Preparando dependência:" $@
+	@ $(CXX) $(CXXFLAGS) -c -o $@ $<
+
+link: $(MODULES)
+	@ echo "Linkando compilador"
+	@ $(LD) $(LDFLAGS) -o bin/$(BINARY) $(MODULES)
+
+test:
+	@ if !([ -e bin/$(BINARY) ]); then make link; fi
+	@ clear
+	@ bin/$(BINARY) $(TEST_MODULES) 2> $@.results
+
+clean:
+	@ clear
+	@ rm -rf bin/$(BINARY) $(MODULES) $(CLEAN)
+	@ cd tcc && $(MAKE) $@ && cd ..
+
+tcc: clean src/parser.cpp
+	@ cd tcc && $(MAKE) $@ && cd ..
