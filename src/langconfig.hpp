@@ -18,15 +18,15 @@
 
 #define LANG_BIRTH_YEAR         2011
 #define LANG_BIRTH_MONTH        1
-#define LANG_BIRTH_DAY          14
+#define LANG_BIRTH_DAY          22
 
 #define LANG_RELEASE_YEAR       2012
 #define LANG_RELEASE_MONTH      6
-#define LANG_RELEASE_DAY        2
+#define LANG_RELEASE_DAY        23
 
 #define LANG_VERSION_MAJOR      0
 #define LANG_VERSION_MINOR      2
-#define LANG_VERSION_PATCH      9
+#define LANG_VERSION_PATCH      91
 
 #define LANG_VERSION_COMMENT    "proto"
 

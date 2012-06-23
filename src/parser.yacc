@@ -17,7 +17,7 @@ using namespace SyntaxTree;
 %}
 
 %require "2.3"
-%start Program
+%start Goal
 %skeleton "lalr1.cc"
 %define namespace "Ares::Compiler"
 %define "parser_class_name" "Parser"
@@ -261,7 +261,7 @@ using namespace SyntaxTree;
 
 %%
 
-Program
+Goal
         : /* empty */ {
             driver.decLines();
             driver.warning("Nothing to do here.");

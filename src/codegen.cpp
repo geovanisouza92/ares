@@ -17,6 +17,7 @@ CodeGenContext::generateCode(SyntaxNode * root) {
 GenericValue
 CodeGenContext::runCode() {
 	// TODO Implementar
+	return GenericValue();
 }
 
 map<string, Value *> &
