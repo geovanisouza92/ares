@@ -12,7 +12,7 @@ CXXFLAGS= \
   -fmessage-length=0 \
   -Wno-unused-function \
   -Wno-logical-op-parentheses \
-  -Wno-switch-enum
+  -Wno-switch
 LDFLAGS= \
   -v \
   -native \
@@ -30,18 +30,18 @@ YFLAGS= \
   -x \
   --defines=src/parser.hpp
 else
-CXXFLAGS= \
+CXXFLAGS= `llvm-config --cxxflags` \
   -emit-llvm \
-  -Wall \
-  -c \
-  -fmessage-length=0 \
-  -Wno-unused-function \
-  -Wno-logical-op-parentheses \
-  -Wno-switch-enum \
-  -DLANG_DEBUG \
-  -g3
-LDFLAGS= \
-  -v \
+  -Wno-switch \
+  -DLANG_DEBUG
+  # -Wall \
+  # -c \
+  # -g3 \
+  # -fmessage-length=0 \
+  # -Wno-unused-function \
+  # -Wno-logical-op-parentheses \
+  # -Wno-switch-enum \
+LDFLAGS= `llvm-config --ldflags --libs engine` \
   -native \
   -lstdc++ \
   -lboost_filesystem \
@@ -51,6 +51,8 @@ LDFLAGS= \
   -L/home/geovani/dev/boost_1_48_0/bin.v2/libs/program_options/build/gcc-4.6.1/release/link-static/threading-multi \
   -L/home/geovani/dev/boost_1_48_0/bin.v2/libs/system/build/gcc-4.6.1/release/link-static/threading-multi \
   -L/home/geovani/dev/boost_1_48_0/bin.v2/libs/filesystem/build/gcc-4.6.1/release/link-static/threading-multi
+  # -L/usr/lib/i386-linux-gnu/ \
+  # -v \
 LFLAGS=--debug
 YFLAGS= \
   -v \
@@ -79,6 +81,7 @@ CLEAN= \
   *.s \
   src/*.bc \
   bin/*.bc \
+  bin/arc* \
   src/*.xml \
   docs/grammar.*
 TEST_MODULES=`ls tests/*.ar`
@@ -94,7 +97,7 @@ src/scanner.cpp:
 
 %.bc: %.cpp
 	@ echo "Preparando dependência:" $@
-	@ $(CXX) $(CXXFLAGS) -c -o $@ $<
+	@ $(CXX) $(CXXFLAGS) -fcxx-exceptions -c -o $@ $< \
 
 link: $(MODULES)
 	@ echo "Linkando compilador"
