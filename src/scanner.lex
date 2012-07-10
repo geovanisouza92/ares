@@ -31,8 +31,11 @@ typedef Parser::token_type token_type;
 %}
 
 id  [a-zA-Z_][a-zA-Z_\-0-9]*[?!]?
+chr \'(\\.|[^\'])\'
 str \"(\\.|[^\"])*\"
 rgx \/(\\.|[^\/\ ])*\/
+csl "//"[^\n]*\n?
+cml "/*"(.|\n)*"*/"
 
 %%
 
@@ -40,91 +43,74 @@ rgx \/(\\.|[^\/\ ])*\/
     yylloc->step();
 %}
 
-"+="    return token::sADE;
-"-="    return token::sSUE;
-"*="    return token::sMUE;
-"/="    return token::sDIE;
-"..."   return token::sRAI;
-".."    return token::sRAE;
-"**"    return token::sPOW;
-"==="   return token::sIDE;
-"!=="   return token::sNID;
-"=="    return token::sEQL;
-"!="    return token::sNEQ;
-"<="    return token::sLEE;
-">="    return token::sGEE;
-"=~"    return token::sMAT;
-"!~"    return token::sNMA;
-"=>"    return token::sFAR;
+"+="    return token::oADE;
+"-="    return token::oSUE;
+"*="    return token::oMUE;
+"/="    return token::oDIE;
+"..."   return token::oRAI;
+".."    return token::oRAE;
+"**"    return token::oPOW;
+"==="   return token::oIDE;
+"!=="   return token::oNID;
+"=="    return token::oEQL;
+"!="    return token::oNEQ;
+"<="    return token::oLEE;
+">="    return token::oGEE;
+"=~"    return token::oMAT;
+"!~"    return token::oNMA;
+"->"    return token::oIMP;
+"=>"    return token::oFAR;
+"?="    return token::oBET;
+"??"    return token::oCOA;
+"&&"    return token::oAND;
+"||"    return token::oOR;
+"++"    return token::oINC;
+"--"    return token::oDEC;
 
-"abstract"      return token::kABSTRACT;
-"after"         return token::kAFTER;
-"and"           return token::kAND;
 "asc"           return token::kASC;
-"async"         return token::kASYNC;
-"attr"          return token::kATTR;
-"before"        return token::kBEFORE;
-"begin"         return token::kBEGIN;
-"between"       return token::kBETWEEN;
+"bool"          return token::kBOOL;
 "break"         return token::kBREAK;
 "by"            return token::kBY;
 "case"          return token::kCASE;
-"class"         return token::kCLASS;
+"char"          return token::kCHAR;
 "const"         return token::kCONST;
-"def"           return token::kDEF;
+"continue"      return token::kCONTINUE;
+"default"       return token::kDEFAULT;
 "desc"          return token::kDESC;
+"double"        return token::kDOUBLE;
 "do"            return token::kDO;
-"elif"          return token::kELIF;
 "else"          return token::kELSE;
-"end"           return token::kEND;
-"ensure"        return token::kENSURE;
-"event"         return token::kEVENT;
 "false"         return token::kFALSE;
+"float"         return token::kFLOAT;
+"foreach"       return token::kFOREACH;
 "for"           return token::kFOR;
 "from"          return token::kFROM;
-"get"           return token::kGET;
 "group"         return token::kGROUP;
 "has"           return token::kHAS;
 "if"            return token::kIF;
-"implies"       return token::kIMPLIES;
-"import"        return token::kIMPORT;
-"include"       return token::kINCLUDE;
-"invariants"    return token::kINVARIANTS;
+"int"           return token::kINT;
 "in"            return token::kIN;
 "join"          return token::kJOIN;
 "left"          return token::kLEFT;
-"module"        return token::kMODULE;
 "new"           return token::kNEW;
-"not"           return token::kNOT;
 "null"          return token::kNULL;
 "on"            return token::kON;
 "order"         return token::kORDER;
-"or"            return token::kOR;
-"private"       return token::kPRIVATE;
-"protected"     return token::kPROTECTED;
-"public"        return token::kPUBLIC;
-"raise"         return token::kRAISE;
-"require"       return token::kREQUIRE;
-"rescue"        return token::kRESCUE;
-"retry"         return token::kRETRY;
+"regex"         return token::kREGEX;
 "return"        return token::kRETURN;
 "right"         return token::kRIGHT;
-"sealed"        return token::kSEALED;
 "select"        return token::kSELECT;
-"set"           return token::kSET;
-"signal"        return token::kSIGNAL;
 "skip"          return token::kSKIP;
 "step"          return token::kSTEP;
+"string"        return token::kSTRING;
+"switch"        return token::kSWITCH;
 "take"          return token::kTAKE;
-"then"          return token::kTHEN;
 "true"          return token::kTRUE;
 "unless"        return token::kUNLESS;
-"until"         return token::kUNTIL;
 "var"           return token::kVAR;
-"when"          return token::kWHEN;
 "where"         return token::kWHERE;
 "while"         return token::kWHILE;
-"xor"           return token::kXOR;
+"yield"         return token::kYIELD;
 
 [0-9]*"."[0-9]+([Ee][\+\-]?[0-9]+)? {
     yylval->v_flt = atof(yytext);
@@ -141,6 +127,11 @@ rgx \/(\\.|[^\/\ ])*\/
     return token::ID;
 }
 
+{chr} {
+    yylval->v_str = new std::string(yytext, yyleng);
+    return token::CHAR;
+}
+
 {str} {
     yylval->v_str = new std::string(yytext, yyleng);
     return token::STRING;
@@ -151,19 +142,19 @@ rgx \/(\\.|[^\/\ ])*\/
     return token::REGEX;
 }
 
-[ \t\r]+ {
+[ \t]+ {
     // Whitespace
     yylloc->step();
 }
 
-"#"[^\n]*\n? {
+{csl} {
     // Comments
     yylloc->lines();
     yylloc->step();
     driver.incLines();
 }
 
-\n {
+[\n\r] {
     yylloc->lines(yyleng);
     yylloc->step();
     driver.incLines();
