@@ -8,6 +8,6 @@ LEVEL=..
 #
 # List all of the subdirectories that we will compile.
 #
-DIRS=sample
+DIRS=codegen driver parser scanner st stmt stoql
 
 include $(LEVEL)/Makefile.common

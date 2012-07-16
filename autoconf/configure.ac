@@ -1,11 +1,11 @@
 dnl **************************************************************************
 dnl * Initialize
 dnl **************************************************************************
-AC_INIT([[[SAMPLE]]],[[[x.xx]]],[bugs@yourdomain])
+AC_INIT([[[ARES]]],[[[0.x]]],[geovanisouza92@gmail.com])
 
 dnl Identify where LLVM source tree is
-LLVM_SRC_ROOT="../.."
-LLVM_OBJ_ROOT="../.."
+LLVM_SRC_ROOT="../../llvm-3.1"
+LLVM_OBJ_ROOT="../../llvm-3.1"
 
 dnl Find absolute paths to LLVM source and object trees
 LLVM_ABS_SRC_ROOT="`cd $srcdir ; cd $LLVM_SRC_ROOT ; pwd`"
@@ -41,7 +41,7 @@ AC_CONFIG_SRCDIR(["Makefile.common.in"])
 
 dnl Place all of the extra autoconf files into the config subdirectory. Tell
 dnl various tools where the m4 autoconf macros are.
-AC_CONFIG_AUX_DIR([autoconf])
+AC_CONFIG_AUX_DIR([../../llvm-3.1/autoconf])
 
 dnl **************************************************************************
 dnl Begin LLVM configure.ac Import
@@ -1463,9 +1463,15 @@ dnl Configure project makefiles
 dnl List every Makefile that exists within your source tree
 AC_CONFIG_MAKEFILE(Makefile)
 AC_CONFIG_MAKEFILE(lib/Makefile)
-AC_CONFIG_MAKEFILE(lib/sample/Makefile)
+AC_CONFIG_MAKEFILE(lib/codegen/Makefile)
+AC_CONFIG_MAKEFILE(lib/driver/Makefile)
+AC_CONFIG_MAKEFILE(lib/parser/Makefile)
+AC_CONFIG_MAKEFILE(lib/scanner/Makefile)
+AC_CONFIG_MAKEFILE(lib/st/Makefile)
+AC_CONFIG_MAKEFILE(lib/stmt/Makefile)
+AC_CONFIG_MAKEFILE(lib/stoql/Makefile)
 AC_CONFIG_MAKEFILE(tools/Makefile)
-AC_CONFIG_MAKEFILE(tools/sample/Makefile)
+AC_CONFIG_MAKEFILE(tools/arc/Makefile)
 
 dnl This must be last
 AC_OUTPUT
