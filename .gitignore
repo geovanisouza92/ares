@@ -24,3 +24,5 @@ tcc.pdf
 grammar.*
 parser.xml
 Rakefile
+autoconf/aclocal.m4
+autoconf/autom4te.cache/
