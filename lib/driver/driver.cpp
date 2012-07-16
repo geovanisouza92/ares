@@ -6,7 +6,7 @@
 
 using namespace std;
 
-#include "driver.hpp"
+#include "driver.h"
 
 namespace LANG_NAMESPACE {
     namespace Compiler {

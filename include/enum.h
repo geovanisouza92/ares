@@ -3,7 +3,7 @@
 #ifndef LANG_ENUM_H
 #define LANG_ENUM_H
 
-#include "langconfig.hpp"
+#include "langconfig.h"
 
 #define DECLARE_ENUM_START(n,e) \
 namespace n { \

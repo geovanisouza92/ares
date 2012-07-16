@@ -15,9 +15,9 @@ using namespace std;
 
 namespace fileSystem = boost::filesystem3;
 
-#include "st.hpp"
-#include "scanner.hpp"
-#include "colorcon.hpp"
+#include "st.h"
+#include "scanner.h"
+#include "colorcon.h"
 
 #define err_tail COLOR_BRED "error" COLOR_RESET ": "
 #define war_tail COLOR_BPURPLE "warning" COLOR_RESET ": "

@@ -25,3 +25,6 @@ include $(PROJ_OBJ_ROOT)/Makefile.llvm.config
 include $(PROJ_SRC_ROOT)/Makefile.llvm.rules
 
 LINK_COMPONENTS = all
+
+DEBUG_SYMBOLS = 1
+CXXFLAGS += -DLANG_DEBUG=1

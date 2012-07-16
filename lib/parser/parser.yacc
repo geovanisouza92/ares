@@ -7,10 +7,10 @@
 
 using namespace std;
 
-#include "driver.hpp"
-#include "st.hpp"
-#include "stoql.hpp"
-#include "stmt.hpp"
+#include "driver.h"
+#include "st.h"
+#include "stoql.h"
+#include "stmt.h"
 
 using namespace SyntaxTree;
 
@@ -39,7 +39,7 @@ using namespace SyntaxTree;
 }
 
 %{
-#include "scanner.hpp"
+#include "scanner.h"
 
 #undef yylex
 #define yylex driver.lexer->lex

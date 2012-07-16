@@ -1,6 +1,6 @@
 /* Ares Programming Language */
 
-#include "codegen.hpp"
+#include "codegen.h"
 
 namespace LANG_NAMESPACE {
 namespace CodeGen {

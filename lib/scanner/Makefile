@@ -14,3 +14,16 @@ LIBRARYNAME=scanner
 # Include Makefile.common so we know what to do.
 #
 include $(LEVEL)/Makefile.common
+
+# Dependencies
+
+LEX = flex
+
+LFLAGS =
+
+ifeq ($(DEBUG_SYMBOLS),1)
+LFLAGS += --debug
+endif
+
+scanner.cpp:
+	$(LEX) $(LFLAGS) -o$@ scanner.lex

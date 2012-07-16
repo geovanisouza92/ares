@@ -26,3 +26,8 @@ parser.xml
 Rakefile
 autoconf/aclocal.m4
 autoconf/autom4te.cache/
+sample
+Debug*
+Release*
+Profile*
+include/parser.h

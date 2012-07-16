@@ -4,9 +4,9 @@
 
 using namespace std;
 
-#include "scanner.hpp"
-#include "parser.hpp"
-#include "version.hpp"
+#include "scanner.h"
+#include "parser.h"
+#include "version.h"
 
 using namespace LANG_NAMESPACE;
 using namespace LANG_NAMESPACE::Compiler;

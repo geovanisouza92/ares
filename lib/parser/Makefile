@@ -8,9 +8,22 @@ LEVEL=../..
 #
 # Give the name of a library.  This will build a dynamic version.
 #
-LIBRARYNAME=main
+LIBRARYNAME=parser
 
 #
-# parser Makefile.common so we know what to do.
+# Include Makefile.common so we know what to do.
 #
 include $(LEVEL)/Makefile.common
+
+# Dependencies
+YACC = bison
+
+YFLAGS += -v -x --defines=$(LEVEL)/include/parser.h
+
+ifeq ($(DEBUG_SYMBOLS),1)
+YFLAGS += --debug
+endif
+
+parser.cpp:
+	$(YACC) $(YFLAGS) -o $@ parser.yacc
+	mv *.hh $(LEVEL)/include/

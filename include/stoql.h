@@ -3,7 +3,7 @@
 #ifndef LANG_STOQL_H
 #define LANG_STOQL_H
 
-#include "st.hpp"
+#include "st.h"
 
 namespace LANG_NAMESPACE {
     namespace SyntaxTree {

@@ -1,6 +1,6 @@
 /* Ares Programming Language */
 
-#include "stmt.hpp"
+#include "stmt.h"
 
 namespace LANG_NAMESPACE {
     namespace SyntaxTree {
