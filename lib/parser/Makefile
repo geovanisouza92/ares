@@ -24,6 +24,6 @@ ifeq ($(DEBUG_SYMBOLS),1)
 YFLAGS += --debug
 endif
 
-parser.cpp:
+parser.cpp: parser.yacc
 	$(YACC) $(YFLAGS) -o $@ parser.yacc
 	mv *.hh $(LEVEL)/include/

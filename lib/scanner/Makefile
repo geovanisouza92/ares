@@ -25,5 +25,5 @@ ifeq ($(DEBUG_SYMBOLS),1)
 LFLAGS += --debug
 endif
 
-scanner.cpp:
+scanner.cpp: scanner.lex
 	$(LEX) $(LFLAGS) -o$@ scanner.lex

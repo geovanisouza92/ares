@@ -24,7 +24,10 @@ include $(PROJ_OBJ_ROOT)/Makefile.llvm.config
 # Include all of the build rules used for making LLVM
 include $(PROJ_SRC_ROOT)/Makefile.llvm.rules
 
-LINK_COMPONENTS = all
+CXXFLAGS += -std=c++11
 
-DEBUG_SYMBOLS = 1
-CXXFLAGS += -DLANG_DEBUG=1
+LIBS += -lboost_filesystem
+LIBS += -lboost_program_options
+LIBS += -lboost_system
+
+LINK_COMPONENTES = all
