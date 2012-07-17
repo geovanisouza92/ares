@@ -24,10 +24,20 @@ include $(PROJ_OBJ_ROOT)/Makefile.llvm.config
 # Include all of the build rules used for making LLVM
 include $(PROJ_SRC_ROOT)/Makefile.llvm.rules
 
+CXX = g++
+
 CXXFLAGS += -std=c++0x
+CXXFLAGS += -fexceptions
+CXXFLAGS += -fmessage-length=0
+CXXFLAGS += -frtti
+CXXFLAGS += -Wno-unused-function
 
 LIBS += -lboost_filesystem
 LIBS += -lboost_program_options
 LIBS += -lboost_system
+
+LDFLAGS += -L/home/geovani/dev/boost_1_48_0/bin.v2/libs/program_options/build/gcc-4.6.1/release/link-static/threading-multi
+LDFLAGS += -L/home/geovani/dev/boost_1_48_0/bin.v2/libs/system/build/gcc-4.6.1/release/link-static/threading-multi
+LDFLAGS += -L/home/geovani/dev/boost_1_48_0/bin.v2/libs/filesystem/build/gcc-4.6.1/release/link-static/threading-multi
 
 LINK_COMPONENTES = all
