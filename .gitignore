@@ -31,3 +31,4 @@ Debug*
 Release*
 Profile*
 include/parser.h
+config.status
