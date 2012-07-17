@@ -24,3 +24,6 @@ tcc.pdf
 grammar.*
 parser.xml
 Rakefile
+Debug+Asserts/
+autoconf/autom4te.cache/
+parser.h
