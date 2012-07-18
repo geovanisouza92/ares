@@ -8,60 +8,57 @@ using namespace std;
 
 #include "driver.h"
 
+// static string LANG_NAMESPACE::Util::intToStr(int num) {
+//     stringstream str;
+//     str << num;
+//     string conv = str.str();
+//     for (unsigned i = conv.length() - 1; i > 1; i--)
+//         if ((i % 3) == 0) conv.insert(conv.length() - i, " ");
+//     return conv;
+// }
+
+// static string LANG_NAMESPACE::Util::formatNumber(int n, int w, char c = ' ') {
+//     stringstream s;
+//     s.fill(c);
+//     s.width(w);
+//     s << n;
+//     return s.str();
+// }
+
+// static double LANG_NAMESPACE::Util::getMili() {
+//   return (double) ( (clock() - start) / (CLOCKS_PER_SEC / 1000) );
+// }
+
+// static string LANG_NAMESPACE::Util::statistics(unsigned total_files,
+//     unsigned total_lines, bool print_time = false) {
+//     double elapsed = getMili() / 1000;
+//     stringstream s;
+//     s << "=> Statistics: "
+//       << COLOR_BCYAN
+//       << intToStr(total_files)
+//       << COLOR_RESET
+//       << (total_files <= 1 ? " file processed: " : " files processed: ")
+//       << COLOR_BBLUE
+//       << intToStr(total_lines)
+//       << COLOR_RESET
+//       << (total_lines > 1 ? " lines in " : " line in ")
+//       << COLOR_BYELLOW
+//       << elapsed
+//       << COLOR_RESET
+//       << (elapsed <= 1 ? " second" : " seconds");
+//     if (print_time) {
+//         s << (elapsed <= 1 ? " / " : " / =~ ")
+//           << COLOR_BGREEN
+//           << intToStr((elapsed >= 1 ? (int) (total_lines / elapsed) : total_lines))
+//           << COLOR_RESET
+//           << (total_lines > 1 ? " lines per second." : " line per second.");
+//     } else
+//         s << '.';
+//     s << endl;
+//     return s.str();
+// }
+
 namespace LANG_NAMESPACE {
-    namespace Util {
-        const clock_t start(clock());
-
-        static inline string intToStr(int num) {
-            stringstream str;
-            str << num;
-            string conv = str.str();
-            for (unsigned i = conv.length() - 1; i > 1; i--)
-                if ((i % 3) == 0) conv.insert(conv.length() - i, " ");
-            return conv;
-        }
-
-        static inline string formatNumber(int n, int w, char c = ' ') {
-            stringstream s;
-            s.fill(c);
-            s.width(w);
-            s << n;
-            return s.str();
-        }
-
-        static inline double getMili() {
-          return (double) ( (clock() - start) / (CLOCKS_PER_SEC / 1000) );
-        }
-
-        static inline string statistics(unsigned total_files, unsigned total_lines, bool print_time = false) {
-            double elapsed = getMili() / 1000;
-            stringstream s;
-            s << "=> Statistics: "
-              << COLOR_BCYAN
-              << intToStr(total_files)
-              << COLOR_RESET
-              << (total_files <= 1 ? " file processed: " : " files processed: ")
-              << COLOR_BBLUE
-              << intToStr(total_lines)
-              << COLOR_RESET
-              << (total_lines > 1 ? " lines in " : " line in ")
-              << COLOR_BYELLOW
-              << elapsed
-              << COLOR_RESET
-              << (elapsed <= 1 ? " second" : " seconds");
-            if (print_time) {
-                s << (elapsed <= 1 ? " / " : " / =~ ")
-                  << COLOR_BGREEN
-                  << intToStr((elapsed >= 1 ? (int) (total_lines / elapsed) : total_lines))
-                  << COLOR_RESET
-                  << (total_lines > 1 ? " lines per second." : " line per second.");
-            } else
-                s << '.';
-            s << endl;
-            return s.str();
-        }
-    }
-    
     namespace Compiler {
 
         Driver::Driver() : origin(LANG_SHELL_NAME), checkOnly(false), verboseMode(VerboseMode::Normal), lines(0), totalLines(0), errors(0), warnings(0), hints(0) {

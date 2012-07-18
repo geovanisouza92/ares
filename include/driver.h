@@ -4,9 +4,9 @@
 #define LANG_DRIVER_H
 
 #include <string>
-#include <vector>
-#include <time.h>
-#include <sstream>
+// #include <vector>
+// #include <time.h>
+// #include <sstream>
 
 using namespace std;
 
@@ -38,6 +38,14 @@ namespace fileSystem = boost::filesystem3;
 using namespace LANG_NAMESPACE::Enum;
 
 namespace LANG_NAMESPACE {
+    // namespace Util {
+    //     const clock_t start(clock());
+    //     static string intToStr(int);
+    //     static string formatNumber(int, int, char);
+    //     static double getMili();
+    //     static string statistics(unsigned, unsigned, bool);
+    // }
+    
     namespace Compiler {
 
         class Driver {
@@ -64,13 +72,13 @@ namespace LANG_NAMESPACE {
             virtual void warning(const string&);
             virtual void hint(const class location&, const string&);
             virtual void hint(const string&);
-            virtual inline void resetMessages();
-            virtual inline string resumeMessages();
+            virtual void resetMessages();
+            virtual string resumeMessages();
 
-            virtual inline void syntaxOkFor(const string);
-            virtual inline void resetLines();
-            virtual inline void incLines();
-            virtual inline void decLines();
+            virtual void syntaxOkFor(const string);
+            virtual void resetLines();
+            virtual void incLines();
+            virtual void decLines();
             virtual void produce(FinallyAction::Action, ostream &);
         };
 

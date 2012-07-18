@@ -8,8 +8,8 @@
 
 using namespace std;
 
-#define __STDC_CONSTANT_MACROS
-#define __STDC_LIMIT_MACROS
+// #define __STDC_CONSTANT_MACROS
+// #define __STDC_LIMIT_MACROS
 #include <llvm/Module.h>
 #include <llvm/Function.h>
 //#include <llvm/Type.h>
