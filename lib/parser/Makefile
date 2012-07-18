@@ -27,3 +27,6 @@ endif
 parser.cpp: parser.yacc
 	$(YACC) $(YFLAGS) -o $@ parser.yacc
 	mv *.hh $(LEVEL)/include/
+
+clean::
+	@ rm -f parser.cpp parser.xml parser.output

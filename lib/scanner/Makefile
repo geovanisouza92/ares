@@ -27,3 +27,6 @@ endif
 
 scanner.cpp: scanner.lex
 	$(LEX) $(LFLAGS) -o$@ scanner.lex
+
+clean::
+	@ rm -f scanner.cpp

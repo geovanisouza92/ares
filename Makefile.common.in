@@ -28,9 +28,9 @@ CXX = g++
 
 CXXFLAGS += -std=c++0x
 CXXFLAGS += -fexceptions
-CXXFLAGS += -fmessage-length=0
 CXXFLAGS += -frtti
 CXXFLAGS += -Wno-unused-function
+CXXFLAGS += -Wno-switch
 
 LIBS += -lboost_filesystem
 LIBS += -lboost_program_options
@@ -41,3 +41,6 @@ LDFLAGS += -L/home/geovani/dev/boost_1_48_0/bin.v2/libs/system/build/gcc-4.6.1/r
 LDFLAGS += -L/home/geovani/dev/boost_1_48_0/bin.v2/libs/filesystem/build/gcc-4.6.1/release/link-static/threading-multi
 
 LINK_COMPONENTES = all
+
+ENABLE_OPTIMIZED = 1
+DISABLE_ASSERTIONS = 1
