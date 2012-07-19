@@ -1,0 +1,44 @@
+# Set the name of the project here
+PROJECT_NAME := ares
+PROJ_VERSION := 0.x
+
+# Set this variable to the top of the LLVM source tree.
+LLVM_SRC_ROOT = @LLVM_SRC@
+
+# Set this variable to the top level directory where LLVM was built
+# (this is *not* the same as OBJ_ROOT as defined in LLVM's Makefile.config).
+LLVM_OBJ_ROOT = @LLVM_OBJ@
+
+# Set the directory root of this project's source files
+PROJ_SRC_ROOT := $(subst //,/,@abs_top_srcdir@)
+
+# Set the root directory of this project's object files
+PROJ_OBJ_ROOT := $(subst //,/,@abs_top_builddir@)
+
+# Set the root directory of this project's install prefix
+PROJ_INSTALL_ROOT := @prefix@
+
+# Configuration file to set paths specific to local installation of LLVM
+include $(PROJ_OBJ_ROOT)/Makefile.llvm.config
+
+# Include all of the build rules used for making LLVM
+include $(PROJ_SRC_ROOT)/Makefile.llvm.rules
+
+CXX = g++
+CXXFLAGS += -std=c++0x
+CXXFLAGS += -fexceptions
+CXXFLAGS += -frtti
+CXXFLAGS += -Wno-unused-function
+CXXFLAGS += -Wno-switch
+
+ENABLE_OPTIMIZED = 1
+DISABLE_ASSERTIONS = 1
+LINK_COMPONENTES = all
+
+LIBS += -lboost_filesystem
+LIBS += -lboost_program_options
+LIBS += -lboost_system
+
+LDFLAGS += -L/home/geovani/dev/boost_1_48_0/bin.v2/libs/program_options/build/gcc-4.6.1/release/link-static/threading-multi
+LDFLAGS += -L/home/geovani/dev/boost_1_48_0/bin.v2/libs/system/build/gcc-4.6.1/release/link-static/threading-multi
+LDFLAGS += -L/home/geovani/dev/boost_1_48_0/bin.v2/libs/filesystem/build/gcc-4.6.1/release/link-static/threading-multi

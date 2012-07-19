@@ -25,9 +25,20 @@ tcc.pdf
 grammar.*
 parser.xml
 Rakefile
+<<<<<<< HEAD
 Debug+Asserts/
 autoconf/autom4te.cache/
 parser.h
 =======
 src/
 >>>>>>> gh-pages
+=======
+autoconf/aclocal.m4
+autoconf/autom4te.cache/
+sample
+Debug*
+Release*
+Profile*
+include/parser.h
+config.status
+>>>>>>> llvm-build
