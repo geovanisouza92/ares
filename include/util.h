@@ -5,6 +5,9 @@
 #include <time.h>
 #include <string>
 
+#include "langconfig.h"
+#include "colorcon.h"
+
 using namespace std;
 
 namespace LANG_NAMESPACE {
@@ -14,6 +17,7 @@ namespace LANG_NAMESPACE {
         static string formatNumber(int, int, char);
         static double getMili();
         static string statistics(unsigned, unsigned, bool);
+        static string trimString(string, char);
     }
 }
 

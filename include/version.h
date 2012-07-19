@@ -9,8 +9,11 @@ using namespace std;
 
 #include "langconfig.h"
 
-string LANG_NAMESPACE::langVersion();
-string LANG_NAMESPACE::langRelease();
-string LANG_NAMESPACE::langCopy();
+namespace LANG_NAMESPACE {
+	static string langVersionInfo();
+	static string langVersion();
+	static string langRelease();
+	static string langCopy();
+}
 
 #endif
