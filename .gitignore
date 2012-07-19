@@ -1,4 +1,5 @@
 __*
+<<<<<<< HEAD
 arc
 *.bc
 *.hh
@@ -27,3 +28,6 @@ Rakefile
 Debug+Asserts/
 autoconf/autom4te.cache/
 parser.h
+=======
+src/
+>>>>>>> gh-pages
