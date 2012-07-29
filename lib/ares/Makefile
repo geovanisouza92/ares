@@ -25,6 +25,7 @@ clean-local::
 parser.cpp:: parser.y
 	$(YACC) $(YFLAGS) -o $@ $<
 	@ mv *.hh $(LEVEL)/include/
+	@ mv *.output *.xml $(LEVEL)/docs
 # Mover arquivos de relatório para ../docs
 
 scanner.cpp:: scanner.l
