@@ -5,7 +5,7 @@
 #include "util.h"
 #include "version.h"
 
-static string LANG_NAMESPACE::Util::trimString(string str, char c) {
+string LANG_NAMESPACE::Util::trimString(string str, char c) {
     string::size_type posb, pose;
     posb = str.find_first_not_of(c);
     if (posb != string::npos) str = str.substr(posb, str.length());
@@ -15,7 +15,7 @@ static string LANG_NAMESPACE::Util::trimString(string str, char c) {
     return str;
 }
 
-static string LANG_NAMESPACE::Util::intToStr(int num) {
+string LANG_NAMESPACE::Util::intToStr(int num) {
     stringstream str;
     str << num;
     string conv = str.str();
@@ -24,7 +24,7 @@ static string LANG_NAMESPACE::Util::intToStr(int num) {
     return conv;
 }
 
-static string LANG_NAMESPACE::Util::formatNumber(int n, int w, char c = ' ') {
+string LANG_NAMESPACE::Util::formatNumber(int n, int w, char c = ' ') {
     stringstream s;
     s.fill(c);
     s.width(w);
@@ -32,11 +32,11 @@ static string LANG_NAMESPACE::Util::formatNumber(int n, int w, char c = ' ') {
     return s.str();
 }
 
-static double LANG_NAMESPACE::Util::getMili() {
+double LANG_NAMESPACE::Util::getMili() {
   return (double) ( (clock() - start) / (CLOCKS_PER_SEC / 1000) );
 }
 
-static string LANG_NAMESPACE::Util::statistics(unsigned total_files,
+string LANG_NAMESPACE::Util::statistics(unsigned total_files,
     unsigned total_lines, bool print_time = false) {
     double elapsed = getMili() / 1000;
     stringstream s;

@@ -10,10 +10,10 @@ using namespace std;
 #include "langconfig.h"
 
 namespace LANG_NAMESPACE {
-	static string langVersionInfo();
-	static string langVersion();
-	static string langRelease();
-	static string langCopy();
+	string langVersionInfo();
+	string langVersion();
+	string langRelease();
+	string langCopy();
 }
 
 #endif

@@ -642,3 +642,13 @@ Identifier
     ;
 
 %%
+
+namespace LANG_NAMESPACE {
+namespace Compiler {
+
+void Parser::error(const Parser::location_type& l, const std::string& m) {
+    driver.error(l, m);
+}
+
+} // Compiler
+} // LANG_NAMESPACE
