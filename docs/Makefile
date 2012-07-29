@@ -4,9 +4,12 @@ LEVEL=..
 all-local:: docs
 
 clean-local::
-	@ rm -rf grammar.html grammar.xml parser.output parser.xml
+	@ rm -rf grammar.html grammar.xml parser.output parser.xml grammar.bnf
 
-docs: $(LEVEL)/lib/ares/parser.cpp
+parser.xml:
+	cd $(LEVEL)/lib/ares && $(MAKE) parser.cpp
+
+docs: parser.xml
 	@ echo "Gerando documentação"
 	@ echo '<?xml version="1.0"?><bison-xml-report version="2.5" bug-report="bug-bison@gnu.org" url="http://www.gnu.org/software/bison/"><filename>Ares</filename><grammar>' > grammar.xml
 	@ echo "sed -n '`grep -n '<rules>' parser.xml | grep -o '[0-9]*'`,`grep -n '</rules>' parser.xml | grep -o '[0-9]*'` p' parser.xml >> grammar.xml" | bash

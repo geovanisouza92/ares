@@ -22,10 +22,13 @@ all-local:: tcc
 clean-local::
 	@ rm -rf $(CLEAN)
 
-tcc: bb tex index bibtex
+tcc: grammar.tex bb tex index bibtex
 	@ $(MAKE) tex
 	@ $(MAKE) tex
 	@ $(MAKE) tex
+
+grammar.tex:
+	cd $(LEVEL)/docs && $(MAKE) docs
 
 bb:
 	@ echo "Gerando arquivos de imagens"
