@@ -18,7 +18,7 @@ YFLAGS += -v -x --defines=$(LEVEL)/include/parser.h --debug
 all-local:: parser.cpp scanner.cpp
 
 clean-local::
-	@ rm -f parser.cpp parser.xml parser.output
+	@ rm -f parser.cpp
 	@ rm -f $(LEVEL)/include/*.hh $(LEVEL)/include/parser.h
 	@ rm -f scanner.cpp
 

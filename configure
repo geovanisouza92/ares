@@ -1738,6 +1738,12 @@ ac_config_commands="$ac_config_commands tools/Makefile"
 ac_config_commands="$ac_config_commands tools/arc/Makefile"
 
 
+ac_config_commands="$ac_config_commands docs/Makefile"
+
+
+ac_config_commands="$ac_config_commands tcc/Makefile"
+
+
 
 
 
@@ -2481,6 +2487,8 @@ do
     "lib/ares/Makefile") CONFIG_COMMANDS="$CONFIG_COMMANDS lib/ares/Makefile" ;;
     "tools/Makefile") CONFIG_COMMANDS="$CONFIG_COMMANDS tools/Makefile" ;;
     "tools/arc/Makefile") CONFIG_COMMANDS="$CONFIG_COMMANDS tools/arc/Makefile" ;;
+    "docs/Makefile") CONFIG_COMMANDS="$CONFIG_COMMANDS docs/Makefile" ;;
+    "tcc/Makefile") CONFIG_COMMANDS="$CONFIG_COMMANDS tcc/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -2909,6 +2917,10 @@ $as_echo "$as_me: executing $ac_file commands" >&6;}
    ${SHELL} ${llvm_src}/autoconf/install-sh -m 0644 -c ${srcdir}/tools/Makefile tools/Makefile ;;
     "tools/arc/Makefile":C) ${llvm_src}/autoconf/mkinstalldirs `dirname tools/arc/Makefile`
    ${SHELL} ${llvm_src}/autoconf/install-sh -m 0644 -c ${srcdir}/tools/arc/Makefile tools/arc/Makefile ;;
+    "docs/Makefile":C) ${llvm_src}/autoconf/mkinstalldirs `dirname docs/Makefile`
+   ${SHELL} ${llvm_src}/autoconf/install-sh -m 0644 -c ${srcdir}/docs/Makefile docs/Makefile ;;
+    "tcc/Makefile":C) ${llvm_src}/autoconf/mkinstalldirs `dirname tcc/Makefile`
+   ${SHELL} ${llvm_src}/autoconf/install-sh -m 0644 -c ${srcdir}/tcc/Makefile tcc/Makefile ;;
 
   esac
 done # for ac_tag

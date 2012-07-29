@@ -1,4 +1,6 @@
 
+LEVEL=..
+
 CLEAN= \
   figuras/*.bb \
   tcc.pdf \
@@ -15,14 +17,15 @@ CLEAN= \
   *.blg \
   *.ilg \
 
+all-local:: tcc
+
+clean-local::
+	@ rm -rf $(CLEAN)
+
 tcc: bb tex index bibtex
 	@ $(MAKE) tex
 	@ $(MAKE) tex
 	@ $(MAKE) tex
-
-clean:
-	@ clear
-	@ rm -rf bin/$(BINARY) $(MODULES) $(CLEAN)
 
 bb:
 	@ echo "Gerando arquivos de imagens"
@@ -41,3 +44,5 @@ sigla:
 bibtex:
 	@ echo "Gerando referências bibliográficas"
 	@ bibtex tcc
+
+include $(LEVEL)/Makefile.common

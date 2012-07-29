@@ -32,6 +32,8 @@ AC_CONFIG_MAKEFILE(lib/Makefile)
 AC_CONFIG_MAKEFILE(lib/ares/Makefile)
 AC_CONFIG_MAKEFILE(tools/Makefile)
 AC_CONFIG_MAKEFILE(tools/arc/Makefile)
+AC_CONFIG_MAKEFILE(docs/Makefile)
+AC_CONFIG_MAKEFILE(tcc/Makefile)
 
 dnl **************************************************************************
 dnl * Determine which system we are building on
