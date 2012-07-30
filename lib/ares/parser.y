@@ -195,19 +195,9 @@ BlockStatement
     | '{' StatementRepeat '}'
     ;
 
-ExpressionStatement
-    : PrimaryExpression ';'
-    | PrimaryExpression ControlExpression ';'
-    ;
-
 ControlExpression
     : kIF Expression
     | kUNLESS Expression
-    ;
-
-PrimaryExpression
-    : AssignmentExpression
-    | InvocationStatement
     ;
 
 InvocationStatement
@@ -373,6 +363,16 @@ ConstantList
 
 Constant
     : Identifier '=' AssignmentTail
+    ;
+
+ExpressionStatement
+    : PrimaryExpression ';'
+    | PrimaryExpression ControlExpression ';'
+    ;
+
+PrimaryExpression
+    : AssignmentExpression
+    | InvocationStatement
     ;
 
 Expression
