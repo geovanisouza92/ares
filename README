@@ -11,4 +11,3 @@ Dependencies:
       + GDB Debugger [7.4.x]
       + GIT [1.7.x]
       + Make [3.x]
-      + Autoconf [2.5x] or [2.6x]

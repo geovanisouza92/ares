@@ -1,6 +1,5 @@
 __*
-autoconf/aclocal.m4
-autoconf/autom4te.cache/
+autoconf
 *.aux
 *.b*
 config.*
