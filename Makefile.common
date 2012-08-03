@@ -15,22 +15,16 @@ PROJ_SRC_ROOT := $(subst //,/,/home/geovani/dev/ares)
 # Set the root directory of this project's object files
 PROJ_OBJ_ROOT := $(subst //,/,@abs_top_objdir@)
 
-# Set the root directory of this s'project install prefix
 PROJ_INSTALL_ROOT := /usr
-
-LDFLAGS += -L/home/geovani/dev/boost/bin.v2/libs/program_options/build/gcc-4.6.1/release/link-static/threading-multi
-LDFLAGS += -L/home/geovani/dev/boost/bin.v2/libs/system/build/gcc-4.6.1/release/link-static/threading-multi
-LDFLAGS += -L/home/geovani/dev/boost/bin.v2/libs/filesystem/build/gcc-4.6.1/release/link-static/threading-multi
-
-LINK_COMPONENTS = all
 
 # Include LLVM's Master Makefile.
 include $(LLVM_SRC_ROOT)/Makefile.common
 
-# CPPFLAGS += -std=c++0x
 CPPFLAGS += -fexceptions -frtti
 CXX = clang++ -w
 
 LIBS += -lboost_filesystem
 LIBS += -lboost_program_options
 LIBS += -lboost_system
+
+LINK_COMPONENTS = all
