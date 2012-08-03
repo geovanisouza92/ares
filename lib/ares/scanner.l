@@ -147,6 +147,17 @@ cml "/*"(.|\n)*"*/"
     yylloc->step();
 }
 
+{cml} {
+    string input(yytext);
+    int linhas = 0;
+    for (int i = 0; i < input.length(); i++)
+        if (input[i] == '\n')
+            ++linhas;
+    yylloc->lines();
+    yylloc->step();
+    driver.incLines(linhas);
+}
+
 {csl} {
     // Comments
     yylloc->lines();

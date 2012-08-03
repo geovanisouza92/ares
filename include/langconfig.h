@@ -5,8 +5,6 @@
 
 #include <string>
 
-//#define LANG_DEBUG
-
 #define LANG_NAME               "Ares"
 #define LANG_SHELL_NAME         "ash"
 #define LANG_EXTENSION          "ar"

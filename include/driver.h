@@ -4,17 +4,8 @@
 #define LANG_DRIVER_H
 
 #include <string>
-// #include <vector>
-// #include <time.h>
-// #include <sstream>
-
-using namespace std;
-
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
-
-namespace fileSystem = boost::filesystem3;
-
 #include "st.h"
 #include "scanner.h"
 #include "colorcon.h"
@@ -35,20 +26,16 @@ namespace fileSystem = boost::filesystem3;
 #define DEBUG_HINT(x)
 #endif
 
+using namespace std;
 using namespace LANG_NAMESPACE::Enum;
+namespace fileSystem = boost::filesystem3;
 
-namespace LANG_NAMESPACE {
-    // namespace Util {
-    //     const clock_t start(clock());
-    //     static string intToStr(int);
-    //     static string formatNumber(int, int, char);
-    //     static double getMili();
-    //     static string statistics(unsigned, unsigned, bool);
-    // }
-    
-    namespace Compiler {
-
-        class Driver {
+namespace LANG_NAMESPACE
+{
+    namespace Compiler
+    {
+        class Driver
+        {
         public:
             string origin;
             bool checkOnly;
@@ -56,32 +43,29 @@ namespace LANG_NAMESPACE {
             unsigned lines, totalLines;
             unsigned errors, warnings, hints;
             class Scanner * lexer;
-#ifdef ENVIRONMENT
             class SyntaxTree::Environment * enviro;
-#endif
         public:
-            Driver();
-            virtual ~Driver();
-            virtual bool parseStream(istream&, const string& sname = "stream input");
-            virtual bool parseString(const string&, const string& sname = "string stream");
-            virtual bool parseFile(const string&);
+            Driver ();
+            virtual ~Driver ();
+            virtual bool parseStream (istream&, const string& sname = "stream input");
+            virtual bool parseString (const string&, const string& sname = "string stream");
+            virtual bool parseFile (const string&);
 
-            virtual int error(const class location&, const string&);
-            virtual int error(const string&);
-            virtual void warning(const class location&, const string&);
-            virtual void warning(const string&);
-            virtual void hint(const class location&, const string&);
-            virtual void hint(const string&);
-            virtual void resetMessages();
-            virtual string resumeMessages();
+            virtual int error (const class location&, const string&);
+            virtual int error (const string&);
+            virtual void warning (const class location&, const string&);
+            virtual void warning (const string&);
+            virtual void hint (const class location&, const string&);
+            virtual void hint (const string&);
+            virtual void resetMessages ();
+            virtual string resumeMessages ();
 
-            virtual void syntaxOkFor(const string);
-            virtual void resetLines();
-            virtual void incLines();
-            virtual void decLines();
-            virtual void produce(FinallyAction::Action, ostream &);
+            virtual void syntaxOkFor (const string);
+            virtual void resetLines ();
+            virtual void incLines (int qtde = 1);
+            virtual void decLines ();
+            virtual void produce (FinallyAction::Action, ostream &);
         };
-
     } // Compiler
 } // LANG_NAMESPACE
 

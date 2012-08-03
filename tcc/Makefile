@@ -17,7 +17,7 @@ CLEAN= \
   *.blg \
   *.ilg \
 
-all-local:: tcc
+# all-local:: tcc
 
 clean-local::
 	@ rm -rf $(CLEAN)

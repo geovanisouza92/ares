@@ -27,7 +27,7 @@ using namespace SyntaxTree;
 %error-verbose
 %initial-action {
     @$.begin.filename = @$.end.filename = &driver.origin;
-    driver.incLines();
+    driver.incLines ();
 }
 
 %union {
@@ -592,7 +592,7 @@ LiteralValue
     ;
 
 HashLiteral
-    : '{' ',' '}'
+    : '{' ',' '}' /* Remover essa vírgula */
     | '{' KeyValuePairList '}'
     ;
 
@@ -643,12 +643,14 @@ Identifier
 
 %%
 
-namespace LANG_NAMESPACE {
-namespace Compiler {
-
-void Parser::error(const Parser::location_type& l, const std::string& m) {
-    driver.error(l, m);
-}
-
-} // Compiler
+namespace LANG_NAMESPACE
+{
+    namespace Compiler
+    {
+        void
+        Parser::error (const Parser::location_type& l, const std::string& m)
+        {
+            driver.error (l, m);
+        }
+    } // Compiler
 } // LANG_NAMESPACE

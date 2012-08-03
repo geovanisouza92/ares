@@ -4,16 +4,16 @@
 #define LANG_VERSION_H
 
 #include <string>
+#include "langconfig.h"
 
 using namespace std;
 
-#include "langconfig.h"
-
-namespace LANG_NAMESPACE {
-	string langVersionInfo();
-	string langVersion();
-	string langRelease();
-	string langCopy();
-}
+namespace LANG_NAMESPACE
+{
+    string langVersionInfo ();
+    string langVersion ();
+    string langRelease ();
+    string langCopy ();
+} // LANG_NAMESPACE
 
 #endif
