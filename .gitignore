@@ -4,6 +4,7 @@ autoconf
 *.b*
 config.*
 *.d*
+*.[bdrs]*
 Debug*
 grammar.*
 *.hh
@@ -11,13 +12,8 @@ grammar.*
 *.lo*
 Makefile.common
 *.out*
-parser.cpp
-parser.h
-parser.xml
+parser.[chx]*
 Release*
-*.results
 scanner.cpp
-*.sig*
-*.sym*
 tcc.pdf
 *.toc
