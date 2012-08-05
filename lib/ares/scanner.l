@@ -113,6 +113,7 @@ cml "/*"(.|[\n\r])*"*/"
 "if"            return token::kIF;
 "int"           return token::kINT;
 "in"            return token::kIN;
+"is"            return token::kIS;
 "join"          return token::kJOIN;
 "left"          return token::kLEFT;
 "lock"          return token::kLOCK;
@@ -126,6 +127,7 @@ cml "/*"(.|[\n\r])*"*/"
 "right"         return token::kRIGHT;
 "select"        return token::kSELECT;
 "short"         return token::kSHORT;
+"sizeof"        return token::kSIZEOF;
 "skip"          return token::kSKIP;
 "static"        return token::kSTATIC;
 "step"          return token::kSTEP;
@@ -133,8 +135,10 @@ cml "/*"(.|[\n\r])*"*/"
 "struct"        return token::kSTRUCT;
 "switch"        return token::kSWITCH;
 "take"          return token::kTAKE;
+"throw"         return token::kTHROW;
 "true"          return token::kTRUE;
 "try"           return token::kTRY;
+"typeof"        return token::kTYPEOF;
 "unless"        return token::kUNLESS;
 "using"         return token::kUSING;
 "var"           return token::kVAR;
