@@ -85,6 +85,7 @@ cml "/*"(.|[\n\r])*"*/"
 "--"    return token::oDEC;
 "->"    return token::oIND;
 
+"array"         return token::kARRAY;
 "asc"           return token::kASC;
 "bool"          return token::kBOOL;
 "break"         return token::kBREAK;
@@ -107,6 +108,7 @@ cml "/*"(.|[\n\r])*"*/"
 "foreach"       return token::kFOREACH;
 "for"           return token::kFOR;
 "from"          return token::kFROM;
+"hash"          return token::kHASH;
 "group"         return token::kGROUP;
 "if"            return token::kIF;
 "int"           return token::kINT;
