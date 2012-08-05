@@ -7,7 +7,7 @@ YACC = bison
 LFLAGS += 
 YFLAGS += -v -x --defines=$(LEVEL)/include/parser.h
 
-ifdef DEBUG_SYMBOLS
+ifdef DEBUG
 LFLAGS += --debug
 YFLAGS += --debug
 endif

@@ -31,21 +31,17 @@ grammar.tex:
 	cd $(LEVEL)/docs && $(MAKE) docs
 
 bb:
-	@ echo "Gerando arquivos de imagens"
 	@ ebb figuras/*.*
 
 tex:
-	@ echo "Gerando tcc"
 	@ pdflatex tcc.tex
 
 index: sigla
 
 sigla:
-	@ echo "Gerando índice de siglas"
 	@ makeindex -s tabela-simbolos.ist -o tcc.sigla tcc.siglax
 
 bibtex:
-	@ echo "Gerando referências bibliográficas"
 	@ bibtex tcc
 
 include $(LEVEL)/Makefile.common
