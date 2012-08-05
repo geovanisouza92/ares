@@ -7,7 +7,7 @@ YACC = bison
 LFLAGS += --debug
 YFLAGS += -v -x --defines=$(LEVEL)/include/parser.h --debug
 
-all-local:: parser.cpp scanner.cpp
+all-local:: parser.cpp scanner.cpp actions/actions.cpp
 
 clean-local::
 	@ rm -f parser.cpp
