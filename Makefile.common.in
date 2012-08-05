@@ -20,11 +20,7 @@ PROJ_INSTALL_ROOT := @prefix@
 # Include LLVM's Master Makefile.
 include $(LLVM_SRC_ROOT)/Makefile.common
 
-ifdef DEBUG
-CPPFLAGS += -DLANG_DEBUG
-endif
-
-CPPFLAGS += -fexceptions -frtti
+CPPFLAGS += -fexceptions -frtti -DLANG_DEBUG
 CXX = clang++ -w
 
 LIBS += -lboost_filesystem

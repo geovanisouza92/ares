@@ -4,13 +4,8 @@ LIBRARYNAME = ares
 
 LEX = flex
 YACC = bison
-LFLAGS += 
-YFLAGS += -v -x --defines=$(LEVEL)/include/parser.h
-
-ifdef DEBUG
 LFLAGS += --debug
-YFLAGS += --debug
-endif
+YFLAGS += -v -x --defines=$(LEVEL)/include/parser.h --debug
 
 all-local:: parser.cpp scanner.cpp
 
