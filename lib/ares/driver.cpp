@@ -7,6 +7,8 @@
 
 using namespace std;
 
+#define LANG_DEBUG
+
 namespace LANG_NAMESPACE
 {
     namespace Compiler
