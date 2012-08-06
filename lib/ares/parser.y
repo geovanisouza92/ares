@@ -16,6 +16,7 @@ using namespace SyntaxTree;
 
 %}
 
+%debug
 %require "2.3"
 %start Goal
 %skeleton "lalr1.cc"
@@ -869,6 +870,22 @@ UnaryExpressionNotPlusMinus
     | CastExpression
     ;
 
+PreIncrementExpression
+    : oINC UnaryExpression %prec UNARY
+    ;
+
+PreDecrementExpression
+    : oDEC UnaryExpression %prec UNARY
+    ;
+
+AddressofExpression
+    : '&' UnaryExpression %prec UNARY
+    ;
+
+CastExpression
+    : '(' Type ')' UnaryExpression %prec UNARY
+    ;
+
 PostfixExpression
     : PrimaryExpression
     | QualifiedIdentifier
@@ -887,22 +904,6 @@ PostIncrementExpression
 
 PointerMemberAccessExpression
     : PostfixExpression oIND Identifier
-    ;
-
-CastExpression
-    : '(' Type ')' UnaryExpression %prec UNARY
-    ;
-
-PreIncrementExpression
-    : oINC PostfixExpression %prec UNARY
-    ;
-
-PreDecrementExpression
-    : oDEC PostfixExpression %prec UNARY
-    ;
-
-AddressofExpression
-    : '&' UnaryExpression %prec UNARY
     ;
 
 PrimaryExpression
