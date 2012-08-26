@@ -1,4 +1,7 @@
-import Math;
+using Math;
 
-2 + 3;
-    srqt(3 / 4) / (1 / 3 - 2 / PI**2);
+main()
+{
+	var x = 2 + 3;
+    return srqt(3 / 4) / (1 / 3 - 2 / PI**2);
+}

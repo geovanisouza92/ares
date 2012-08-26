@@ -1,63 +1,63 @@
-module Garage
+/*module Garage
 
 import System.IO;
 
   class Base
     def Base() # Construtor
-    begin
+    {
       # Gerar código automático
-    end
+    }
     attr ID: Integer; # invariants not nil and > 0
-  end
+  }
 
   class RentalAgency > Base
     attr Address: String;
     attr PhoneNo: String;
     attr Manager: Pessoa;
-  end
+  }
   
   class Person > Base
     attr Name: String; # invariants not nil
     attr Address: String;
-  end
+  }
   
   class CustomerRecord
     attr CustomerID: Integer ;
     attr RentalHistory: Strings ;
   private
     def Initialize()
-    begin
+    {
       # Inicializa Histórico
-    end
-  end
+    }
+  }
   
   # TODO Rever a questão de heranças múltiplas
   class Customer > Base # , Person
     include Person;
     def Reserve()
-    begin
+    {
     
-    end
+    }
     
     def PicksUp()
-    begin
+    {
     
-    end
+    }
     
     def Pays()
-    begin
+    {
     
-    end
+    }
     
     def Returns()
-    begin
+    {
     
-    end
+    }
 
     attr Phone: String ;
     attr BirthDate: Date ;
     attr LicenseNo: String ; # like \[0-9]+\ # Validado com regex
-  end
+  }
   
   class Car > Base
     attr FleetNo: Integer ;
@@ -67,49 +67,50 @@ import System.IO;
     attr Status: String ;
     
     def Reserved?(): Boolean
-    begin
+    {
     
-    end
+    }
     
     def InService?(): Boolean
-    begin
+    {
     
-    end
-  end
+    }
+  }
   
   class Employee > Person
     attr PhoneNo: String ;
     attr DateHired: Date ;
-  end
+  }
   
   class RentalAgent > Employee
     attr CommissionRate: Float;
     attr Tar: foo;
     
     def Calculate()
-    begin
+    {
     
-    end
-  end
+    }
+  }
   
   class Mechanic > Employee
     attr Skills: Strings ;
     attr Qualifications: String ;
   private
     def Initialize()
-    begin
+    {
       # Initialize Skills & Qualifications
-    end
-  end
+    }
+  }
   
   class ServiceLog > Base
     attr ServiceHistory: String ;
     attr ProgressHistory: Strings ;
   private
     def Initialize()
-    begin
+    {
       # Initialize ProgressHistory
-    end
-  end
+    }
+  }
   
-end
+}
+*/

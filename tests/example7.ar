@@ -1,136 +1,136 @@
-module Classes
+/*module Classes
 
    class Persistente
     # Atributos
     attr ObjectId: Integer ;
-    attr Iter: RanbeginmAccessFile ;
+    attr Iter: Ran{mAccessFile ;
 
     # Métodos abstratos
-     def AtualizarDabegins();
+     def AtualizarDa{s();
      def Gravar();
      def Ler();
     
     # Métodos
     def Persistente()
-    begin
+    {
       # Constructor
-    end
+    }
     
     def GetObjectId(): Integer
-    begin
-      # begin ;
-    end
+    {
+      # { ;
+    }
     
     def GetObject(): Object
-    begin
-      # begin something
-    end
+    {
+      # { something
+    }
     
     def Armazenar()
-    begin
+    {
       # Salvar em disco
-    end
+    }
     
     def Apagar()
-    begin
-      # Apagar begin disco
-    end
+    {
+      # Apagar { disco
+    }
     
     def StartObjectId(): Integer
-    begin
+    {
       # Inicializa a propriedade "ObjectId"
-    end
-  end
+    }
+  }
   
   class Agencia > Persistente
     # Atributos
     attr CodAgencia: String ;
     attr NomeAgencia: String ;
     
-    # Métobegins
+    # Méto{s
     def Agencia()
-    begin
+    {
       # .ctor
-    end
+    }
     
     def AtualiarDados()
-    begin
+    {
       # Implementação
-    end
+    }
     
     def Gravar()
-    begin
+    {
       # Implementação
-    end
+    }
     
     def Ler()
-    begin
+    {
       # Implementação
-    end
-  end
+    }
+  }
   
   class ContaCorrente > Persistente
     attr Cod: String;
-    attr Salbegin: Integer;
+    attr Sal{: Integer;
     attr AplicPrefix: Array;
     attr Historico: Array;
     attr Agencia: ObjectId;
     
     def Depositar(Quantia: Float)
-    begin
+    {
       
-    end
+    }
     
     def Debitar(Quantia: Float)
-    begin
+    {
     
-    end
+    }
     
     def Transferir(Quantia: Float, ParaConta: ContaCorrente)
-    begin
+    {
     
-    end
+    }
     
     def ObterSaldo(): Float
-    begin
+    {
     
-    end
+    }
     
     def AplicarPrefix()
-    begin
+    {
     
-    end
+    }
     
     def ContaCorrente()
-    begin
+    {
     
-    end
+    }
     
     def TirarExtrato(): Strings # = Array<String>
-    begin
+    {
     
-    end
+    }
     
     def RetirarAplicPrefix()
-    begin
+    {
     
-    end
+    }
     
     def Localizar()
-    begin
+    {
     
-    end
+    }
     
     def Gravar()
-    begin
+    {
     
-    end
+    }
     
     def Ler()
-    begin
+    {
     
-    end
-  end
+    }
+  }
 
   class Historico > Persistente
     attr Date: Date;
@@ -138,91 +138,91 @@ module Classes
     attr Valor: Float;
     
     def Criar()
-    begin
+    {
     
-    end
+    }
     
     def Destruir()
-    begin
+    {
     
-    end
-  end
+    }
+  }
   
   class Operacao > Persistente
-    attr Cobeginperacao: String;
+    attr Co{peracao: String;
     attr DescricaoOperacao: String;
     
     def Operacao()
-    begin
+    {
     
-    end
+    }
     
     def AtualizarDados()
-    begin
+    {
     
-    end
+    }
     
     def Gravar()
-    begin
+    {
     
-    end
+    }
     
     def Ler()
-    begin
+    {
     
-    end
-  end
+    }
+  }
   
-  class Dependente > Persistente
+  class Dep}ente > Persistente
     attr Nome: String; # invariants not nil
     attr CPF: String;
     attr Parentesco: String;
     attr Poupancas: Array;
     
-    def Dependente()
-    begin
+    def Dep}ente()
+    {
     
-    end
+    }
     
     def Localizar()
-    begin
+    {
     
-    end
+    }
     
     def AbrirPoupanca()
-    begin
+    {
     
-    end
+    }
     
     def FecharPoupanca()
-    begin
+    {
     
-    end
+    }
     
     def AtualizarDados()
-    begin
+    {
     
-    end
+    }
     
     def Gravar()
-    begin
+    {
     
-    end
+    }
     
     def Ler()
-    begin
+    {
     
-    end
-  end
+    }
+  }
   
   class Poupanca > ContaCorrente
     attr DataVencimento: Date;
     
     def Poupanca()
-    begin
+    {
     
-    end
-  end
+    }
+  }
   
   class AplicacaoPreFixada > Persistente
     attr Valor: Float;
@@ -230,20 +230,20 @@ module Classes
     attr Taxa: Float;
     
     def AplicacaoPreFixada()
-    begin
+    {
     
-    end
+    }
     
     def Gravar()
-    begin
+    {
     
-    end
+    }
     
     def Ler()
-    begin
+    {
     
-    end
-  end
+    }
+  }
   
   class Cliente > Persistente
     attr Nome: String; # invariants not nil
@@ -253,65 +253,66 @@ module Classes
     attr Bairro: String;
     attr Cidade: String;
     attr CEP: String;
-    attr Estabegin: String;
-    attr Dependentes: Array;
+    attr Esta{: String;
+    attr Dep}entes: Array;
     attr ContasCorrente: Array;
     attr Poupancas: Array;
     
     def Cliente()
-    begin
+    {
     
-    end
+    }
     
     def Gravar()
-    begin
+    {
     
-    end
+    }
     
     def Ler()
-    begin
+    {
     
-    end
+    }
     
     def Localizar()
-    begin
+    {
     
-    end
+    }
     
     def AbrirContaCorrente()
-    begin
+    {
     
-    end
+    }
     
     def RemoverContaCorrente()
-    begin
+    {
     
-    end
+    }
     
-    def AdicDependente()
-    begin
+    def AdicDep}ente()
+    {
     
-    end
+    }
     
-    def ExcluirDependente()
-    begin
+    def ExcluirDep}ente()
+    {
     
-    end
+    }
     
     def AbrirPoupanca()
-    begin
+    {
     
-    end
+    }
     
     def FecharPoupanca()
-    begin
+    {
     
-    end
+    }
     
     def AtualizarDados()
-    begin
+    {
     
-    end
-  end
+    }
+  }
   
-end
+}
+*/

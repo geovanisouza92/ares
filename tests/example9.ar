@@ -1,4 +1,4 @@
-module Another
+/*module Another
 # inline doc "
   # Description of this module...
   # 
@@ -6,136 +6,137 @@ module Another
 # ";
   class Banco
     attr Nome: String ;
-    attr Endereco: String ;
+    attr }ereco: String ;
     
     def AtualizarContas()
-    begin
+    {
     
-    end
+    }
     
     def GetNome(): String
-    begin
+    {
     
-    end
+    }
     
-    def GetEndereco(): String
-    begin
+    def Get}ereco(): String
+    {
     
-    end
-  end
+    }
+  }
 
   class GerenciadorDeContas
     def Adicionar()
-    begin
+    {
     
-    end
+    }
     
     def Remover()
-    begin
+    {
     
-    end
+    }
     
     def AtualizarContas()
-    begin
+    {
     
-    end
-  end
+    }
+  }
 
-  class GerenciabeginrDeTransacoes
+  class Gerencia{rDeTransacoes
     attr VetorDeTransacoesEmExecucao: Array;
-    attr VetorDeTransacoesEsperanbegin: Array;
+    attr VetorDeTransacoesEsperan{: Array;
     
     def EfetuarTransacao()
-    begin
+    {
     
-    end
+    }
     
     def GetEstatisticas()
-    begin
+    {
     
-    end
+    }
     
     def GetStatus()
-    begin
+    {
     
-    end
-  end
+    }
+  }
 
   class Transacao
     def ProcessarTransacao(Valor: Float)
-    begin
+    {
     
-    end
+    }
     
     def GetValor()
-    begin
+    {
     
-    end
-  end
+    }
+  }
 
-  class Calendario
+  class Cal}ario
     attr DiasUteis: Array;
     
     def EhDiaUtil?(): Boolean
-    begin
+    {
     
-    end
-  end
+    }
+  }
 
   class GerenciadorDeClientes
     def Adicionar()
-    begin
+    {
     
-    end
+    }
     
     def Remover()
-    begin
+    {
     
-    end
-  end
+    }
+  }
 
   class Cliente
     attr Nome: String;
-    attr Endereco: String;
+    attr }ereco: String;
     
     def Sacar(DaConta: Conta)
-    begin
+    {
     
-    end
+    }
     
     def Transferir(ParaConta: Conta)
-    begin
+    {
     
-    end
+    }
     
     def GetNome(): String
-    begin
+    {
     
-    end
+    }
     
     def SetNome(Value: String)
-    begin
+    {
     
-    end
+    }
     
-    def GetEndereco(): String
-    begin
+    def Get}ereco(): String
+    {
     
-    end
+    }
     
-    def SetEndereco(Value: String)
-    begin
+    def Set}ereco(Value: String)
+    {
     
-    end
-  end
+    }
+  }
 
   class Conta
     attr Saldo: Float;
     def Atualizar();
-  end
+  }
   
   class Poupanca > Conta;
   
   class ContaCorrente > Conta;
 
-end
+}
+*/

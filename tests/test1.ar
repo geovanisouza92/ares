@@ -1,4 +1,7 @@
-if true then
-begin
+main ()
+{
+	if (true)
+	{
 
-end
+	}
+}

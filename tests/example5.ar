@@ -1,68 +1,69 @@
-module XNA
+/*module XNA
 
   class Entidade
     attr X: Float ;
     attr Y: Float ;
-  end
+  }
 
   class Nave > Entidade
-    attr Estabegin: EstabeginNave ;
+    attr Esta{: Esta{Nave ;
     attr Velocidade: Float ;
     attr Direcao: DirecaoNave ;
-  end
+  }
   
-  class Escubegin > Entidade
+  class Escu{ > Entidade
     attr X: Float ;
     attr Y: Float ;
-  end
+  }
   
   class JogoInvasores
-    attr Estabegin: EstabeginJogo ;
-  end
+    attr Esta{: Esta{Jogo ;
+  }
   
-  class CelulaEscubegin
+  class CelulaEscu{
     attr Energia: Integer ;
     attr Tipo: TipoDeCelula ;
-  end
+  }
   
   class Tiro
     attr X: Float ;
     attr Y: Float ;
     attr Velocidade: Float ;
-  end
+  }
   
   class NaveInvasor > Nave;
   
   class NaveBonus > Nave
-    attr Contabeginr: Integer ;
-  end
+    attr Conta{r: Integer ;
+  }
   
-  class NaveJogabeginr > Nave
+  class NaveJoga{r > Nave
     attr Vidas: Integer ;
     attr Pontos: Integer ;
     attr PodeAtirar?: Boolean ;
-  end
+  }
   
-  class ControlabeginrDeNaves
+  class Controla{rDeNaves
     attr InverterDirecao?: Boolean ;
     attr QuantidadeDeNaves: Integer ;
     attr TempoParaAtirar: Float ;
-  end
+  }
   
-  # enum EstabeginNave
-  #   # Estabegins da nave
-  # end
+  # enum Esta{Nave
+  #   # Esta{s da nave
+  # }
   
   # enum DirecaoNave
   #   # Direções da nave
-  # end
+  # }
   
-  # enum EstabeginJogo
-  #   # Estabegins begin jogo
-  # end
+  # enum Esta{Jogo
+  #   # Esta{s { jogo
+  # }
   
   # enum TipoDeCelula
   #   # Tipos de células
-  # end
+  # }
   
-end
+}
+*/

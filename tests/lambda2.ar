@@ -1,5 +1,8 @@
-a = [10, "10", 10.0];
-	a.sort(def (x, y) => (cmp(x.classname, y.classname)));
-a;
-# => [10.0, 10, "10"]
 
+main ()
+{
+	var a = [10, "10", 10.0];
+	a.sort ((x, y) => (cmp(x.classname, y.classname)));
+	WriteLine(a);
+	// => [10.0, 10, "10"]
+}

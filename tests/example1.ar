@@ -1,30 +1,30 @@
-module IdeaCloud.Vistem
+/* module IdeaCloud.Vistem
     class Base
     private # change visibility for section
         def GetId(): Integer
-        begin
-            # begin getter
-        end
+        {
+            # { getter
+        }
     public
         attr Id: Integer ;
     private
         def SetId(Value: Integer) # the order doesn't matter...
-        begin
-           # begin setter
-        end ## Comment block
-    end
+        {
+           # { setter
+        } ## Comment block
+    }
     class Cliente > Base # heritance from "Base" class
     private
         # general validations here
     public
         attr Name: String ; # invariants not nil; # read-only, with constance
         def Update()
-        begin
+        {
             # update
             if "blue" == Sky.Color then
-            begin
+            {
 
-            end
+            }
             case Sky.Color
                 when "blue" do
                     print("Uau!");
@@ -32,14 +32,14 @@ module IdeaCloud.Vistem
                     print("Oh not!");
                 when "yellow" do
                     print("Superman will lose his powers!");
-            end
-        end
+            }
+        }
         private
         def Save() # visibility for def, only
         require # pre-conditions here
             print(Self.Valid?);
-        begin # begin of significant code
-            # begin something
+        { # { of significant code
+            # { something
             # bellow a "query expression", that take an collection (one def,
             # in this case), perform conditions to return a set.
             var a = from person in Persons # Persons def return an array
@@ -52,6 +52,6 @@ module IdeaCloud.Vistem
             # execute at finalization of def
         ensure # post-conditions here
             Self.Valid?;
-        end
-    end
-end
+        }
+    }
+} */

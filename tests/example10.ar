@@ -1,18 +1,18 @@
-module Sistema
+/* module Sistema
 
-  class Endereco
+  class }ereco
     attr Tipo: Integer;
-    attr Endereco: String;
+    attr }ereco: String;
     attr Bairro: String;
     attr Cep: String;
     attr Cidade: String;
     attr Estado: String;
     
-    def Endereco()
-    begin
+    def }ereco()
+    {
       # .ctor
-    end
-  end
+    }
+  }
 
   class Telefone
     attr Tipo: Integer;
@@ -20,29 +20,29 @@ module Sistema
     attr Numero: String; # Adicionar pattern
     
     def Telefone()
-    begin
+    {
       # .ctor
-    end
-  end
+    }
+  }
 
   class Email
     attr Tipo: Integer;
     attr Email: String; # Adicionar pattern
     
     def Email()
-    begin
+    {
       # .ctor
-    end
-  end
+    }
+  }
 
    class Pessoa
     attr Nome: String; # invariants not nil
     
     def Pessoa()
-    begin
+    {
       # .ctor
-    end  
-  end
+    }  
+  }
 
   class PessoaFisica > Pessoa
     attr Sexo: Integer;
@@ -50,20 +50,20 @@ module Sistema
     attr CPF: String; # Adicionar pattern
     
     def PessoaFisica()
-    begin
+    {
       # .ctor
-    end
-  end
+    }
+  }
 
   class PessoaJuridica > Pessoa
     attr CNPJ: String; # Adicionar pattern
     attr NomeFantasia: String;
     
     def PessoaJuridica()
-    begin
+    {
       # .ctor
-    end
-  end
+    }
+  }
 
   class Funcionario > PessoaFisica
     attr Matricula: Integer;
@@ -71,19 +71,19 @@ module Sistema
     attr DataAdmissao: Date;
     
     def Funcionario()
-    begin
+    {
       # .ctor
-    end
-  end
+    }
+  }
 
   class Cliente > PessoaFisica
     attr Tipo: Integer;
     
     def Cliente()
-    begin
+    {
       # .ctor
-    end
-  end
+    }
+  }
 
   class Prato
     attr Nome: String;
@@ -91,28 +91,28 @@ module Sistema
     attr Preco: Float;
     
     def Prato()
-    begin
+    {
       # .ctor
-    end
-  end
+    }
+  }
 
   class ItemDoPedido
     attr Quantidade: Float;
     
     def ItemDoPedido()
-    begin
+    {
       # .ctor
-    end
-  end
+    }
+  }
 
   class Pedido
     attr DataHora: DateTime;
     attr FormaDePagamento: Integer;
     
     def Pedido()
-    begin
+    {
       # .ctor
-    end
-  end
+    }
+  }
 
-end
+} */

@@ -1,16 +1,17 @@
-module Fibonacci
 
-  def fib(num: Integer): Integer
-  begin
-    if 0 == num then
-      return 0;
-    elif 1 == num then
-      return 1;
-    else
-      Result = fib(num - 1) + fib(num - 2);
-  end
+int fib (int num)
+{
+  var Result = 0;
+  if (0 == num)
+    Result = 0;
+  else if (1 == num)
+    Result = 1;
+  else
+    Result = fib(num - 1) + fib(num - 2);
+  return Result;
+}
 
-end
-
-# Fibonacci até 50...
-WriteLn(fib(50));
+int main()
+{
+  WriteLn(fib(50));
+}
