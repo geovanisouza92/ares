@@ -1,47 +1,60 @@
-# Main script
-var repos = updateUsing(
-  {
-    git : Path.Join(["E:", "Repos", "GIT"]), 
-    hg : Path.Join(["E:", "Repos", "HG"]), 
-    svn : Path.Join(["E:", "Repos", "SVN"])
-  }
-);
-WriteLn(repos);
-System.Console.WaitUserKey();
+int main()
+{
+  //# Main script
+  var repos = updateUsing(
+    {
+      git : Path.Join(["E:", "Repos", "GIT"]), 
+      hg : Path.Join(["E:", "Repos", "HG"]), 
+      svn : Path.Join(["E:", "Repos", "SVN"])
+    }
+  );
+  WriteLn(repos);
+  System.Console.WaitUserKey();
+}
 
-def updateUsing(args: Array)
-begin
-  var dirs = new Array();
-  for pair in args do
-  begin
-    var cmd = "PAUSE";
-    case pair.Key
-      when "git" do
-        cmd = "git pull";
-      when "hg" do
-        cmd = "hg up";
-      when "svn" do
-        cmd = "svn up";
-    else begin
-        WriteLn("CVS nao reconhecibegin");
+void updateUsing(string[] args)
+{
+  var dirs = /* new */ Array();
+  foreach (var pair in args)
+  {
+    try
+    {
+      var cmd = "PAUSE";
+      switch (pair.Key) {
+        case "git":
+          cmd = "git pull";
+          break;
+        case "hg":
+          cmd = "hg up";
+          break;
+        case "svn":
+          cmd = "svn up";
+          break;
+        default:
+        {
+          WriteLn("CVS nao reconhecido");
+          System(cmd);
+          return;
+        }
+      }
+      WriteLn("=== ${pair.Key}:up");
+      System.Directory.Chan();
+      var subRepos = System.Directory.ListDirectories;
+      foreach (var subRepo in subRepos)
+      {
+        WriteLn(">>> ${subRepo}");
+        System.Directory.Chan();
         System(cmd);
-        return;
-      end
-    end
-    WriteLn("=== ${pair.Key}:up");
-    System.Directory.Chan;
-    var subRepos = System.Directory.ListDirectories;
-    for subRepo in subRepos do begin
-      WriteLn(">>> ${subRepo}");
-      System.Directory.Chan;
-      System(cmd);
-      WriteLn("<<< ${subRepo}");
-      System.Directory.Chan;
-      WriteLn;
-      dirs.Add(Path.Join([pair.Value, subRepo]));
-    end
-  rescue foo do
-    foo();
-  end
+        WriteLn("<<< ${subRepo}");
+        System.Directory.Chan();
+        WriteLn();
+        dirs.Add(Path.Join([pair.Value, subRepo]));
+      }
+    }
+    catch (foo)
+    {
+      foo();
+    }
+  }
   Result = dirs;
-end
+}

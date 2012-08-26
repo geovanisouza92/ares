@@ -1,30 +1,23 @@
-v = (2 ** 4 - 4); e = 2.71828;
-
-4 * 1.5 + 3 * v;
-
-6 * (2 * 2) ** 2 / 2;
-
-a > b;
-a.b >= c;
-# comment
-_def + 3 == 0;
-
-a = a implies b;
-
-a and b;
-
-(1 between 0 and 2) ? true : false ;
-(1.0 between 0.0 and 2.0) ? true : false ;
-
-from item in [a, b, c];
-from item in [a, b, c] join sub in [d, e, f] on true;
-from f in foo join b in bar on "true" =~ /true/;
-from f in foo where foo.x == 0 select f;
-from fb in foo.bar take 5 order by fb asc select fb;
-
-"expressão sem ponto-e-vírgula";
-
-# fim
-
-[a, b, c];
-{a:b, c:d, "abc":[1, 2, 3]};
+main ()
+{
+	var v = (2 ** 4 - 4),
+		e = 2.71828;
+	print(4 * 1.5 + 3 * v);
+	print(6 * (2 * 2) ** 2 / 2);
+	print(a > b);
+	print(a.b >= c);
+	// comment
+	print(def + 3 == 0);
+	print(a = a => b);
+	print(a && b);
+	print( (1 > 0 && 1 < 2) ? true : false );
+	print( (1.0 > 0.0 && 1.0 < 2.0) ? true : false );
+	var x = from item in [a, b, c];
+	var y = from item in [a, b, c] join sub in [d, e, f] on true;
+	var z = from f in foo join b in bar on "true" =~ /true/;
+	var j = from f in foo where foo.x == 0 select f;
+	var k = from fb in foo.bar take 5 order by fb asc select fb;
+	// fim
+	puts([a, b, c]);
+	puts({a:b, c:d, "abc":[1, 2, 3]});
+}

@@ -1,16 +1,19 @@
-{section: {
-  float: _left,
-  margin-right: flex-gutter(),
-  width: flex-grid(8),
-
-  article: {
-    float: _left,
-    margin-right: flex-gutter(),
-    width: flex-grid(6, 8)
-  },
-
-  aside: {
-    float: _left,
-    width: flex-grid(2, 8)
-  }
-}};
+hash main()
+{
+    return {
+        section: {
+            _float: _left,
+            margin_right: flex_gutter(),
+            width: flex_grid(8),
+            article: {
+                _float: _left,
+                margin_right: flex_gutter(),
+                width: flex_grid(6, 8)
+            },
+            aside: {
+                _float: _left,
+                width: flex_grid(2, 8)
+            }
+        }
+    };
+}

@@ -1,19 +1,18 @@
 
-def my_computation(a: Integer, b: Integer)
-begin
+my_computation(int a, int b)
+{
   var c = a + 10 ;
   c = c * 20 ;
   c = c * c ;
   return c + 30 ;
-end
+}
 
-def my_abs(a: Integer)
-begin
-  var b ;
-  if a < 0 then
+my_abs(int a)
+{
+  var b;
+  if (a < 0)
     b = - a ;
   else
     b = a ;
-  # end
   return b ;
-end
+}

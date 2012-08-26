@@ -2,9 +2,9 @@
 LEVEL=..
 
 CLEAN= \
-  figuras/*.bb \
   tcc.pdf \
   grammar.tex \
+  figuras/*.bb \
   *.aux \
   *.log \
   *.lof \
@@ -16,13 +16,12 @@ CLEAN= \
   *.bbl \
   *.blg \
   *.ilg \
-
-# all-local:: tcc
+  *.results
 
 clean-local::
 	@ rm -rf $(CLEAN)
 
-tcc: grammar.tex bb tex index bibtex
+tcc.pdf: grammar.tex bb tex index bibtex
 	@ $(MAKE) tex
 	@ $(MAKE) tex
 	@ $(MAKE) tex

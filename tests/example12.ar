@@ -1,14 +1,13 @@
-module Fatorial
 
-  def fat(num: Integer): Integer
-  begin
-    if 0 == num then
+  int fat(int num)
+  {
+    if (0 == num)
       return 1;
     else
       return num * fat(num - 1);
-  end
+  }
 
-end
-
-# Fatorial de 6 = 720
-assert(720 == fat(6));
+int main()
+{
+  assert(720 == fat(6));
+}

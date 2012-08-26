@@ -1,8 +1,6 @@
 
 LEVEL=..
 
-all-local:: docs
-
 clean-local::
 	@ rm -rf grammar.html grammar.xml parser.output parser.xml grammar.bnf
 

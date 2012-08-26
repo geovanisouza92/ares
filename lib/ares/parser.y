@@ -18,7 +18,7 @@ using namespace SyntaxTree;
 
 %debug
 %require "2.3"
-%start Goal
+%start Goal /* CompilationUnit */
 %skeleton "lalr1.cc"
 %define namespace "Ares::Compiler"
 %define "parser_class_name" "Parser"
@@ -48,25 +48,29 @@ using namespace SyntaxTree;
 
 %token          sEOF    0   "end of file"
 
-%token  <v_str> ID          "identifier literal"
+%token  <v_str> IDENTIFIER  "identifier literal"
 %token  <v_flt> FLOAT       "float literal"
 %token  <v_int> INTEGER     "integer literal"
 %token  <v_str> CHAR        "char literal"
 %token  <v_str> STRING      "string literal"
 %token  <v_str> REGEX       "regex literal"
 
-%nonassoc ID FLOAT INTEGER CHAR STRING REGEX
+%nonassoc IDENTIFIER FLOAT INTEGER CHAR STRING REGEX
 
 %token  kARRAY      "array"
 %token  kASC        "asc"
+%token  kASYNC      "async"
+%token  kAWAIT      "await"
 %token  kBOOL       "bool"
 %token  kBREAK      "break"
+%token  kBYTE       "byte"
 %token  kBY         "by"
 %token  kCASE       "case"
 %token  kCATCH      "catch"
 %token  kCHAR       "char"
 %token  kCONST      "const"
 %token  kCONTINUE   "continue"
+%token  kDECIMAL    "decimal"
 %token  kDEFAULT    "default"
 %token  kDESC       "desc"
 %token  kDOUBLE     "double"
@@ -90,6 +94,7 @@ using namespace SyntaxTree;
 %token  kLEFT       "left"
 %token  kLOCK       "lock"
 %token  kLONG       "long"
+%token  kNEW        "new"
 %token  kNULL       "null"
 %token  kON         "on"
 %token  kORDER      "order"
@@ -111,13 +116,20 @@ using namespace SyntaxTree;
 %token  kTRUE       "true"
 %token  kTRY        "try"
 %token  kTYPEOF     "typeof"
+%token  kUINT       "uint"
+%token  kULONG      "ulong"
 %token  kUNLESS     "unless"
+%token  kUSHORT     "ushort"
 %token  kUSING      "using"
 %token  kVAR        "var"
 %token  kVOID       "void"
 %token  kWHERE      "where"
 %token  kWHILE      "while"
 %token  kYIELD      "yield"
+
+%left kON kIN
+%right kFROM kWHERE kORDER kGROUP kBY kSELECT kJOIN kLEFT kRIGHT
+%right kSKIP kSTEP kTAKE
 
 %token  ';'         ";"
 %token  '{'         "{"
@@ -147,6 +159,12 @@ using namespace SyntaxTree;
 %token  oSUE        "-="
 %token  oMUE        "*="
 %token  oDIE        "/="
+%token  oMOE        "%="
+%token  oXOE        "^="
+%token  oORE        "|="
+%token  oANE        "&="
+%token  oSLE        "<<="
+%token  oSRE        ">>="
 %token  oRAI        "..."
 %token  oRAE        ".."
 %token  oPOW        "**"
@@ -169,7 +187,7 @@ using namespace SyntaxTree;
 %left ';' '{' '}' ',' '(' ')' ':' '=' '.' '?' '^' '<' '>' '+' '-' '*' '/'
 %left '%' '!' '[' ']' '&' '|' '~'
 %left oADE oSUE oMUE oDIE oRAI oRAE oPOW oEQL oNEQ oLEE oGEE oMAT oNMA oFAR
-%left oCOA oAND oOR oINC oDEC oSHR oSHL oIND
+%left oCOA oAND oOR oINC oDEC oSHR oSHL oIND oMOE oXOE oORE oANE oSLE oSRE
 
 %right UNARY
 
@@ -177,162 +195,73 @@ using namespace SyntaxTree;
 
 Goal
     : /* empty */
-    | GoalRepeat
+    | GoalOptionRepeat
     ;
 
-GoalRepeat
-    : SingleGoal
-    | GoalRepeat SingleGoal
+GoalOptionRepeat
+    : GoalOption
+    | GoalOptionRepeat GoalOption
     ;
 
-SingleGoal
-    : UsingDirectiveRepeat
-    | ExternalStatement
-    | ExternalDeclaration
-    ;
-
-UsingDirectiveRepeat
-    : UsingDirective
-    | UsingDirectiveRepeat UsingDirective
-    ;
-
-UsingDirective
-    : UsingAliasDirective
-    | UsingModuleDirective
-    ;
-
-UsingAliasDirective
-    : kUSING Identifier '=' QualifiedIdentifier ';'
-    ;
-
-// ModuleNameOrTypeDeclaration
-//     : ModuleName
-//     | TypeDeclaration
-//     ;
-
-UsingModuleDirective
-    : kUSING QualifiedIdentifier ';'
-    ;
-
-ExternalStatement
-    : Statement
-    ;
-
-ExternalDeclaration
+GoalOption
     : TypeDeclaration
+    | UsingDirectiveRepeat
+    // | Statement
     ;
 
-TypeDeclaration
-    : StructDeclaration
-    | EnumDeclaration
-    | MethodDeclaration
-    // | ClassDeclaration
-    // | InterfaceDeclaration
-    // | DelegateDeclaration
+Literal
+    : kNULL
+    | INTEGER
+    | FLOAT
+    | CHAR
+    | STRING
+    | REGEX
+    | BooleanLiteral
+    | ArrayLiteral
+    | HashLiteral
     ;
 
-TypeModifierRepeat
-    : TypeModifier
-    | TypeModifierRepeat TypeModifier
+BooleanLiteral
+    : kFALSE
+    | kTRUE
     ;
 
-TypeModifier
-    : kSTATIC
-    | kEXTERN
-    // | kPRIVATE
-    // | kPROTECTED
-    // | kPUBLIC
+ArrayLiteral
+    : '[' ExpressionListOpt ']'
+    | '[' ExpressionListOpt ',' ']'
     ;
 
-StructDeclaration
-    : kSTRUCT Identifier StructBody
-    | TypeModifierRepeat kSTRUCT Identifier StructBody
+ExpressionListOpt
+    : /* empty */
+    | ExpressionList
     ;
 
-StructBody
-    : '{' StructMemberDeclarationRepeat '}'
+HashLiteral
+    : '{' KeyValuePairListOpt '}'
+    | '{' KeyValuePairListOpt ',' '}'
     ;
 
-StructMemberDeclarationRepeat
-    : StructMemberDeclaration
-    | StructMemberDeclarationRepeat StructMemberDeclaration
+KeyValuePairListOpt
+    : ':'
+    | KeyValuePairList
     ;
 
-StructMemberDeclaration
-    : VariableDeclaration ';'
-    | ConstantDeclaration ';'
+KeyValuePairList
+    : KeyValuePair
+    | KeyValuePairList ',' KeyValuePair
     ;
 
-EnumDeclaration
-    : kENUM Identifier EnumBody
-    | TypeModifierRepeat kENUM Identifier EnumBody
+KeyValuePair
+    : IDENTIFIER ':' Expression
+    | STRING ':' Expression
     ;
 
-EnumBody
-    : '{' '}'
-    | '{' EnumMemberDeclarationList '}'
-    | '{' EnumMemberDeclarationList ',' '}'
+ModuleName
+    : QualifiedIdentifier
     ;
 
-EnumMemberDeclarationList
-    : EnumMemberDeclaration
-    | EnumMemberDeclarationList ',' EnumMemberDeclaration
-    ;
-
-EnumMemberDeclaration
-    : Identifier
-    | Identifier '=' Expression
-    ;
-
-MethodDeclaration
-    : MethodHeader MethodBody
-    ;
-
-MethodHeader
-    : ReturnType Identifier '(' ')'
-    | ReturnType Identifier '(' FormalParameterList ')'
-    | TypeModifierRepeat ReturnType Identifier '(' ')'
-    | TypeModifierRepeat ReturnType Identifier '(' FormalParameterList ')'
-    ;
-
-ReturnType
-    : Type
-    | kVOID
-    ;
-
-MethodBody
-    : Block
-    | ';'
-    ;
-
-FormalParameterList
-    : FixedParameterList
-    | FixedParameterList ',' ParameterArray
-    | FixedParameterList ',' InitializedParameterList
-    | FixedParameterList ',' InitializedParameterList ',' ParameterArray
-    | ParameterArray
-    ;
-
-FixedParameterList
-    : FixedParameter
-    | FixedParameterList ',' FixedParameter
-    ;
-
-FixedParameter
-    : Type Identifier
-    ;
-
-InitializedParameterList
-    : InitializedParameter
-    | InitializedParameterList ',' InitializedParameter
-    ;
-
-InitializedParameter
-    : Type Identifier '=' Expression
-    ;
-
-ParameterArray
-    : kPARAMS ArrayType Identifier
+TypeName
+    : QualifiedIdentifier
     ;
 
 Type
@@ -342,19 +271,14 @@ Type
     ;
 
 NonArrayType
-    : TypeName
-    | SimpleType
-    ;
-
-TypeName
-    : QualifiedIdentifier
+    : SimpleType
+    | TypeName
     ;
 
 SimpleType
     : PrimitiveType
     | ClassType
     | PointerType
-    | NullableType
     ;
 
 PrimitiveType
@@ -365,13 +289,18 @@ PrimitiveType
 NumericType
     : IntegralType
     | FloatingPointType
+    | kDECIMAL
     ;
 
 IntegralType
-    : kSHORT
+    : kBYTE
+    | kSHORT
+    | kUSHORT
     | kINT
+    | kUINT
     | kLONG
     | kLONG kLONG
+    | kULONG
     | kCHAR
     ;
 
@@ -385,30 +314,27 @@ ClassType
     | kREGEX
     | kARRAY
     | kHASH
+    // | kOBJECT
     ;
 
 PointerType
     : Type '*'
     | kVOID '*'
-    | PointerType '*'
-    ;
-
-NullableType
-    : SimpleType '?'
     ;
 
 ArrayType
-    : Type ArraySpecifierRepeat
+    : ArrayType RankSpecifier
+    | SimpleType RankSpecifier
+    | QualifiedIdentifier RankSpecifier
     ;
 
-ArraySpecifierRepeat
-    : ArraySpecifier
-    | ArraySpecifierRepeat ArraySpecifier
+RankSpecifier
+    : '[' DimSeparatorsOpt ']'
     ;
 
-ArraySpecifier
-    : '[' ']'
-    | '[' DimSeparators ']'
+DimSeparatorsOpt
+    : /* empty */
+    | DimSeparators
     ;
 
 DimSeparators
@@ -416,42 +342,388 @@ DimSeparators
     | DimSeparators ','
     ;
 
+ArgumentList
+    : Argument
+    | ArgumentList ',' Argument
+    ;
+
+Argument
+    : Expression
+    ;
+
+PrimaryExpression
+    : ParenthesizedExpression
+    | PrimaryExpressionNoParentesis
+    ;
+
+ParenthesizedExpression
+    : '(' Expression ')'
+    ;
+
+PrimaryExpressionNoParentesis
+    : Literal
+    | ArrayCreationExpression
+    | MemberAccess
+    | InvocationExpression
+    | ArraySlice
+    | ElementAccess
+    // | ThisAccess
+    // | BaseAccess
+    | NewExpression
+    | TypeofExpression
+    | SizeofExpression
+    ;
+
+ArrayCreationExpression
+    : kNEW NonArrayType '[' ExpressionList ']' ArrayInitializerOpt
+    | kNEW ArrayType ArrayInitializerOpt
+    ;
+
+ArrayInitializerOpt
+    : /* empty */
+    | HashLiteral
+    ;
+
+MemberAccess
+    : PrimaryExpression '.' IDENTIFIER
+    | PrimitiveType '.' IDENTIFIER
+    | ClassType '.' IDENTIFIER
+    ;
+
+InvocationExpression
+    : PrimaryExpressionNoParentesis '(' ArgumentList ')'
+    | QualifiedIdentifier '(' ArgumentListOpt ')'
+    ;
+
+ArgumentListOpt
+    : /* empty */
+    | ArgumentList
+    ;
+
+ArraySlice
+    : PrimaryExpression '[' Expression ':' ']'
+    | PrimaryExpression '[' ':' Expression ']'
+    | PrimaryExpression '[' Expression ':' Expression ']'
+    | QualifiedIdentifier '[' Expression ':' ']'
+    | QualifiedIdentifier '[' ':' Expression ']'
+    | QualifiedIdentifier '[' Expression ':' Expression ']'
+    ;
+
+ElementAccess
+    : PrimaryExpression '[' ExpressionList ']'
+    | QualifiedIdentifier '[' ExpressionList ']'
+    ;
+
+ExpressionList
+    : Expression
+    | ExpressionList ',' Expression
+    ;
+
+// ThisAccess
+//     : kTHIS
+//     ;
+
+// BaseAccess
+//     : kBASE '.' IDENTIFIER
+//     | kBASE '[' ExpressionList ']'
+//     ;
+
+PostIncrementExpression
+    : PostfixExpression oINC
+    ;
+
+PostDecrementExpression
+    : PostfixExpression oDEC
+    ;
+
+NewExpression
+    : ObjectCreationExpression
+    ;
+
+ObjectCreationExpression
+    : kNEW Type '(' ArgumentListOpt ')'
+    ;
+
+TypeofExpression
+    : kTYPEOF '(' Type ')'
+    | kTYPEOF '(' kVOID ')'
+    ;
+
+SizeofExpression
+    : kSIZEOF '(' Type ')'
+    // | kSIZEOF '(' Expression ')'
+    ;
+
+PointerMemberAccess
+    : PostfixExpression oIND IDENTIFIER
+    ;
+
+AddressofExpression
+    : '&' UnaryExpression %prec UNARY
+    ;
+
+PostfixExpression
+    : PrimaryExpression
+    | QualifiedIdentifier
+    | PostIncrementExpression
+    | PostDecrementExpression
+    | PointerMemberAccess
+    ;
+
+UnaryExpressionNotPlusMinus
+    : PostfixExpression
+    | '!' UnaryExpression %prec UNARY
+    | '~' UnaryExpression %prec UNARY
+    | CastExpression
+    ;
+
+PreIncrementExpression
+    : oINC UnaryExpression %prec UNARY
+    ;
+
+PreDecrementExpression
+    : oDEC UnaryExpression %prec UNARY
+    ;
+
+UnaryExpression
+    : UnaryExpressionNotPlusMinus
+    | '+' UnaryExpression %prec UNARY
+    | '-' UnaryExpression %prec UNARY
+    | '*' UnaryExpression %prec UNARY
+    | PreIncrementExpression
+    | PreDecrementExpression
+    | AddressofExpression
+    ;
+
+CastExpression
+    : /* '(' Type ')' UnaryExpressionNotPlusMinus
+    | */ '(' Expression ')' UnaryExpressionNotPlusMinus
+    | '(' MultiplicativeExpression '*' ')' UnaryExpressionNotPlusMinus
+    | '(' QualifiedIdentifier RankSpecifier TypeQualsOpt ')' UnaryExpressionNotPlusMinus
+    | '(' PrimitiveType TypeQualsOpt ')' UnaryExpressionNotPlusMinus
+    | '(' ClassType TypeQualsOpt ')' UnaryExpressionNotPlusMinus
+    | '(' kVOID TypeQualsOpt ')' UnaryExpressionNotPlusMinus //*/
+    ;
+
+TypeQualsOpt
+    : /* empty */
+    | TypeQuals
+    ;
+
+TypeQuals
+    : TypeQual
+    | TypeQuals TypeQual
+    ;
+
+TypeQual
+    : RankSpecifier
+    | '*'
+    ;
+
+PowerExpression
+    : UnaryExpression
+    | PowerExpression oPOW UnaryExpression
+    ;
+
+MultiplicativeExpression
+    : PowerExpression
+    | MultiplicativeExpression '*' PowerExpression
+    | MultiplicativeExpression '/' PowerExpression
+    | MultiplicativeExpression '%' PowerExpression
+    ;
+
+AdditiveExpression
+    : MultiplicativeExpression
+    | AdditiveExpression '+' MultiplicativeExpression
+    | AdditiveExpression '-' MultiplicativeExpression
+    ;
+
+ShiftExpression
+    : AdditiveExpression
+    | ShiftExpression oSHL AdditiveExpression
+    | ShiftExpression oSHR AdditiveExpression
+    ;
+
+RelationalExpression
+    : ShiftExpression
+    | RelationalExpression '<' ShiftExpression
+    | RelationalExpression '>' ShiftExpression
+    | RelationalExpression oLEE ShiftExpression
+    | RelationalExpression oGEE ShiftExpression
+    | RelationalExpression oMAT ShiftExpression
+    | RelationalExpression oNMA ShiftExpression
+    | RelationalExpression kIS Type
+    // | RelationalExpression kAS Type
+    ;
+
+EqualityExpression
+    : RelationalExpression
+    | EqualityExpression oEQL RelationalExpression
+    | EqualityExpression oNEQ RelationalExpression
+    ;
+
+AndExpression
+    : EqualityExpression
+    | AndExpression '&' EqualityExpression
+    ;
+
+ExclusiveOrExpression
+    : AndExpression
+    | ExclusiveOrExpression '^' AndExpression
+    ;
+
+InclusiveOrExpression
+    : ExclusiveOrExpression
+    | InclusiveOrExpression '|' ExclusiveOrExpression
+    ;
+
+ConditionalAndExpression
+    : InclusiveOrExpression
+    | ConditionalAndExpression oAND InclusiveOrExpression
+    ;
+
+ConditionalOrExpression
+    : ConditionalAndExpression
+    | ConditionalOrExpression oOR ConditionalAndExpression
+    ;
+
+RangeExpression
+    : ConditionalOrExpression
+    | RangeExpression oRAE ConditionalOrExpression
+    | RangeExpression oRAI ConditionalOrExpression
+    ;
+
+NullCoalescingExpression
+    : RangeExpression
+    | NullCoalescingExpression oCOA RangeExpression
+    ;
+
+ConditionalExpression
+    : NullCoalescingExpression
+    | ConditionalExpression '?' Expression ':' Expression
+    ;
+
+AssignmentExpression
+    : UnaryExpression AssignmentOperator Expression
+    ;
+
+AssignmentOperator
+    : '='
+    | oADE /* += */
+    | oSUE /* -= */
+    | oMUE /* *= */
+    | oDIE /* /= */
+    | oXOE /* %= */
+    | oMOE /* ^= */
+    | oANE /* &= */
+    | oORE /* |= */
+    | oSLE /* <<= */
+    | oSRE /* >>= */
+    ;
+
+SelectOrGroupClause
+    : kGROUP kBY Expression
+    | kSELECT ExpressionList
+    ;
+
+RangeClause
+    : kSKIP Expression
+    | kSTEP Expression
+    | kTAKE Expression
+    ;
+
+OrderExpression
+    : Expression OrderOperatorOpt
+    ;
+
+OrderOperatorOpt
+    : /* empty */
+    | kASC
+    | kDESC
+    ;
+
+JoinClause
+    : kJOIN QueryOrigin kON BooleanExpression
+    | kLEFT kJOIN QueryOrigin kON BooleanExpression
+    | kRIGHT kJOIN QueryOrigin kON BooleanExpression
+    ;
+
+QueryBodyMemberRepeat
+    : QueryBodyMember 
+    | QueryBodyMemberRepeat QueryBodyMember
+    ;
+
+QueryBodyMember
+    : kWHERE BooleanExpression
+    | kORDER kBY OrderExpression
+    | JoinClause
+    | RangeClause
+    ;
+
+QueryBody
+    : QueryBodyMemberRepeat SelectOrGroupClause
+    | QueryBodyMemberRepeat
+    | SelectOrGroupClause
+    ;
+
+QueryOrigin
+    : IDENTIFIER kIN Expression
+    ;
+
+QueryExpression
+    : kFROM QueryOrigin
+    | kFROM QueryOrigin QueryBody
+    ;
+
+LambdaParameterList
+    : LambdaParameter
+    | LambdaParameterList ',' LambdaParameter
+    ;
+
+LambdaParameter
+    : Type IDENTIFIER
+    | IDENTIFIER
+    ;
+
+LambdaParameterListOpt
+    : /* empty */
+    | LambdaParameterList
+    ;
+
+LambdaExpressionBody
+    : Expression
+    | Block
+    ;
+
+LambdaExpression
+    : IDENTIFIER oFAR LambdaExpressionBody
+    | '(' LambdaParameterListOpt ')' oFAR LambdaExpressionBody
+    ;
+
+TimedExpression
+    : kASYNC Expression
+    | kAWAIT Expression
+    ;
+
+Expression
+    : ConditionalExpression
+    | AssignmentExpression
+    | QueryExpression
+    | LambdaExpression
+    | TimedExpression
+    ;
+
+ConstantExpression
+    : Expression
+    ;
+
+BooleanExpression
+    : Expression
+    ;
+
 Statement
     : DeclarationStatement
     | EmbeddedStatement
-    // | LabeledStatement
-    ;
-
-DeclarationStatement
-    : VariableDeclaration ';'
-    | ConstantDeclaration ';'
-    ;
-
-VariableDeclaration
-    : Type VariableDeclaratorList
-    ;
-
-VariableDeclaratorList
-    : VariableDeclarator
-    | VariableDeclaratorList ',' VariableDeclarator
-    ;
-
-VariableDeclarator
-    : Identifier
-    | Identifier '=' Expression
-    ;
-
-ConstantDeclaration
-    : kCONST Type ConstantDeclaratorList
-    ;
-
-ConstantDeclaratorList
-    : ConstantDeclarator
-    | ConstantDeclaratorList ',' ConstantDeclarator
-    ;
-
-ConstantDeclarator
-    : Identifier '=' Expression
     ;
 
 EmbeddedStatement
@@ -464,12 +736,15 @@ EmbeddedStatement
     | TryStatement
     | LockStatement
     | UsingStatement
-    | YieldStatement
     ;
 
 Block
-    : '{' '}'
-    | '{' StatementRepeat '}'
+    : '{' StatementRepeatOpt '}'
+    ;
+
+StatementRepeatOpt
+    : /* empty */
+    | StatementRepeat
     ;
 
 StatementRepeat
@@ -481,18 +756,56 @@ EmptyStatement
     : ';'
     ;
 
+DeclarationStatement
+    : LocalVariableDeclaration ';'
+    | LocalConstantDeclaration ';'
+    ;
+
+LocalVariableDeclaration
+    : Type VariableDeclaratorList
+    ;
+
+VariableDeclaratorList
+    : VariableDeclarator
+    | VariableDeclaratorList ',' VariableDeclarator
+    ;
+
+VariableDeclarator
+    : IDENTIFIER
+    | IDENTIFIER '=' VariableInitializer
+    ;
+
+VariableInitializer
+    : Expression
+    | ArrayInitializer
+    ;
+
+LocalConstantDeclaration
+    : kCONST Type ConstantDeclaratorList
+    ;
+
+ConstantDeclaratorList
+    : ConstantDeclarator
+    | ConstantDeclaratorList ',' ConstantDeclarator
+    ;
+
+ConstantDeclarator
+    : IDENTIFIER '=' ConstantExpression
+    ;
+
 ExpressionStatement
     : StatementExpression ';'
     ;
 
 StatementExpression
     : InvocationExpression
-    // | ObjectCreationExpression
+    | ObjectCreationExpression
     | AssignmentExpression
     | PostIncrementExpression
     | PostDecrementExpression
     | PreIncrementExpression
     | PreDecrementExpression
+    // | Expression
     ;
 
 SelectionStatement
@@ -515,8 +828,12 @@ SwitchStatement
     ;
 
 SwitchBlock
-    : '{' '}'
-    | '{' SwitchSectionRepeat '}'
+    : '{' SwitchSectionRepeatOpt '}'
+    ;
+
+SwitchSectionRepeatOpt
+    : /* empty */
+    | SwitchSectionRepeat
     ;
 
 SwitchSectionRepeat
@@ -546,27 +863,43 @@ IterationStatement
     ;
 
 WhileStatement
-    : kWHILE '(' Expression ')' EmbeddedStatement
+    : kWHILE '(' BooleanExpression ')' EmbeddedStatement
     ;
 
 DoStatement
-    : kDO EmbeddedStatement kWHILE '(' Expression ')' ';'
+    : kDO EmbeddedStatement kWHILE '(' BooleanExpression ')' ';'
     ;
 
 ForStatement
-    : kFOR '(' ';' ';' ')' EmbeddedStatement
-    | kFOR '(' ForInitialization ';' ';' ')' EmbeddedStatement
-    | kFOR '(' ';' ForCondition ';' ')' EmbeddedStatement
-    | kFOR '(' ';' ';' ForIncrement ')' EmbeddedStatement
-    | kFOR '(' ForInitialization ';' ForCondition ';' ')' EmbeddedStatement
-    | kFOR '(' ForInitialization ';' ';' ForIncrement ')' EmbeddedStatement
-    | kFOR '(' ';' ForCondition ';' ForIncrement ')' EmbeddedStatement
-    | kFOR '(' ForInitialization ';' ForCondition ';' ForIncrement ')' EmbeddedStatement
+    : kFOR '(' ForInitializerOpt ';' ForConditionOpt ';' ForIteratorOpt ')' EmbeddedStatement
     ;
 
-ForInitialization
-    : VariableDeclaration
+ForInitializerOpt
+    : /* empty */
+    | ForInitializer
+    ;
+
+ForConditionOpt
+    : /* empty */
+    | ForCondition
+    ;
+
+ForIteratorOpt
+    : /* empty */
+    | ForIterator
+    ;
+
+ForInitializer
+    : LocalVariableDeclaration
     | StatementExpressionList
+    ;
+
+ForCondition
+    : BooleanExpression
+    ;
+
+ForIterator
+    : StatementExpressionList
     ;
 
 StatementExpressionList
@@ -574,23 +907,15 @@ StatementExpressionList
     | StatementExpressionList ',' StatementExpression
     ;
 
-ForCondition
-    : Expression
-    ;
-
-ForIncrement
-    : StatementExpressionList
-    ;
-
 ForeachStatement
-    : kFOREACH '(' Type Identifier kIN Expression ')' EmbeddedStatement
+    : kFOREACH '(' Type IDENTIFIER kIN Expression ')' EmbeddedStatement
     ;
 
 JumpStatement
     : BreakStatement
     | ContinueStatement
-    // | GotoStatement
     | ReturnStatement
+    | YieldStatement
     | ThrowStatement
     ;
 
@@ -602,45 +927,44 @@ ContinueStatement
     : kCONTINUE ';'
     ;
 
-// GotoStatement
-//     : kGOTO Identifier ';'
-//     | kGOTO kCASE Expression ';'
-//     | kGOTO kDEFAULT Expression ';'
-//     ;
-
 ReturnStatement
-    : kRETURN ';'
-    | kRETURN Expression ';'
+    : kRETURN ExpressionOpt ';'
+    ;
+
+YieldStatement
+    : kYIELD /* kBREAK */ ';'
+    | kYIELD /* kRETURN */ Expression ';'
+    ;
+
+ExpressionOpt
+    : /* empty */
+    | Expression
     ;
 
 ThrowStatement
-    : kTHROW ';'
-    | kTHROW Expression ';'
+    : kTHROW ExpressionOpt ';'
     ;
 
 TryStatement
-    : kTRY Block CatchClauses
+    : kTRY Block CatchClauseRepeat
     | kTRY Block FinallyClause
-    | kTRY Block CatchClauses FinallyClause
+    | kTRY Block CatchClauseRepeat FinallyClause
     ;
 
-CatchClauses
-    : SpecificCatchClauseRepeat
-    | SpecificCatchClauseRepeat GeneralCatchClause
+CatchClauseRepeat
+    : CatchClause
+    | CatchClauseRepeat CatchClause
     ;
 
-SpecificCatchClauseRepeat
-    : SpecificCatchClause
-    | SpecificCatchClauseRepeat SpecificCatchClause
+CatchClause
+    : kCATCH '(' ClassType IdentifierOpt ')' Block
+    | kCATCH '(' TypeName IdentifierOpt ')' Block
+    | kCATCH Block
     ;
 
-SpecificCatchClause
-    : kCATCH '(' Type ')' Block
-    | kCATCH '(' Type Identifier ')' Block
-    ;
-
-GeneralCatchClause
-    : kCATCH Block
+IdentifierOpt
+    : /* empty */
+    | IDENTIFIER
     ;
 
 FinallyClause
@@ -656,397 +980,250 @@ UsingStatement
     ;
 
 ResourceAquisition
-    : VariableDeclaration
+    : LocalVariableDeclaration
     | Expression
     ;
 
-YieldStatement
-    : kYIELD ';'
-    | kYIELD Expression ';'
-    ;
-
-Expression
-    : AssignmentExpression
-    | LambdaExpression
-    | QueryExpression
-    | ConditionalExpression
-    ;
-
-ExpressionList
-    : Expression
-    | ExpressionList ',' Expression
-    ;
-
-AssignmentExpression
-    : UnaryExpression '=' Expression
-    | UnaryExpression oADE Expression
-    | UnaryExpression oSUE Expression
-    | UnaryExpression oMUE Expression
-    | UnaryExpression oDIE Expression
-    ;
-
-LambdaExpression
-    : AnonymousFunctionSignature oFAR AnonymousFunctionBody
-    ;
-
-AnonymousFunctionSignature
-    : ImplicitAnonymousParameter
-    | '(' ImplicitAnonymousParameterList ')'
-    | '(' ExplicitAnonymousParameterList ')'
-    | '(' ')'
-    ;
-
-ImplicitAnonymousParameterList
-    : ImplicitAnonymousParameter
-    | ImplicitAnonymousParameterList ',' ImplicitAnonymousParameter
-    ;
-
-ImplicitAnonymousParameter
-    : Identifier
-    ;
-
-ExplicitAnonymousParameterList
-    : ExplicitAnonymousParameter
-    | ExplicitAnonymousParameterList ',' ExplicitAnonymousParameter
-    ;
-
-ExplicitAnonymousParameter
-    : Type Identifier
-    ;
-
-AnonymousFunctionBody
-    : Expression
-    | Block
-    ;
-
-QueryExpression
-    : kFROM QueryOrigin
-    | kFROM QueryOrigin QueryBody
-    ;
-
-QueryOrigin
-    : Identifier kIN Expression
-    ;
-
-QueryBody
-    : QueryBodyMemberRepeat SelectOrGroupClause
-    | QueryBodyMemberRepeat
-    | SelectOrGroupClause
-    ;
-
-QueryBodyMemberRepeat
-    : QueryBodyMember 
-    | QueryBodyMemberRepeat QueryBodyMember
-    ;
-
-QueryBodyMember
-    : kWHERE ConditionalExpression %prec UNARY
-    | kORDER kBY OrderExpression
-    | JoinClause
-    | RangeClause
-    ;
-
-JoinClause
-    : kJOIN QueryOrigin kON ConditionalExpression %prec UNARY
-    | kLEFT kJOIN QueryOrigin kON ConditionalExpression %prec UNARY
-    | kRIGHT kJOIN QueryOrigin kON ConditionalExpression %prec UNARY
-    ;
-
-OrderExpression
-    : Expression
-    | Expression kASC
-    | Expression kDESC
-    ;
-
-RangeClause
-    : kSKIP Expression %prec UNARY
-    | kSTEP Expression %prec UNARY
-    | kTAKE Expression %prec UNARY
-    ;
-
-SelectOrGroupClause
-    : kGROUP kBY Expression %prec UNARY
-    | kSELECT ExpressionList
-    ;
-
-ConditionalExpression
-    : NullCoalescingExpression
-    | NullCoalescingExpression '?' Expression ':' Expression
-    // | NullCoalescingExpression kBETWENN Expression kAND Expression
-    ;
-
-NullCoalescingExpression
-    : RangeExpression
-    | NullCoalescingExpression oCOA RangeExpression
-    ;
-
-RangeExpression
-    : ConditionalOrExpression
-    | RangeExpression oRAE ConditionalOrExpression
-    | RangeExpression oRAI ConditionalOrExpression
-    ;
-
-ConditionalOrExpression
-    : ConditionalAndExpression
-    | ConditionalOrExpression oOR ConditionalAndExpression
-    ;
-
-ConditionalAndExpression
-    : InclusiveOrExpression
-    | ConditionalAndExpression oAND InclusiveOrExpression
-    ;
-
-InclusiveOrExpression
-    : ExclusiveOrExpression
-    | InclusiveOrExpression '|' ExclusiveOrExpression
-    ;
-
-ExclusiveOrExpression
-    : AndExpression
-    | ExclusiveOrExpression '^' AndExpression
-    ;
-
-AndExpression
-    : ComparisonExpression
-    | AndExpression '&' ComparisonExpression
-    ;
-
-ComparisonExpression
-    : RelationalExpression
-    | ComparisonExpression oEQL ShiftExpression
-    | ComparisonExpression oNEQ ShiftExpression
-    | ComparisonExpression oMAT ShiftExpression
-    | ComparisonExpression oNMA ShiftExpression
-    ;
-
-RelationalExpression
-    : ShiftExpression
-    | RelationalExpression '<' ShiftExpression
-    | RelationalExpression '>' ShiftExpression
-    | RelationalExpression oLEE ShiftExpression
-    | RelationalExpression oGEE ShiftExpression
-    | RelationalExpression kIS Type
-    // | RelationalExpression kAS Type
-    ;
-
-ShiftExpression
-    : AdditiveExpression
-    | ShiftExpression oSHR AdditiveExpression
-    | ShiftExpression oSHL AdditiveExpression
-    ;
-
-AdditiveExpression
-    : MultiplicativeExpression
-    | AdditiveExpression '+' MultiplicativeExpression
-    | AdditiveExpression '-' MultiplicativeExpression
-    ;
-
-MultiplicativeExpression
-    : PowerExpression
-    | MultiplicativeExpression '*' PowerExpression
-    | MultiplicativeExpression '/' PowerExpression
-    | MultiplicativeExpression '%' PowerExpression
-    ;
-
-PowerExpression
-    : UnaryExpression
-    | PowerExpression oPOW UnaryExpression
-    ;
-
-UnaryExpression
-    : UnaryExpressionNotPlusMinus
-    | '+' UnaryExpression %prec UNARY
-    | '-' UnaryExpression %prec UNARY
-    | '*' UnaryExpression %prec UNARY
-    | PreIncrementExpression
-    | PreDecrementExpression
-    | AddressofExpression
-    ;
-
-UnaryExpressionNotPlusMinus
-    : PostfixExpression
-    | '!' UnaryExpression %prec UNARY
-    | '~' UnaryExpression %prec UNARY
-    | CastExpression
-    ;
-
-PreIncrementExpression
-    : oINC UnaryExpression %prec UNARY
-    ;
-
-PreDecrementExpression
-    : oDEC UnaryExpression %prec UNARY
-    ;
-
-AddressofExpression
-    : '&' UnaryExpression %prec UNARY
-    ;
-
-CastExpression
-    : '(' Type ')' UnaryExpression %prec UNARY
-    ;
-
-PostfixExpression
-    : PrimaryExpression
-    | QualifiedIdentifier
-    | PostIncrementExpression
-    | PostDecrementExpression
-    | PointerMemberAccessExpression
-    ;
-
-PostDecrementExpression
-    : PostfixExpression oDEC
-    ;
-
-PostIncrementExpression
-    : PostfixExpression oINC
-    ;
-
-PointerMemberAccessExpression
-    : PostfixExpression oIND Identifier
-    ;
-
-PrimaryExpression
-    : ParenthesizedExpression
-    | PrimaryExpressionNoParentesis
-    ;
-
-ParenthesizedExpression
-    : '(' Expression ')'
-    ;
-
-PrimaryExpressionNoParentesis
-    : LiteralValue
-    | MemberAccessExpression
-    // | ThisAccessExpression
-    // | BaseAccessExpression
-    | ElementAccessExpression
-    | InvocationExpression
-    // | NewExpression
-    | TypeofExpression
-    | SizeofExpression
-    ;
-
-// NewExpression
-//     : ArrayCreationExpression
-//     | ObjectCreationExpression
+// CompilationUnit
+//     : /* UsingDirectiveRepeatOpt AttributesOpt
+//     | */ UsingDirectiveRepeatOpt NamespaceMemberDeclarationRepeatOpt
 //     ;
 
-// ArrayCreationExpression
-//     : kNEW Type ArrayInitializer
-//     | kNEW Type '[' ExpressionList ']'
-//     | kNEW Type '[' ExpressionList ']' ArrayInitializer
+// UsingDirectiveRepeatOpt
+//     : /* empty */
+//     | UsingDirectiveRepeat
 //     ;
 
-// ArrayInitializer
-//     :
+// AttributesOpt
+//     : /* empty */
+//     | Attributes
 //     ;
 
-// ObjectCreationExpression
-//     :
+// NamespaceMemberDeclarationRepeatOpt
+//     : /* empty */
+//     | NamespaceMemberDeclarationRepeat
 //     ;
 
-MemberAccessExpression
-    : PrimaryExpression '.' Identifier
-    | PrimitiveType '.' Identifier
-    | ClassType '.' Identifier
-    ;
+// NamespaceDeclaration
+//     : AttributesOpt kNAMESPACE QualifiedIdentifier NamespaceBody CommaOpt
+//     ;
 
-ElementAccessExpression
-    : PrimaryExpression '[' Expression ']'
-    | QualifiedIdentifier '[' Expression ']'
-    ;
-
-InvocationExpression
-    : QualifiedIdentifier '(' ')'
-    | QualifiedIdentifier '(' ArgumentExpressionList ')'
-    | PrimaryExpressionNoParentesis '(' ')'
-    | PrimaryExpressionNoParentesis '(' ArgumentExpressionList ')'
+CommaOpt
+    : /* empty */
+    | ';'
     ;
 
 QualifiedIdentifier
-    : Identifier
-    | Qualifier Identifier
+    : IDENTIFIER
+    | Qualifier IDENTIFIER
     ;
 
 Qualifier
-    : Identifier '.'
-    | Qualifier Identifier '.'
+    : IDENTIFIER '.'
+    | Qualifier IDENTIFIER '.'
     ;
 
-ArgumentExpressionList
-    : Expression
-    | ArgumentExpressionList ',' Expression
+// NamespaceBody
+//     : '{' UsingDirectiveRepeatOpt NamespaceMemberDeclarationRepeatOpt '}'
+//     ;
+
+// UsingDirectiveRepeatOpt
+//     : /* empty */
+//     | UsingDirectiveRepeat
+//     ;
+
+UsingDirectiveRepeat
+    : UsingDirective
+    | UsingDirectiveRepeat UsingDirective
     ;
 
-TypeofExpression
-    : kTYPEOF '(' Type ')'
+UsingDirective
+    : UsingAliasDirective
+    | UsingNamespaceDirective
     ;
 
-SizeofExpression
-    : kSIZEOF '(' Type ')'
+UsingAliasDirective
+    : kUSING IDENTIFIER '=' QualifiedIdentifier ';'
     ;
 
-LiteralValue
-    : kNULL
-    | HashLiteral
-    | ArrayLiteral
-    | IntegerLiteral
-    | FloatLiteral
-    | StringLiteral
-    | RegexLiteral
-    | CharLiteral
-    | BooleanLiteral
+UsingNamespaceDirective
+    : kUSING ModuleName ';'
     ;
 
-HashLiteral
-    : '{' ':' '}'
-    | '{' KeyValuePairList '}'
+// NamespaceMemberDeclarationRepeat
+//     : NamespaceDeclaration
+//     | TypeDeclaration
+//     ;
+
+TypeDeclaration
+    : MethodDeclaration
+    | StructDeclaration
+    | EnumDeclaration
+    // | DelegateDeclaration
+    // | InterfaceDeclaration 
+    // | ClassDeclaration
     ;
 
-KeyValuePairList
-    : KeyValuePair
-    | KeyValuePairList ',' KeyValuePair
+ModifierRepeatOpt
+    : /* empty */
+    | ModifierRepeat
     ;
 
-KeyValuePair
-    : Identifier ':' Expression
-    | StringLiteral ':' Expression
+ModifierRepeat
+    : Modifier
+    | ModifierRepeat Modifier
     ;
 
-ArrayLiteral
-    : '[' ']'
-    | '[' ExpressionList ']'
+Modifier
+    : kEXTERN
+    | kSTATIC
+    | kASYNC
+    // | kABSTRACT
+    // | kINTERNAL
+    // | kNEW
+    // | kOVERRIDE
+    // | kPRIVATE
+    // | kPROTECTED
+    // | kPUBLIC
+    // | kREADONLY
+    // | kSEALED
+    // | kUNSAFE
+    // | kVIRTUAL
+    // | kVOLATILE
     ;
 
-IntegerLiteral
-    : INTEGER
+StructDeclaration
+    : /* AttributesOpt */ ModifierRepeatOpt kSTRUCT IDENTIFIER /* StructInterfacesOpt */ StructBody CommaOpt
     ;
 
-FloatLiteral
-    : FLOAT
+// StructInterfacesOpt
+//     : /* empty */
+//     | StructInterfaces
+//     ;
+
+// StructInterfaces
+//     : ':' InterfaceTypeList
+//     ;
+
+StructBody
+    : '{' StructMemberDeclarationRepeatOpt '}'
     ;
 
-StringLiteral
-    : STRING
-    | StringLiteral STRING
+StructMemberDeclarationRepeatOpt
+    : /* empty */
+    | StructMemberDeclarationRepeat
     ;
 
-RegexLiteral
-    : REGEX
+StructMemberDeclarationRepeat
+    : StructMemberDeclaration
+    | StructMemberDeclarationRepeat StructMemberDeclaration
     ;
 
-CharLiteral
-    : CHAR
+StructMemberDeclaration
+    : ConstantDeclaration
+    // | FieldDeclaration
+    // | MethodDeclaration
+    // | PropertyDeclaration
+    // | EventDeclaration
+    // | IndexerDeclaration
+    // | OperatorDeclaration
+    // | ConstructorDeclaration
+    | TypeDeclaration
     ;
 
-BooleanLiteral
-    : kFALSE
-    | kTRUE
+ConstantDeclaration
+    : /* AttributesOpt */ ModifierRepeatOpt kCONST Type ConstantDeclaratorList ';'
     ;
 
-Identifier
-    : ID
+ArrayInitializer
+    : '{' VariableInitializerListOpt '}'
+    | '{' VariableInitializerListOpt ',' '}'
+    ;
+
+VariableInitializerListOpt
+    : /* empty */
+    | VariableInitializerList
+    ;
+
+VariableInitializerList
+    : VariableInitializer
+    | VariableInitializerList ',' VariableInitializer
+    ;
+
+EnumDeclaration
+    : /* AttributesOpt */ ModifierRepeatOpt kENUM IDENTIFIER EnumBaseOpt EnumBody CommaOpt
+    ;
+
+EnumBaseOpt
+    : /* empty */
+    | EnumBase
+    ;
+
+EnumBase
+    : ':' IntegralType /* Type */
+    ;
+
+EnumBody
+    : '{' EnumMemberDeclarationListOpt '}'
+    | '{' EnumMemberDeclarationListOpt ',' '}'
+    ;
+
+EnumMemberDeclarationListOpt
+    : /* empty */
+    | EnumMemberDeclarationList
+    ;
+
+EnumMemberDeclarationList
+    : EnumMemberDeclaration
+    | EnumMemberDeclarationList ',' EnumMemberDeclaration
+    ;
+
+EnumMemberDeclaration
+    : /* AttributesOpt */ IDENTIFIER
+    | /* AttributesOpt */ IDENTIFIER '=' ConstantExpression
+    ;
+
+MethodDeclaration
+    : MethodHeader MethodBody
+    ;
+
+MethodHeader
+    : /* AttributesOpt */ ModifierRepeatOpt kVOID QualifiedIdentifier '(' FormalParameterListOpt ')'
+    | /* AttributesOpt */ ModifierRepeatOpt Type QualifiedIdentifier '(' FormalParameterListOpt ')'
+    | /* AttributesOpt */ ModifierRepeatOpt /* Type == int */ QualifiedIdentifier '(' FormalParameterListOpt ')'
+    ;
+
+FormalParameterListOpt
+    : /* empty */
+    | FormalParameterList
+    ;
+
+MethodBody
+    : Block
+    | ';'
+    ;
+
+FormalParameterList
+    : FormalParameter
+    | FormalParameterList ',' FormalParameter
+    ;
+
+FormalParameter
+    : FixedParameter
+    | ParameterArray
+    ;
+
+FixedParameter
+    : /* AttributesOpt /* ParameterModifierOpt */ Type IDENTIFIER ParameterInitializerOpt
+    ;
+
+ParameterInitializerOpt
+    : /* empty */
+    | '=' ConstantExpression
+    ;
+
+ParameterArray
+    : /* AttributesOpt */ kPARAMS ArrayType IDENTIFIER
     ;
 
 %%

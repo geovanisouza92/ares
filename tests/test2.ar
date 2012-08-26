@@ -1,7 +1,9 @@
+main()
+{
+	// comentário
 
-# comentário
-
-if true then
-begin
-  # return foo + 3;
-end
+	if (true)
+	{
+		return foo + 3;
+	}
+}
