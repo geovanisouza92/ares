@@ -6,7 +6,6 @@ using namespace std;
 
 #include "scanner.h"
 #include "parser.h"
-#include "version.h"
 
 using namespace LANG_NAMESPACE;
 using namespace LANG_NAMESPACE::Compiler;
@@ -19,7 +18,7 @@ typedef Parser::token_type token_type;
 #define YY_NO_UNISTD_H
 %}
 
-%option c++ prefix="arc" batch yywrap nounput stack
+%option c++ prefix="arc" batch yywrap nounput stack debug
 
 %{
 #define YY_USER_ACTION yylloc->columns(yyleng);
@@ -45,16 +44,17 @@ typedef Parser::token_type token_type;
 */
 %}
 
+csl "//"[^\n\r]*
 nl  (\n|\r|\n\r|\r\n)
 ws  [ \t]+
 flt [0-9]*"."[0-9]+([Ee][\+\-]?[0-9]+)?
 int [0-9]+([Ee][\+\-]?[0-9]+)?
-id  [a-zA-Z_][a-zA-Z_\-0-9]*[?!]?
+id  [a-zA-Z_][a-zA-Z_\-0-9]*
 chr \'(\\.|[^\'])\'
 str \"(\\.|[^\"])*\"
 rgx \/(\\.|[^\/\ ])*\/
-csl "//"[^\n\r]*[\n\r]?
-cml "/*"(.|[\n\r])*"*/"
+
+%x ML_COMMENT
 
 %%
 
@@ -62,6 +62,38 @@ cml "/*"(.|[\n\r])*"*/"
     yylloc->step();
 %}
 
+"/*" {
+    yylloc->step();
+    yy_push_state(ML_COMMENT);
+}
+
+<ML_COMMENT>. {
+    yylloc->step();
+}
+
+<ML_COMMENT>\n {
+    yylloc->step();
+    yylloc->lines();
+    driver.incLines();
+}
+
+<ML_COMMENT>"*/" {
+    yylloc->step();
+    yy_pop_state();
+}
+
+{csl} {
+    yylloc->step();
+    yylloc->lines();
+    driver.incLines();
+}
+
+"%="    return token::oMOE;
+"^="    return token::oXOE;
+"|="    return token::oORE;
+"&="    return token::oANE;
+"<<="   return token::oSLE;
+">>="   return token::oSRE;
 "+="    return token::oADE;
 "-="    return token::oSUE;
 "*="    return token::oMUE;
@@ -87,14 +119,18 @@ cml "/*"(.|[\n\r])*"*/"
 
 "array"         return token::kARRAY;
 "asc"           return token::kASC;
+"async"         return token::kASYNC;
+"await"         return token::kAWAIT;
 "bool"          return token::kBOOL;
 "break"         return token::kBREAK;
+"byte"          return token::kBYTE;
 "by"            return token::kBY;
 "case"          return token::kCASE;
 "catch"         return token::kCATCH;
 "char"          return token::kCHAR;
 "const"         return token::kCONST;
 "continue"      return token::kCONTINUE;
+"decimal"       return token::kDECIMAL;
 "default"       return token::kDEFAULT;
 "desc"          return token::kDESC;
 "double"        return token::kDOUBLE;
@@ -118,6 +154,7 @@ cml "/*"(.|[\n\r])*"*/"
 "left"          return token::kLEFT;
 "lock"          return token::kLOCK;
 "long"          return token::kLONG;
+"new"           return token::kNEW;
 "null"          return token::kNULL;
 "on"            return token::kON;
 "order"         return token::kORDER;
@@ -139,7 +176,10 @@ cml "/*"(.|[\n\r])*"*/"
 "true"          return token::kTRUE;
 "try"           return token::kTRY;
 "typeof"        return token::kTYPEOF;
+"uint"          return token::kUINT;
+"ulong"         return token::kULONG;
 "unless"        return token::kUNLESS;
+"ushort"        return token::kUSHORT;
 "using"         return token::kUSING;
 "var"           return token::kVAR;
 "void"          return token::kVOID;
@@ -159,7 +199,7 @@ cml "/*"(.|[\n\r])*"*/"
 
 {id} {
     yylval->v_str = new std::string(yytext, yyleng);
-    return token::ID;
+    return token::IDENTIFIER;
 }
 
 {chr} {
@@ -177,32 +217,13 @@ cml "/*"(.|[\n\r])*"*/"
     return token::REGEX;
 }
 
-{ws} {
-    // Whitespace
+{ws} { // Whitespace
     yylloc->step();
-}
-
-{cml} {
-    string input(yytext);
-    int linhas = 0;
-    for (int i = 0; i < input.length(); i++)
-        if (input[i] == '\n' || input[i] == '\r')
-            ++linhas;
-    yylloc->lines();
-    yylloc->step();
-    driver.incLines(linhas);
-}
-
-{csl} {
-    // Comments
-    yylloc->lines();
-    yylloc->step();
-    driver.incLines();
 }
 
 {nl} {
-    yylloc->lines(yyleng);
     yylloc->step();
+    yylloc->lines();
     driver.incLines();
 }
 
