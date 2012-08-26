@@ -12,4 +12,7 @@ docs::
 	@ cd docs; $(MAKE) docs
 
 test::
-	@ $(LEVEL)/Release/bin/arc `ls $(LEVEL)/tests/*.ar`
+	@ $(LEVEL)/Release/bin/arc --verbose=3 `ls $(LEVEL)/tests/*.ar` 2> $@.results
+
+clean-local::
+	@ rm -rf *.results
