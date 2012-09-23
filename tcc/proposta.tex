@@ -1,0 +1,22 @@
+% Formato do documento
+\documentclass[12pt,a4paper,tocpage=prefix,pagestart=folhaderosto,floatnumber=chapter,chapter=TITLE,section=Title,header=plain]{abnt}
+
+\include{config}
+\include{proposta/metainfo}
+\include{pdfinfo}
+
+\begin{document}
+  \begin{espacosimples}
+    \include{capa} % capapropo
+  \end{espacosimples}
+  \begin{espacoumemeio}
+    \include{proposta/introducao}
+    \include{proposta/classes}
+  \end{espacoumemeio}
+  \begin{espacosimples}
+    \bibliography{bibliografia}
+  \end{espacosimples}
+  \begin{espacoumemeio}
+    \include{proposta/aprovacao}
+  \end{espacoumemeio}
+\end{document}

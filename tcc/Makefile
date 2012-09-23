@@ -3,9 +3,11 @@ LEVEL=..
 
 CLEAN= \
   tcc.pdf \
+  proposta.pdf \
   grammar.tex \
   figuras/*.bb \
   *.aux \
+  proposta/*.aux \
   *.log \
   *.lof \
   *.lol \
@@ -26,6 +28,11 @@ tcc.pdf: grammar.tex bb tex index bibtex
 	@ $(MAKE) tex
 	@ $(MAKE) tex
 
+proposta.pdf: bb propotex bibtexpropo
+	@ $(MAKE) propotex
+	@ $(MAKE) propotex
+	@ $(MAKE) propotex
+
 grammar.tex:
 	cd $(LEVEL)/docs && $(MAKE) docs
 
@@ -35,6 +42,9 @@ bb:
 tex:
 	@ pdflatex tcc.tex
 
+propotex:
+	@ pdflatex proposta.tex
+
 index: sigla
 
 sigla:
@@ -42,5 +52,8 @@ sigla:
 
 bibtex:
 	@ bibtex tcc
+
+bibtexpropo:
+	@ bibtex proposta
 
 include $(LEVEL)/Makefile.common

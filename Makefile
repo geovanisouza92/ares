@@ -16,3 +16,6 @@ test::
 
 clean-local::
 	@ rm -rf *.results
+
+proposta::
+	@ cd tcc; $(MAKE) proposta.pdf
