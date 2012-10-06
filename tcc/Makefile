@@ -28,10 +28,11 @@ tcc.pdf: grammar.tex bb tex index bibtex
 	@ $(MAKE) tex
 	@ $(MAKE) tex
 
-proposta.pdf: bb propotex bibtexpropo
+proposta.pdf: bb propotex
 	@ $(MAKE) propotex
 	@ $(MAKE) propotex
 	@ $(MAKE) propotex
+	# @ $(MAKE) bibtexpropo
 
 grammar.tex:
 	cd $(LEVEL)/docs && $(MAKE) docs

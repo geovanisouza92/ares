@@ -1,5 +1,5 @@
 % Formato do documento
-\documentclass[12pt,a4paper,tocpage=prefix,pagestart=folhaderosto,floatnumber=chapter,chapter=TITLE,section=Title,header=plain]{abnt}
+\documentclass[12pt,a4paper,tocpage=prefix,floatnumber=chapter,chapter=TITLE,section=Title,header=plain]{abnt}
 
 \include{config}
 \include{proposta/metainfo}
@@ -7,16 +7,14 @@
 
 \begin{document}
   \begin{espacosimples}
-    \include{capa} % capapropo
+    \include{proposta/capa} % capapropo
   \end{espacosimples}
   \begin{espacoumemeio}
     \include{proposta/introducao}
-    \include{proposta/classes}
-  \end{espacoumemeio}
-  \begin{espacosimples}
-    \bibliography{bibliografia}
-  \end{espacosimples}
-  \begin{espacoumemeio}
+    \include{proposta/descricao}
     \include{proposta/aprovacao}
   \end{espacoumemeio}
+  % \begin{espacosimples}
+  %   \bibliography{bibliografia}
+  % \end{espacosimples}
 \end{document}
