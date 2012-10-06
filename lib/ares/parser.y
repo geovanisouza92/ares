@@ -87,11 +87,13 @@ using namespace SyntaxTree;
 %token  kGROUP      "group"
 %token  kHASH       "hash"
 %token  kIF         "if"
+%token  kINTO       "into"
 %token  kINT        "int"
 %token  kIN         "in"
 %token  kIS         "is"
 %token  kJOIN       "join"
 %token  kLEFT       "left"
+%token  kLET        "let"
 %token  kLOCK       "lock"
 %token  kLONG       "long"
 %token  kNEW        "new"
@@ -238,11 +240,11 @@ ExpressionListOpt
 
 HashLiteral
     : '{' KeyValuePairListOpt '}'
-    | '{' KeyValuePairListOpt ',' '}'
+    | '{' KeyValuePairList ',' '}'
     ;
 
 KeyValuePairListOpt
-    : ':'
+    : /* empty */
     | KeyValuePairList
     ;
 
@@ -622,8 +624,21 @@ AssignmentOperator
     ;
 
 SelectOrGroupClause
-    : kGROUP kBY Expression
-    | kSELECT ExpressionList
+    : GroupByClause
+    | SelectClause
+    ;
+
+GroupByClause
+    : kGROUP IDENTIFIER kBY Expression
+    | kGROUP IDENTIFIER kBY Expression kINTO IDENTIFIER
+    ;
+
+SelectClause
+    : kSELECT ExpressionList
+    ;
+
+LetClause
+    : kLET IDENTIFIER '=' Expression
     ;
 
 RangeClause
@@ -646,6 +661,9 @@ JoinClause
     : kJOIN QueryOrigin kON BooleanExpression
     | kLEFT kJOIN QueryOrigin kON BooleanExpression
     | kRIGHT kJOIN QueryOrigin kON BooleanExpression
+    | kJOIN QueryOrigin kON BooleanExpression kINTO IDENTIFIER
+    | kLEFT kJOIN QueryOrigin kON BooleanExpression kINTO IDENTIFIER
+    | kRIGHT kJOIN QueryOrigin kON BooleanExpression kINTO IDENTIFIER
     ;
 
 QueryBodyMemberRepeat
@@ -658,6 +676,7 @@ QueryBodyMember
     | kORDER kBY OrderExpression
     | JoinClause
     | RangeClause
+    | LetClause
     ;
 
 QueryBody

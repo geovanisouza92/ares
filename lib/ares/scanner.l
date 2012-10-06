@@ -147,11 +147,13 @@ rgx \/(\\.|[^\/\ ])*\/
 "hash"          return token::kHASH;
 "group"         return token::kGROUP;
 "if"            return token::kIF;
+"into"          return token::kINTO;
 "int"           return token::kINT;
 "in"            return token::kIN;
 "is"            return token::kIS;
 "join"          return token::kJOIN;
 "left"          return token::kLEFT;
+"let"           return token::kLET;
 "lock"          return token::kLOCK;
 "long"          return token::kLONG;
 "new"           return token::kNEW;
