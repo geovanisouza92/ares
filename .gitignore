@@ -1,11 +1,10 @@
 __*
 autoconf
 *.aux
-*.b*
-*.[bdrs]*
+*.bb*
+*.blg
 chronos*
 config.*
-*.d*
 Debug*
 grammar.*
 *.hh
@@ -14,8 +13,10 @@ grammar.*
 Makefile.common
 *.out*
 parser.[chx]*
-proposta.pdf
+*.pdf
 Release*
 scanner.cpp
+*.sigla*
+*.symbol*
 tcc.pdf
 *.toc

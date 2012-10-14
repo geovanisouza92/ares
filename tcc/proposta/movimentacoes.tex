@@ -1,0 +1,20 @@
+% Descrição das movimentações
+\subsection{Descri\ca o das Movimenta\co es}
+
+\label{pro:movimentacoes}
+
+O programa principal, que se chamara \emph{arc} ser\ah\ respons\ah vel por:
+\begin{itemize}
+  \item Ler o arquivo de c\oh digo com a linguagem fonte;
+  \item Encapsular o comportamento de interpretador no modelo \sigla{REPL}{Read-eval-print loop}\emph{REPL} (Console de comando interativo);
+  \item Encapsular o comportamento de programa interpretador de arquivos na linguagem fonte;
+  \item Gerar a \sigla{AST}{Abstract Syntax Tree}\emph{Abstract Syntax Tree};
+  \item Realizar as tratativas de otimiza\ca o de express\~oes e coer\ca o de tipos de dados, quando necess\ah rio;
+  \item Gera\ca o do \emph{bitcode} utilizando as \sigla{API}{Application Programming Interface}\emph{API}'s do projeto LLVM;
+  \item Ativa\ca o dos passos de otimiza\ca o avan\c{c}ada do projeto LLVM, representado pela classe \emph{llvm::PassManager};
+  \item Execu\ca o do \emph{bitcode} otimizado no ambiente de execu\ca o padr\ao\ do LLVM, representado pela classe \emph{llvm::ExecutionEngine};
+  \item Grava\ca o do \emph{bitcode} otimizado em arquivos independentes de plataforma para execu\ca o posterior em arquivo \emph{*.bc}, semelhante ao \emph{*.class} e empacotamento em arquivo \emph{*.ara} semelhante ao \emph{*.jar} do Java; e
+  \item Gera\ca o de c\oh digo objeto voltado para uma plataforma espec\ih fica (inicialmente a plataforma \emph{x86}) atrav\eh s de \emph{API} espec\ih fica do LLVM, conhecida como \emph{Backend}.
+\end{itemize}
+
+O programa \emph{arc} ser\ah\ \emph{self-hosted}, ou seja, escrito na linguagem C++ e utilizando o projeto LLVM como apoio.

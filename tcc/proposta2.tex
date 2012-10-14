@@ -1,0 +1,57 @@
+% Formato do documento - Proposta de TCC inspirada
+\documentclass[12pt,a4paper,tocpage=prefix,floatnumber=chapter,chapter=TITLE,section=Title,header=plain]{abnt}
+
+\include{config}
+\include{proposta/metainfo}
+\include{pdfinfo}
+
+\begin{document}
+  \begin{espacosimples}
+    \include{proposta/capa} % capapropo
+  \end{espacosimples}
+  \begin{espacoumemeio}
+
+    \chapter{T\ih tulo Provis\oh rio do TCC}
+    \label{pro:titulo}
+    \Nome
+
+    \chapter{\AH rea Geral / \AH rea Espec\ih fica do TCC}
+    \label{pro:area}
+
+    \chapter{Justificativa}
+    \label{pro:justificativa}
+
+    \chapter{Objetivos}
+    \label{pro:objetivos}
+
+    \section{Objetivos Gerais}
+    \label{pro:objetivos_gerais}
+
+    \section{Objetivos Espec\ih ficos}
+    \label{pro:objetivos_especificos}
+
+    \chapter{Enunciado do Problema e da Hip\oh tese}
+    \label{pro:enunciado}
+
+    \chapter{Fundamenta\ca o Te\oh rica}
+    \label{pro:fundamentacao}
+
+    \chapter{Recursos Necess\ah rios}
+    \label{pro:recursos}
+
+    \chapter{Metodologia}
+    \label{pro:metodologia}
+
+    \chapter{Cronograma}
+    \label{pro:cronograma}
+  
+  \end{espacoumemeio}
+  \begin{espacosimples}
+    \bibliography{bibliografia,auxiliar}
+  \end{espacosimples}
+  \begin{espacoumemeio}
+    \include{proposta/aprovacao}
+  \end{espacoumemeio}
+  \begin{titlepage}
+  \end{titlepage}
+\end{document}
