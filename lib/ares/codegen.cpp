@@ -1,4 +1,9 @@
-/* Ares Programming Language */
+/** Ares Programming Language
+ *
+ * codegen.cpp - LLVM-IR code generation
+ *
+ * Implements objects used to generate LLVM-IR code
+ */
 
 #include "codegen.h"
 
@@ -6,48 +11,48 @@ namespace LANG_NAMESPACE
 {
     namespace CodeGen
     {
-        CodeGenContext::CodeGenContext ()
+        CodeGenContext::CodeGenContext()
         {
-            module = new Module ("main", getGlobalContext ());
+            module = new Module("main", getGlobalContext());
         }
 
         void
-        CodeGenContext::generateCode (SyntaxNode * root)
+        CodeGenContext::generateCode(SyntaxNode * root)
         {
             // TODO Implementar
         }
 
         GenericValue
-        CodeGenContext::runCode ()
+        CodeGenContext::runCode()
         {
             // TODO Implementar
-            return GenericValue ();
+            return GenericValue();
         }
 
         map<string, Value *> &
-        CodeGenContext::getCurrentLocals ()
+        CodeGenContext::getCurrentLocals()
         {
-            return blocks.top ()->locals;
+            return blocks.top()->locals;
         }
 
         BasicBlock *
-        CodeGenContext::getCurrentBlock ()
+        CodeGenContext::getCurrentBlock()
         {
-            return blocks.top ()->block;
+            return blocks.top()->block;
         }
 
         void
-        CodeGenContext::pushBlock (BasicBlock * b)
+        CodeGenContext::pushBlock(BasicBlock * b)
         {
-            blocks.push (new CodeGenBlock ());
-            blocks.top ()->block = b;
+            blocks.push(new CodeGenBlock());
+            blocks.top()->block = b;
         }
 
         void
-        CodeGenContext::popBlock ()
+        CodeGenContext::popBlock()
         {
-            CodeGenBlock * top = blocks.top ();
-            blocks.pop ();
+            CodeGenBlock * top = blocks.top();
+            blocks.pop();
             delete top;
         }
 
@@ -91,10 +96,10 @@ namespace LANG_NAMESPACE
         // Returns an LLVM type based on the identifier
         static const Type *typeOf(const NIdentifier& type)
         {
-            if (type.name.compare("int") == 0) {
+            if(type.name.compare("int") == 0) {
                 return Type::getInt64Ty(getGlobalContext());
             }
-            else if (type.name.compare("double") == 0) {
+            else if(type.name.compare("double") == 0) {
                 return Type::getDoubleTy(getGlobalContext());
             }
             return Type::getVoidTy(getGlobalContext());
@@ -117,7 +122,7 @@ namespace LANG_NAMESPACE
         Value* NIdentifier::codeGen(CodeGenContext& context)
         {
             std::cout << "Creating identifier reference: " << name << endl;
-            if (context.locals().find(name) == context.locals().end()) {
+            if(context.locals().find(name) == context.locals().end()) {
                 std::cerr << "undeclared variable " << name << endl;
                 return NULL;
             }
@@ -127,12 +132,12 @@ namespace LANG_NAMESPACE
         Value* NMethodCall::codeGen(CodeGenContext& context)
         {
             Function *function = context.module->getFunction(id.name.c_str());
-            if (function == NULL) {
+            if(function == NULL) {
                 std::cerr << "no such function " << id.name << endl;
             }
             std::vector<Value*> args;
             ExpressionList::const_iterator it;
-            for (it = arguments.begin(); it != arguments.end(); it++) {
+            for(it = arguments.begin(); it != arguments.end(); it++) {
                 args.push_back((**it).codeGen(context));
             }
             CallInst *call = CallInst::Create(function, args.begin(), args.end(), "", context.currentBlock());
@@ -144,7 +149,7 @@ namespace LANG_NAMESPACE
         {
             std::cout << "Creating binary operation " << op << endl;
             Instruction::BinaryOps instr;
-            switch (op) {
+            switch(op) {
                 case TPLUS:     instr = Instruction::Add; goto math;
                 case TMINUS:    instr = Instruction::Sub; goto math;
                 case TMUL:      instr = Instruction::Mul; goto math;
@@ -162,7 +167,7 @@ namespace LANG_NAMESPACE
         Value* NAssignment::codeGen(CodeGenContext& context)
         {
             std::cout << "Creating assignment for " << lhs.name << endl;
-            if (context.locals().find(lhs.name) == context.locals().end()) {
+            if(context.locals().find(lhs.name) == context.locals().end()) {
                 std::cerr << "undeclared variable " << lhs.name << endl;
                 return NULL;
             }
@@ -173,9 +178,9 @@ namespace LANG_NAMESPACE
         {
             StatementList::const_iterator it;
             Value *last = NULL;
-            for (it = statements.begin(); it != statements.end(); it++) {
+            for(it = statements.begin(); it != statements.end(); it++) {
                 std::cout << "Generating code for " << typeid(**it).name() << endl;
-                last = (**it).codeGen(context);
+                last =(**it).codeGen(context);
             }
             std::cout << "Creating block" << endl;
             return last;
@@ -192,7 +197,7 @@ namespace LANG_NAMESPACE
             std::cout << "Creating variable declaration " << type.name << " " << id.name << endl;
             AllocaInst *alloc = new AllocaInst(typeOf(type), id.name.c_str(), context.currentBlock());
             context.locals()[id.name] = alloc;
-            if (assignmentExpr != NULL) {
+            if(assignmentExpr != NULL) {
                 NAssignment assn(id, *assignmentExpr);
                 assn.codeGen(context);
             }
@@ -203,7 +208,7 @@ namespace LANG_NAMESPACE
         {
             vector<const Type*> argTypes;
             VariableList::const_iterator it;
-            for (it = arguments.begin(); it != arguments.end(); it++) {
+            for(it = arguments.begin(); it != arguments.end(); it++) {
                 argTypes.push_back(typeOf((**it).type));
             }
             FunctionType *ftype = FunctionType::get(typeOf(type), argTypes, false);
@@ -212,8 +217,8 @@ namespace LANG_NAMESPACE
 
             context.pushBlock(bblock);
 
-            for (it = arguments.begin(); it != arguments.end(); it++) {
-                (**it).codeGen(context);
+            for(it = arguments.begin(); it != arguments.end(); it++) {
+               (**it).codeGen(context);
             }
 
             block.codeGen(context);
