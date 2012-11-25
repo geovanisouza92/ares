@@ -2,15 +2,8 @@
 LEVEL=..
 
 CLEAN= \
-  tcc.pdf \
-  proposta.pdf \
-  proposta2.pdf \
-  grammar.tex \
-  figuras/*.bb \
   *.aux \
-  proposta/*.aux \
   *.log \
-  proposta/*.log \
   *.lof \
   *.lol \
   *.out \
@@ -20,55 +13,56 @@ CLEAN= \
   *.bbl \
   *.blg \
   *.ilg \
-  *.results
+  *.results \
+  tcc.pdf \
+  proposta-pesquisa.pdf \
+  proposta/*.aux
 
 clean-local::
-	@ rm -rf $(CLEAN)
+	@ rm -rRf $(CLEAN)
 
-tcc.pdf: grammar.tex bb tcctex index bibtex
-	@ $(MAKE) tcctex
-	@ $(MAKE) tcctex
-	@ $(MAKE) tcctex
+all-local:: tcc proposta-pesquisa
 
-proposta.pdf: bb propotex bibtexpropo
-	@ $(MAKE) propotex
-	@ $(MAKE) propotex
-	@ $(MAKE) propotex
-	# @ $(MAKE) bibtexpropo
+tcc:
+	@ $(MAKE) grammar-tex
+	@ $(MAKE) bb
+	@ $(MAKE) tcc-tex
+	@ $(MAKE) index
+	@ $(MAKE) bibtex-tcc
+	@ $(MAKE) tcc-tex
+	@ $(MAKE) tcc-tex
+	@ $(MAKE) tcc-tex
 
-proposta2.pdf: bb propo2tex bibtexpropo2
-	@ $(MAKE) propo2tex
-	@ $(MAKE) propo2tex
-	@ $(MAKE) propo2tex
-	# @ $(MAKE) bibtexpropo2
+proposta-pesquisa:
+	@ $(MAKE) bb
+	@ $(MAKE) proposta-pesquisa-tex
+	@ $(MAKE) bibtex-proposta-pesquisa
+	@ $(MAKE) proposta-pesquisa-tex
+	@ $(MAKE) proposta-pesquisa-tex
+	@ $(MAKE) proposta-pesquisa-tex
 
-grammar.tex:
+grammar-tex:
 	cd $(LEVEL)/docs && $(MAKE) docs
 
 bb:
-	@ ebb figuras/*.*
+	@ ebb figuras/*.png
+	@ ebb figuras/*.jpg
 
-tcctex:
+tcc-tex:
 	@ pdflatex tcc.tex
 
-propotex:
-	@ pdflatex proposta.tex
-
-propo2tex:
-	@ pdflatex proposta2.tex
+proposta-pesquisa-tex:
+	@ pdflatex proposta-pesquisa.tex
 
 index: sigla
 
-sigla:
+sigla: tcc-tex
 	@ makeindex -s tabela-simbolos.ist -o tcc.sigla tcc.siglax
 
-bibtex:
+bibtex-tcc: tcc-tex
 	@ bibtex tcc
 
-bibtexpropo:
-	@ bibtex proposta
-
-bibtexpropo2:
-	@ bibtex proposta2
+bibtex-proposta-pesquisa: proposta-pesquisa-tex
+	@ bibtex proposta-pesquisa
 
 include $(LEVEL)/Makefile.common

@@ -1,0 +1,35 @@
+% Formato do documento - Proposta de TCC inspirada
+\documentclass[12pt,a4paper,tocpage=prefix,pagestart=folhaderosto,floatnumber=chapter,chapter=TITLE,section=Title,header=plain]{abnt}
+
+\pagenumbering{arabic}
+
+\include{config}
+\include{proposta/metainfo}
+\include{pdfinfo}
+
+\begin{document}
+  \begin{espacosimples}
+    \include{proposta/capa} % Capa da proposta
+    \include{ficha} % Ficha catalográfica
+  \end{espacosimples}
+  \begin{espacoumemeio}
+    \sumario
+    \include{proposta/titulo-provisorio}
+    \include{proposta/area}
+    \include{proposta/justificativa}
+    \include{proposta/objetivos}
+    \include{proposta/enunciado}
+    \include{proposta/fundamentacao}
+    \include{proposta/recursos}
+    \include{proposta/metodologia}
+    \include{proposta/cronograma}
+  \end{espacoumemeio}
+  \begin{espacosimples}
+    \bibliography{bibliografia,auxiliar}
+  \end{espacosimples}
+  \begin{espacoumemeio}
+    \include{proposta/aprovacao}
+  \end{espacoumemeio}
+  \begin{titlepage}
+  \end{titlepage}
+\end{document}
