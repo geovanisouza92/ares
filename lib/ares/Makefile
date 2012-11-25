@@ -2,10 +2,10 @@
 LEVEL=../..
 LIBRARYNAME = ares
 
-LEX = flex
-YACC = bison
-LFLAGS +=
-YFLAGS += -v -x --defines=$(LEVEL)/include/parser.h
+FLEX = flex
+BISON = bison
+FFLAGS +=
+BFLAGS += -v -x --defines=$(LEVEL)/include/parser.h
 
 all-local:: parser.cpp scanner.cpp actions/actions.cpp
 
@@ -15,13 +15,13 @@ clean-local::
 	@ rm -f scanner.cpp
 
 parser.cpp:: parser.y
-	@ $(YACC) $(YFLAGS) -o $@ $<
+	@ $(BISON) $(BFLAGS) -o $@ $<
 	@ mv *.hh $(LEVEL)/include/
 	@ mv *.output *.xml $(LEVEL)/docs
 	@ $(MAKE) all-local
 
 scanner.cpp:: scanner.l
-	@ $(LEX) $(LFLAGS) -o$@ $<
+	@ $(FLEX) $(FFLAGS) -o$@ $<
 	@ $(MAKE) all-local
 
 include $(LEVEL)/Makefile.common

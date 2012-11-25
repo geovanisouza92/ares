@@ -14,8 +14,9 @@ grammar.*
 Makefile.common
 *.out*
 parser.[chx]*
-proposta.pdf
+proposta-pesquisa.pdf
 Release*
 scanner.cpp
 tcc.pdf
 *.toc
+TODO
