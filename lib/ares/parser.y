@@ -1,6 +1,17 @@
-/* Ares Programming Language */
+/** Ares Programming Language
+ *
+ * parser.y - Syntatic Analyzer
+ *
+ * Bison script to generate the syntax parser of virtual engine
+ */
 
 %{
+/** Ares Programming Language
+ *
+ * parser.cpp - Syntatic Analyzer
+ *
+ * Implements the syntax parser of virtual engine
+ */
 
 #include <string>
 #include <vector>
@@ -8,8 +19,8 @@
 using namespace std;
 
 #include "driver.h"
-#include "st.h"
-#include "stoql.h"
+#include "ast.h"
+#include "oql.h"
 #include "stmt.h"
 
 using namespace SyntaxTree;
@@ -18,9 +29,9 @@ using namespace SyntaxTree;
 
 %debug
 %require "2.3"
-%start Goal /* CompilationUnit */
+%start Goal
 %skeleton "lalr1.cc"
-%define namespace "Ares::Compiler"
+%define namespace "Ares::VirtualEngine"
 %define "parser_class_name" "Parser"
 %parse-param { class Driver& driver }
 %lex-param { class Driver& driver }
@@ -229,24 +240,26 @@ BooleanLiteral
     ;
 
 ArrayLiteral
-    : '[' ExpressionListOpt ']'
-    | '[' ExpressionListOpt ',' ']'
+    : '[' ']'
+    | '[' ExpressionList ']'
+    | '[' ExpressionList ',' ']'
     ;
 
-ExpressionListOpt
-    : /* empty */
-    | ExpressionList
-    ;
+// ExpressionListOpt
+//     : /* empty */
+//     | ExpressionList
+//     ;
 
 HashLiteral
-    : '{' KeyValuePairListOpt '}'
+    : '{' ',' '}'
+    | '{' KeyValuePairList '}'
     | '{' KeyValuePairList ',' '}'
     ;
 
-KeyValuePairListOpt
-    : /* empty */
-    | KeyValuePairList
-    ;
+// KeyValuePairListOpt
+//     : /* empty */
+//     | KeyValuePairList
+//     ;
 
 KeyValuePairList
     : KeyValuePair
@@ -304,6 +317,7 @@ IntegralType
     | kLONG kLONG
     | kULONG
     | kCHAR
+    // | kUCHAR
     ;
 
 FloatingPointType
@@ -377,14 +391,16 @@ PrimaryExpressionNoParentesis
     ;
 
 ArrayCreationExpression
-    : kNEW NonArrayType '[' ExpressionList ']' ArrayInitializerOpt
-    | kNEW ArrayType ArrayInitializerOpt
+    : kNEW NonArrayType '[' ExpressionList ']'
+    | kNEW NonArrayType '[' ExpressionList ']' ArrayInitializer
+    | kNEW ArrayType
+    | kNEW ArrayType ArrayInitializer
     ;
 
-ArrayInitializerOpt
-    : /* empty */
-    | HashLiteral
-    ;
+// ArrayInitializerOpt
+//     : /* empty */
+//     | HashLiteral
+//     ;
 
 MemberAccess
     : PrimaryExpression '.' IDENTIFIER
@@ -394,13 +410,14 @@ MemberAccess
 
 InvocationExpression
     : PrimaryExpressionNoParentesis '(' ArgumentList ')'
-    | QualifiedIdentifier '(' ArgumentListOpt ')'
+    | QualifiedIdentifier '(' ')'
+    | QualifiedIdentifier '(' ArgumentList ')'
     ;
 
-ArgumentListOpt
-    : /* empty */
-    | ArgumentList
-    ;
+// ArgumentListOpt
+//     : /* empty */
+//     | ArgumentList
+//     ;
 
 ArraySlice
     : PrimaryExpression '[' Expression ':' ']'
@@ -443,7 +460,8 @@ NewExpression
     ;
 
 ObjectCreationExpression
-    : kNEW Type '(' ArgumentListOpt ')'
+    : kNEW Type '(' ')'
+    | kNEW Type '(' ArgumentList ')'
     ;
 
 TypeofExpression
@@ -501,16 +519,20 @@ CastExpression
     : /* '(' Type ')' UnaryExpressionNotPlusMinus
     | */ '(' Expression ')' UnaryExpressionNotPlusMinus
     | '(' MultiplicativeExpression '*' ')' UnaryExpressionNotPlusMinus
-    | '(' QualifiedIdentifier RankSpecifier TypeQualsOpt ')' UnaryExpressionNotPlusMinus
-    | '(' PrimitiveType TypeQualsOpt ')' UnaryExpressionNotPlusMinus
-    | '(' ClassType TypeQualsOpt ')' UnaryExpressionNotPlusMinus
-    | '(' kVOID TypeQualsOpt ')' UnaryExpressionNotPlusMinus //*/
+    | '(' QualifiedIdentifier RankSpecifier ')' UnaryExpressionNotPlusMinus
+    | '(' QualifiedIdentifier RankSpecifier TypeQuals ')' UnaryExpressionNotPlusMinus
+    | '(' PrimitiveType ')' UnaryExpressionNotPlusMinus
+    | '(' PrimitiveType TypeQuals ')' UnaryExpressionNotPlusMinus
+    | '(' ClassType ')' UnaryExpressionNotPlusMinus
+    | '(' ClassType TypeQuals ')' UnaryExpressionNotPlusMinus
+    | '(' kVOID ')' UnaryExpressionNotPlusMinus //*/
+    | '(' kVOID TypeQuals ')' UnaryExpressionNotPlusMinus //*/
     ;
 
-TypeQualsOpt
-    : /* empty */
-    | TypeQuals
-    ;
+// TypeQualsOpt
+//     : /* empty */
+//     | TypeQuals
+//     ;
 
 TypeQuals
     : TypeQual
@@ -704,10 +726,10 @@ LambdaParameter
     | IDENTIFIER
     ;
 
-LambdaParameterListOpt
-    : /* empty */
-    | LambdaParameterList
-    ;
+// LambdaParameterListOpt
+//     : /* empty */
+//     | LambdaParameterList
+//     ;
 
 LambdaExpressionBody
     : Expression
@@ -716,7 +738,8 @@ LambdaExpressionBody
 
 LambdaExpression
     : IDENTIFIER oFAR LambdaExpressionBody
-    | '(' LambdaParameterListOpt ')' oFAR LambdaExpressionBody
+    | '(' ')' oFAR LambdaExpressionBody
+    | '(' LambdaParameterList ')' oFAR LambdaExpressionBody
     ;
 
 TimedExpression
@@ -758,13 +781,14 @@ EmbeddedStatement
     ;
 
 Block
-    : '{' StatementRepeatOpt '}'
+    : '{' '}'
+    | '{' StatementRepeat '}'
     ;
 
-StatementRepeatOpt
-    : /* empty */
-    | StatementRepeat
-    ;
+// StatementRepeatOpt
+//     : /* empty */
+//     | StatementRepeat
+//     ;
 
 StatementRepeat
     : Statement
@@ -847,13 +871,13 @@ SwitchStatement
     ;
 
 SwitchBlock
-    : '{' SwitchSectionRepeatOpt '}'
+    : '{' SwitchSectionRepeat '}'
     ;
 
-SwitchSectionRepeatOpt
-    : /* empty */
-    | SwitchSectionRepeat
-    ;
+// SwitchSectionRepeatOpt
+//     : /* empty */
+//     | SwitchSectionRepeat
+//     ;
 
 SwitchSectionRepeat
     : SwitchSection
@@ -947,7 +971,8 @@ ContinueStatement
     ;
 
 ReturnStatement
-    : kRETURN ExpressionOpt ';'
+    : kRETURN ';'
+    | kRETURN Expression ';'
     ;
 
 YieldStatement
@@ -955,13 +980,14 @@ YieldStatement
     | kYIELD /* kRETURN */ Expression ';'
     ;
 
-ExpressionOpt
-    : /* empty */
-    | Expression
-    ;
+// ExpressionOpt
+//     : /* empty */
+//     | Expression
+//     ;
 
 ThrowStatement
-    : kTHROW ExpressionOpt ';'
+    : kTHROW ';'
+    | kTHROW Expression ';'
     ;
 
 TryStatement
@@ -976,15 +1002,17 @@ CatchClauseRepeat
     ;
 
 CatchClause
-    : kCATCH '(' ClassType IdentifierOpt ')' Block
-    | kCATCH '(' TypeName IdentifierOpt ')' Block
+    : kCATCH '(' ClassType ')' Block
+    | kCATCH '(' ClassType IDENTIFIER ')' Block
+    | kCATCH '(' TypeName ')' Block
+    | kCATCH '(' TypeName IDENTIFIER ')' Block
     | kCATCH Block
     ;
 
-IdentifierOpt
-    : /* empty */
-    | IDENTIFIER
-    ;
+// IdentifierOpt
+//     : /* empty */
+//     | IDENTIFIER
+//     ;
 
 FinallyClause
     : kFINALLY Block
@@ -1027,10 +1055,10 @@ ResourceAquisition
 //     : AttributesOpt kNAMESPACE QualifiedIdentifier NamespaceBody CommaOpt
 //     ;
 
-CommaOpt
-    : /* empty */
-    | ';'
-    ;
+// CommaOpt
+//     : /* empty */
+//     | ';'
+//     ;
 
 QualifiedIdentifier
     : IDENTIFIER
@@ -1083,10 +1111,10 @@ TypeDeclaration
     // | ClassDeclaration
     ;
 
-ModifierRepeatOpt
-    : /* empty */
-    | ModifierRepeat
-    ;
+// ModifierRepeatOpt
+//     : /* empty */
+//     | ModifierRepeat
+//     ;
 
 ModifierRepeat
     : Modifier
@@ -1112,7 +1140,10 @@ Modifier
     ;
 
 StructDeclaration
-    : /* AttributesOpt */ ModifierRepeatOpt kSTRUCT IDENTIFIER /* StructInterfacesOpt */ StructBody CommaOpt
+    : /* AttributesOpt */ kSTRUCT IDENTIFIER /* StructInterfacesOpt */ StructBody
+    | /* AttributesOpt */ kSTRUCT IDENTIFIER /* StructInterfacesOpt */ StructBody ';'
+    | /* AttributesOpt */ ModifierRepeat kSTRUCT IDENTIFIER /* StructInterfacesOpt */ StructBody
+    | /* AttributesOpt */ ModifierRepeat kSTRUCT IDENTIFIER /* StructInterfacesOpt */ StructBody ';'
     ;
 
 // StructInterfacesOpt
@@ -1151,7 +1182,8 @@ StructMemberDeclaration
     ;
 
 ConstantDeclaration
-    : /* AttributesOpt */ ModifierRepeatOpt kCONST Type ConstantDeclaratorList ';'
+    : /* AttributesOpt */ kCONST Type ConstantDeclaratorList ';'
+    | /* AttributesOpt */ ModifierRepeat kCONST Type ConstantDeclaratorList ';'
     ;
 
 ArrayInitializer
@@ -1170,7 +1202,10 @@ VariableInitializerList
     ;
 
 EnumDeclaration
-    : /* AttributesOpt */ ModifierRepeatOpt kENUM IDENTIFIER EnumBaseOpt EnumBody CommaOpt
+    : /* AttributesOpt */ kENUM IDENTIFIER EnumBaseOpt EnumBody
+    | /* AttributesOpt */ ModifierRepeat kENUM IDENTIFIER EnumBaseOpt EnumBody
+    | /* AttributesOpt */ kENUM IDENTIFIER EnumBaseOpt EnumBody ';'
+    | /* AttributesOpt */ ModifierRepeat kENUM IDENTIFIER EnumBaseOpt EnumBody ';'
     ;
 
 EnumBaseOpt
@@ -1207,9 +1242,12 @@ MethodDeclaration
     ;
 
 MethodHeader
-    : /* AttributesOpt */ ModifierRepeatOpt kVOID QualifiedIdentifier '(' FormalParameterListOpt ')'
-    | /* AttributesOpt */ ModifierRepeatOpt Type QualifiedIdentifier '(' FormalParameterListOpt ')'
-    | /* AttributesOpt */ ModifierRepeatOpt /* Type == int */ QualifiedIdentifier '(' FormalParameterListOpt ')'
+    : /* AttributesOpt */ kVOID QualifiedIdentifier '(' FormalParameterListOpt ')'
+    | /* AttributesOpt */ ModifierRepeat kVOID QualifiedIdentifier '(' FormalParameterListOpt ')'
+    | /* AttributesOpt */ Type QualifiedIdentifier '(' FormalParameterListOpt ')'
+    | /* AttributesOpt */ ModifierRepeat Type QualifiedIdentifier '(' FormalParameterListOpt ')'
+    | /* AttributesOpt */ /* Type == int */ QualifiedIdentifier '(' FormalParameterListOpt ')'
+    | /* AttributesOpt */ ModifierRepeat /* Type == int */ QualifiedIdentifier '(' FormalParameterListOpt ')'
     ;
 
 FormalParameterListOpt
@@ -1249,7 +1287,7 @@ ParameterArray
 
 namespace LANG_NAMESPACE
 {
-    namespace Compiler
+    namespace VirtualEngine
     {
         void
         Parser::error (const Parser::location_type& l, const std::string& m)
