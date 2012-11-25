@@ -1,9 +1,14 @@
-/* Ares Programming Language */
+/** Ares Programming Language
+ *
+ * stmt.h - Statements
+ *
+ * Defines objects used to represent statements
+ */
 
 #ifndef LANG_STMT_H
 #define LANG_STMT_H
 
-#include "st.h"
+#include "ast.h"
 
 using namespace LANG_NAMESPACE::Enum;
 
@@ -11,16 +16,22 @@ namespace LANG_NAMESPACE
 {
     namespace SyntaxTree
     {
+    	/**
+    	 * Represents an asynchronous statement
+    	 */
         class AsyncStatementNode : public SyntaxNode
         {
         protected:
             SyntaxNode * asyncItem;
         public:
-            AsyncStatementNode (SyntaxNode *);
-            virtual void printUsing (ostream &, unsigned);
+            AsyncStatementNode(SyntaxNode *);
+            virtual void toString(ostream &, unsigned);
         };
 
         // TODO Dividir em IfNode e UnlessNode
+        /**
+         * Represents a condition expression
+         */
         class ConditionNode: public SyntaxNode
         {
         protected:
@@ -30,12 +41,15 @@ namespace LANG_NAMESPACE
             VectorNode * conditionElifs;
             SyntaxNode * conditionElse;
         public:
-            ConditionNode (ConditionType::Type, SyntaxNode *, SyntaxNode *);
-            virtual ConditionNode * setElif (VectorNode *);
-            virtual ConditionNode * setElse (SyntaxNode *);
-            virtual void printUsing (ostream &, unsigned);
+            ConditionNode(ConditionType::Type, SyntaxNode *, SyntaxNode *);
+            virtual ConditionNode * setElif(VectorNode *);
+            virtual ConditionNode * setElse(SyntaxNode *);
+            virtual void toString(ostream &, unsigned);
         };
 
+        /**
+         * Represents a case expression and body of switch
+         */
         class CaseNode: public SyntaxNode
         {
         protected:
@@ -43,22 +57,28 @@ namespace LANG_NAMESPACE
             VectorNode * caseWhen;
             VectorNode * caseElse;
         public:
-            CaseNode (SyntaxNode *);
-            virtual CaseNode * setWhen (VectorNode *);
-            virtual CaseNode * setElse (VectorNode *);
-            virtual void printUsing (ostream &, unsigned);
+            CaseNode(SyntaxNode *);
+            virtual CaseNode * setWhen(VectorNode *);
+            virtual CaseNode * setElse(VectorNode *);
+            virtual void toString(ostream &, unsigned);
         };
 
+        /**
+         * TODO Nem sei se isso permanece... :/
+         */
         class WhenNode: public SyntaxNode
         {
         protected:
             SyntaxNode * whenExpression;
             SyntaxNode * whenBlock;
         public:
-            WhenNode (SyntaxNode *, SyntaxNode *);
-            virtual void printUsing (ostream &, unsigned);
+            WhenNode(SyntaxNode *, SyntaxNode *);
+            virtual void toString(ostream &, unsigned);
         };
 
+        /**
+         * Represents a for loop
+         */
         class ForNode: public SyntaxNode
         {
         protected:
@@ -68,12 +88,15 @@ namespace LANG_NAMESPACE
             SyntaxNode * forBlock;
             SyntaxNode * forStep;
         public:
-            ForNode (LoopType::Type, SyntaxNode *, SyntaxNode *, SyntaxNode *);
-            virtual ForNode * setStep (SyntaxNode *);
-            virtual void printUsing (ostream &, unsigned);
+            ForNode(LoopType::Type, SyntaxNode *, SyntaxNode *, SyntaxNode *);
+            virtual ForNode * setStep(SyntaxNode *);
+            virtual void toString(ostream &, unsigned);
         };
 
         // TODO Dividir em WhileNode e UntilNode
+        /**
+         * Represents a while/do-while loop
+         */
         class LoopNode: public SyntaxNode
         {
         protected:
@@ -81,21 +104,27 @@ namespace LANG_NAMESPACE
             SyntaxNode * loopExpression;
             SyntaxNode * loopBlock;
         public:
-            LoopNode (LoopType::Type, SyntaxNode *, SyntaxNode *);
-            virtual void printUsing (ostream &, unsigned);
+            LoopNode(LoopType::Type, SyntaxNode *, SyntaxNode *);
+            virtual void toString(ostream &, unsigned);
         };
 
+        /**
+         * Represents a control/interruption of execution
+         */
         class ControlNode: public SyntaxNode
         {
         protected:
             ControlType::Type controlType;
             SyntaxNode * controlExpression;
         public:
-            ControlNode (ControlType::Type);
-            ControlNode (ControlType::Type, SyntaxNode *);
-            virtual void printUsing (ostream &, unsigned);
+            ControlNode(ControlType::Type);
+            ControlNode(ControlType::Type, SyntaxNode *);
+            virtual void toString(ostream &, unsigned);
         };
 
+        /**
+         * Represents a block os statements
+         */
         class BlockNode: public SyntaxNode
         {
         protected:
@@ -104,43 +133,55 @@ namespace LANG_NAMESPACE
             VectorNode * blockStatements;
             VectorNode * blockRescue;
         public:
-            BlockNode (VectorNode *);
-            virtual BlockNode * setBlockRequire (VectorNode *);
-            virtual BlockNode * setBlockEnsure (VectorNode *);
-            virtual BlockNode * setBlockRescue (VectorNode *);
-            virtual void printUsing (ostream &, unsigned);
+            BlockNode(VectorNode *);
+            virtual BlockNode * setBlockRequire(VectorNode *);
+            virtual BlockNode * setBlockEnsure(VectorNode *);
+            virtual BlockNode * setBlockRescue(VectorNode *);
+            virtual void toString(ostream &, unsigned);
         };
 
+        /**
+         * TODO Nem sei pra que serve isso... (:
+         */
         class ValidationNode: public SyntaxNode
         {
         protected:
             SyntaxNode * validationExpression;
             SyntaxNode * validationRaise;
         public:
-            ValidationNode (SyntaxNode *, SyntaxNode *);
-            virtual void printUsing (ostream &, unsigned);
+            ValidationNode(SyntaxNode *, SyntaxNode *);
+            virtual void toString(ostream &, unsigned);
         };
 
+        /**
+         * TODO Jamaz funcionará
+         */
         class RescueNode : public SyntaxNode
         {
         protected:
             SyntaxNode * rescueStatement;
             SyntaxNode * rescueException;
         public:
-            RescueNode (SyntaxNode *);
-            virtual RescueNode * setException (SyntaxNode *);
-            virtual void printUsing (ostream &, unsigned);
+            RescueNode(SyntaxNode *);
+            virtual RescueNode * setException(SyntaxNode *);
+            virtual void toString(ostream &, unsigned);
         };
 
+        /**
+         * Represents a variable
+         */
         class VariableNode: public SyntaxNode
         {
         protected:
             VectorNode * variables;
         public:
-            VariableNode (VectorNode *);
-            virtual void printUsing (ostream &, unsigned);
+            VariableNode(VectorNode *);
+            virtual void toString(ostream &, unsigned);
         };
 
+        /**
+         * TODO Prq Deus quis assim...
+         */
         class ElementNode: public SyntaxNode
         {
         protected:
@@ -149,22 +190,28 @@ namespace LANG_NAMESPACE
             SyntaxNode * elementInitialValue;
             SyntaxNode * elementInvariants;
         public:
-            ElementNode (SyntaxNode *);
-            virtual ElementNode * setElementType (SyntaxNode *);
-            virtual ElementNode * setElementInitialValue (SyntaxNode *);
-            virtual ElementNode * setElementInvariants (SyntaxNode *);
-            virtual void printUsing (ostream &, unsigned);
+            ElementNode(SyntaxNode *);
+            virtual ElementNode * setElementType(SyntaxNode *);
+            virtual ElementNode * setElementInitialValue(SyntaxNode *);
+            virtual ElementNode * setElementInvariants(SyntaxNode *);
+            virtual void toString(ostream &, unsigned);
         };
 
+        /**
+         * Represents a constant
+         */
         class ConstantNode: public SyntaxNode
         {
         protected:
             VectorNode * constants;
         public:
-            ConstantNode (VectorNode *);
-            virtual void printUsing (ostream &, unsigned);
+            ConstantNode(VectorNode *);
+            virtual void toString(ostream &, unsigned);
         };
 
+        /**
+         * Represents a function
+         */
         class FunctionNode: public SyntaxNode
         {
         protected:
@@ -175,12 +222,12 @@ namespace LANG_NAMESPACE
             SyntaxNode * functionIntercept;
             SyntaxNode * functionBlock;
         public:
-            FunctionNode (SyntaxNode *, VectorNode *);
-            virtual FunctionNode * setFunctionReturn (SyntaxNode *);
-            virtual FunctionNode * setFunctionIntercept (SyntaxNode *);
-            virtual FunctionNode * addSpecifier (SpecifierType::Type);
-            virtual FunctionNode * setBlock (SyntaxNode *);
-            virtual void printUsing (ostream &, unsigned);
+            FunctionNode(SyntaxNode *, VectorNode *);
+            virtual FunctionNode * setFunctionReturn(SyntaxNode *);
+            virtual FunctionNode * setFunctionIntercept(SyntaxNode *);
+            virtual FunctionNode * addSpecifier(SpecifierType::Type);
+            virtual FunctionNode * setBlock(SyntaxNode *);
+            virtual void toString(ostream &, unsigned);
         };
     } // SyntaxTree
 } // LANG_NAMESPACE
