@@ -46,7 +46,7 @@ main (int argc, char ** argv)
     InteractionMode::Mode mode = InteractionMode::None;
     vector<string> files, messages;
     string outputFilename (LANG_SHELL_NAME ".out"), line;
-    Compiler::Driver driver;
+    VirtualEngine::Driver driver;
 
     programOptions::options_description desc ("Usage: " LANG_SHELL_NAME " [Options] files\n\nOptions");
     desc.add_options ()

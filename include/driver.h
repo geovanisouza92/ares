@@ -1,4 +1,10 @@
-/* Ares Programming Language */
+/** Ares Programming Language
+ *
+ * driver.h - Virtual Platform Driver
+ *
+ * Defines objects used to manipulate the compiler, interpreter and execution
+ * environment of Ares project
+ */
 
 #ifndef LANG_DRIVER_H
 #define LANG_DRIVER_H
@@ -6,9 +12,9 @@
 #include <string>
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
-#include "st.h"
+#include "ast.h"
 #include "scanner.h"
-#include "colorcon.h"
+#include "colorize.h"
 
 #define err_tail COLOR_BRED "error" COLOR_RESET ": "
 #define war_tail COLOR_BPURPLE "warning" COLOR_RESET ": "
@@ -32,8 +38,11 @@ namespace fileSystem = boost::filesystem3;
 
 namespace LANG_NAMESPACE
 {
-    namespace Compiler
+    namespace VirtualEngine
     {
+    	/**
+    	 * Represents the class to interact with virtual environment
+    	 */
         class Driver
         {
         public:
@@ -45,26 +54,26 @@ namespace LANG_NAMESPACE
             class Scanner * lexer;
             class SyntaxTree::Environment * enviro;
         public:
-            Driver ();
-            virtual ~Driver ();
-            virtual bool parseStream (istream&, const string& sname = "stream input");
-            virtual bool parseString (const string&, const string& sname = "string stream");
-            virtual bool parseFile (const string&);
+            Driver();
+            virtual ~Driver();
+            virtual bool parseStream(istream&, const string& sname = "stream input");
+            virtual bool parseString(const string&, const string& sname = "string stream");
+            virtual bool parseFile(const string&);
 
-            virtual int error (const class location&, const string&);
-            virtual int error (const string&);
-            virtual void warning (const class location&, const string&);
-            virtual void warning (const string&);
-            virtual void hint (const class location&, const string&);
-            virtual void hint (const string&);
-            virtual void resetMessages ();
-            virtual string resumeMessages ();
+            virtual int error(const class location&, const string&);
+            virtual int error(const string&);
+            virtual void warning(const class location&, const string&);
+            virtual void warning(const string&);
+            virtual void hint(const class location&, const string&);
+            virtual void hint(const string&);
+            virtual void resetMessages();
+            virtual string resumeMessages();
 
-            virtual void syntaxOkFor (const string);
-            virtual void resetLines ();
-            virtual void incLines (int qtde = 1);
-            virtual void decLines ();
-            virtual void produce (FinallyAction::Action, ostream &);
+            virtual void syntaxOkFor(const string);
+            virtual void resetLines();
+            virtual void incLines(int qtde = 1);
+            virtual void decLines();
+            virtual void produce(FinallyAction::Action, ostream &);
         };
     } // Compiler
 } // LANG_NAMESPACE

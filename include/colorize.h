@@ -1,4 +1,9 @@
-/* Ares Programming Language */
+/** Ares Programming Language
+ *
+ * colorize.h - Colorize the interactive shell
+ *
+ * Defines constants used to fill color in interactive shell
+ */
 
 #ifndef LANG_COLORCON_H
 #define LANG_COLORCON_H
@@ -23,7 +28,7 @@
  35 - Purple
  36 - Cyan
  37 - White
- a (singular) is background color
+ a(singular) is background color
  0 - Reset
  40 - Black
  41 - Red
