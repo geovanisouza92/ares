@@ -1,4 +1,10 @@
-%{ /* Ares Programming Language */
+%{
+/** Ares Programming Language
+ *
+ * scanner.l - Lexical Analyzer
+ *
+ * Flex script to generate the scanner.cpp file
+ */
 
 #include <string>
 
@@ -8,7 +14,7 @@ using namespace std;
 #include "parser.h"
 
 using namespace LANG_NAMESPACE;
-using namespace LANG_NAMESPACE::Compiler;
+using namespace LANG_NAMESPACE::VirtualEngine;
 
 typedef Parser::token token;
 typedef Parser::token_type token_type;
@@ -237,7 +243,7 @@ rgx \/(\\.|[^\/\ ])*\/
 
 namespace LANG_NAMESPACE
 {
-    namespace Compiler
+    namespace VirtualEngine
     {
         Scanner::Scanner(std::istream* in, std::ostream* out)
             : arcFlexLexer(in, out) { }
