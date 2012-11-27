@@ -84,8 +84,9 @@ namespace LANG_NAMESPACE
             unsigned errors, warnings, hints;
             class Scanner * lexer;
             class SyntaxTree::Environment * enviro;
+            std::ostream & output;
         public:
-            Driver();
+            Driver(std::ostream &);
             virtual ~Driver();
             virtual bool parseStream(istream&, const string& sname = "stream input");
             virtual bool parseString(const string&, const string& sname = "string stream");
@@ -105,7 +106,11 @@ namespace LANG_NAMESPACE
             virtual void incLines(int qtde = 1);
             virtual void decLines();
             virtual void produce(FinallyAction::Action, ostream &);
+        public:
         };
+
+        std::ostream & operator<< (const Driver &, const string);
+        
     } // Compiler
 } // LANG_NAMESPACE
 

@@ -50,10 +50,10 @@ namespace LANG_NAMESPACE
 {
     namespace VirtualEngine
     {
-        Driver::Driver()
+        Driver::Driver(std::ostream & out)
             : origin(LANG_SHELL_NAME), checkOnly(false),
             verboseMode(VerboseMode::Normal), lines(0), totalLines(0),
-            errors(0), warnings(0), hints(0)
+            errors(0), warnings(0), hints(0), output(out)
         {
             enviro = new SyntaxTree::Environment(0);
         }
@@ -96,7 +96,7 @@ namespace LANG_NAMESPACE
         {
             fileSystem::path file = fileSystem::absolute(filename);
             if(fileSystem::exists(file) && file.extension() == string("." LANG_EXTENSION)) {
-                if(verboseMode >= VerboseMode::High) cout << "=> Start parsing: " << filename << endl;
+                if(verboseMode >= VerboseMode::High) output << "=> Start parsing: " << filename << endl;
                 ifstream in(filename.c_str());
                 if(!in.good()) {
                     error("Could not open file: " + filename);
@@ -112,7 +112,7 @@ namespace LANG_NAMESPACE
         Driver::error(const class location & l, const string & m)
         {
             if(verboseMode >= VerboseMode::Low) {
-                cout << "[" << l << "]: " << err_tail << m << endl;
+                output << "[" << l << "]: " << err_tail << m << endl;
                 ++errors;
             }
             return 1;
@@ -122,8 +122,8 @@ namespace LANG_NAMESPACE
         Driver::error(const string & m)
         {
             if(verboseMode >= VerboseMode::Low) {
-                cout << "[" << origin << "] ";
-                cout << err_tail << m << endl;
+                output << "[" << origin << "] ";
+                output << err_tail << m << endl;
                 ++errors;
             }
             return 1;
@@ -133,7 +133,7 @@ namespace LANG_NAMESPACE
         Driver::warning(const class location & l, const string & m)
         {
             if(verboseMode >= VerboseMode::Normal) {
-                cout << "[" << l << "]: " << war_tail << m << endl;
+                output << "[" << l << "]: " << war_tail << m << endl;
                 ++warnings;
             }
         }
@@ -142,8 +142,8 @@ namespace LANG_NAMESPACE
         Driver::warning(const string & m)
         {
             if(verboseMode >= VerboseMode::Normal) {
-                cout << "[" << origin << "] ";
-                cout << war_tail << m << endl;
+                output << "[" << origin << "] ";
+                output << war_tail << m << endl;
                 ++warnings;
             }
         }
@@ -152,7 +152,7 @@ namespace LANG_NAMESPACE
         Driver::hint(const class location & l, const string & m)
         {
             if(verboseMode >= VerboseMode::High) {
-                cout << "[" << l << "]: " << hin_tail << m << endl;
+                output << "[" << l << "]: " << hin_tail << m << endl;
                 ++hints;
             }
         }
@@ -161,8 +161,8 @@ namespace LANG_NAMESPACE
         Driver::hint(const string & m)
         {
             if(verboseMode >= VerboseMode::High) {
-                cout << "[" << origin << "] ";
-                cout << hin_tail << m << endl;
+                output << "[" << origin << "] ";
+                output << hin_tail << m << endl;
                 ++hints;
             }
         }
@@ -192,7 +192,7 @@ namespace LANG_NAMESPACE
         void
         Driver::syntaxOkFor(const string what)
         {
-            cout << "=> Syntax OK for " << COLOR_BGREEN << what << COLOR_RESET << endl;
+            output << "=> Syntax OK for " << COLOR_BGREEN << what << COLOR_RESET << endl;
         }
 
         void
@@ -237,6 +237,13 @@ namespace LANG_NAMESPACE
             default:
                 break;
             }
+        }
+
+        std::ostream &
+        operator<< (const Driver & driver, const string val)
+        {
+            driver.output << val;
+            return driver.output;
         }
 
     } // Compiler
