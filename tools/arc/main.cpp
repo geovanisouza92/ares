@@ -57,11 +57,11 @@ namespace programOptions = boost::program_options;
 if (driver.verboseMode >= VerboseMode::Low) { \
     string errors = driver.resumeMessages (); \
     if (!errors.empty ()) \
-        cout << "=> " << errors; \
+        output << "=> " << errors; \
     if (driver.totalLines > 0) \
-        cout << statistics (filesProcessed, driver.totalLines, x); \
+        output << statistics (filesProcessed, driver.totalLines, x); \
     if (driver.verboseMode >= VerboseMode::High) { \
-        cout << "=> Elapsed miliseconds: " << getMili () << endl; \
+        output << "=> Elapsed miliseconds: " << getMili () << endl; \
     } \
 }
 #else
@@ -69,9 +69,9 @@ if (driver.verboseMode >= VerboseMode::Low) { \
 if (driver.verboseMode >= VerboseMode::Low) { \
     string errors = driver.resumeMessages (); \
     if (!errors.empty ()) \
-        cout << "=> " << errors; \
+        output << "=> " << errors; \
     if (driver.totalLines > 0) \
-        cout << statistics (filesProcessed, driver.totalLines, x); \
+        output << statistics (filesProcessed, driver.totalLines, x); \
 }
 #endif
 #endif
@@ -83,7 +83,8 @@ main (int argc, char ** argv)
     InteractionMode::Mode mode = InteractionMode::None;
     vector<string> files, messages;
     string outputFilename (LANG_SHELL_NAME ".out"), line;
-    VirtualEngine::Driver driver;
+    std::ostream & output = std::cout;
+    VirtualEngine::Driver driver(output);
 
     programOptions::options_description desc ("Usage: " LANG_SHELL_NAME " [Options] files\n\nOptions");
     desc.add_options ()
@@ -102,8 +103,8 @@ main (int argc, char ** argv)
             .options (desc).positional (positional_input).run (), options);
         notify (options);
     } catch (programOptions::unknown_option & e) {
-        cout << err_tail "Unknown option: " << e.get_option_name () << endl;
-        cout << desc << endl;
+        output << err_tail "Unknown option: " << e.get_option_name () << endl;
+        output << desc << endl;
         return 1;
     }
 
@@ -118,14 +119,14 @@ main (int argc, char ** argv)
             bool parse_result = driver.parseString (line, "line eval");
             if (parse_result) {
                 if (driver.errors > maxErrors) return 1;
-                driver.produce ( (driver.checkOnly ? FinallyAction::None : FinallyAction::PrintOnConsole), cout);
+                driver.produce ( (driver.checkOnly ? FinallyAction::None : FinallyAction::PrintOnConsole), output);
             }
             STATS(false)
         }
     }
 
     if (options.count ("help")) {
-        cout << desc << endl;
+        output << desc << endl;
         return 0;
     }
 
@@ -141,15 +142,15 @@ main (int argc, char ** argv)
     }
 
     if (options.count ("version")) {
-        cout << langVersionInfo () << endl;
+        output << langVersionInfo () << endl;
         return 0;
     }
 
     if (driver.verboseMode >= VerboseMode::High) {
-        cout << langVersionInfo () << endl;
+        output << langVersionInfo () << endl;
         if (!messages.empty ())
             for (vector<string>::iterator message = messages.begin (); message < messages.end (); message++)
-                cout << *message << endl;
+                output << *message << endl;
     }
 
     // TODO Transpor código para Driver
@@ -160,7 +161,7 @@ main (int argc, char ** argv)
             if (parse_ok) {
                 filesProcessed++;
                 if (driver.errors > maxErrors) return 1;
-                driver.produce ( (driver.checkOnly ? FinallyAction::None : FinallyAction::PrintOnConsole), cout);
+                driver.produce ( (driver.checkOnly ? FinallyAction::None : FinallyAction::PrintOnConsole), output);
             } else
                 break;
         }
@@ -170,12 +171,12 @@ main (int argc, char ** argv)
     if (mode == InteractionMode::Shell) {
         string guide (">>> ");
         int blanks = 0;
-        while (cout << COLOR_BGREEN<< LANG_SHELL_NAME << COLOR_RESET << guide && getline (cin, line))
+        while (output << COLOR_BGREEN<< LANG_SHELL_NAME << COLOR_RESET << guide && getline (cin, line))
             if (!line.empty ()) {
                 bool parse_ok = driver.parseString (line, LANG_SHELL_NAME);
                 if (parse_ok) {
                     if (driver.errors > maxErrors) break;
-                    driver.produce ( (driver.checkOnly ? FinallyAction::None : FinallyAction::PrintOnConsole), cout);
+                    driver.produce ( (driver.checkOnly ? FinallyAction::None : FinallyAction::PrintOnConsole), output);
                 }
                 blanks = 0; line.clear ();
             } else if (++blanks && blanks >= 3) break;
