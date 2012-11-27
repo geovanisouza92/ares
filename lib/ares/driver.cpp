@@ -67,7 +67,7 @@ namespace LANG_NAMESPACE
             origin = sname;
             bool result = false;
             try { // Captura erros léxicos e sintáticos
-                Scanner scanner(&in);
+                Scanner scanner(&in, &this->output);
                 this->lexer = &scanner;
                 Parser parser(*this);
 #ifdef LANG_DEBUG
