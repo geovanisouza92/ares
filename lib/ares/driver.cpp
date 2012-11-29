@@ -50,10 +50,10 @@ namespace LANG_NAMESPACE
 {
     namespace VirtualEngine
     {
-        Driver::Driver(std::ostream & out)
+        Driver::Driver(std::ostream & out, bool col = true)
             : origin(LANG_SHELL_NAME), checkOnly(false),
             verboseMode(VerboseMode::Normal), lines(0), totalLines(0),
-            errors(0), warnings(0), hints(0), output(out)
+            errors(0), warnings(0), hints(0), output(out), colorized(col)
         {
             enviro = new SyntaxTree::Environment(0);
         }
@@ -104,15 +104,20 @@ namespace LANG_NAMESPACE
                 }
                 return parseStream(in, fileSystem::absolute(filename).filename().string());
             } else
-                warning(war_tail "This isn't seems a valid " LANG_NAME " file: " + filename);
+                warning("This isn't seems a valid " LANG_NAME " file: " + filename);
             return false;
         }
 
         int
         Driver::error(const class location & l, const string & m)
         {
+            stringstream err_tail;
+            if (this->colorized)
+                err_tail << COLOR_BRED << "error" << COLOR_RESET << ": ";
+            else
+                err_tail << "error: ";
             if(verboseMode >= VerboseMode::Low) {
-                output << "[" << l << "]: " << err_tail << m << endl;
+                output << "[" << l << "]: " << err_tail.str() << m << endl;
                 ++errors;
             }
             return 1;
@@ -121,9 +126,14 @@ namespace LANG_NAMESPACE
         int
         Driver::error(const string & m)
         {
+            stringstream err_tail;
+            if (this->colorized)
+                err_tail << COLOR_BRED << "error" << COLOR_RESET << ": ";
+            else
+                err_tail << "error: ";
             if(verboseMode >= VerboseMode::Low) {
                 output << "[" << origin << "] ";
-                output << err_tail << m << endl;
+                output << err_tail.str() << m << endl;
                 ++errors;
             }
             return 1;
@@ -132,8 +142,13 @@ namespace LANG_NAMESPACE
         void
         Driver::warning(const class location & l, const string & m)
         {
+            stringstream war_tail;
+            if (this->colorized)
+                war_tail << COLOR_BPURPLE << "warning" << COLOR_RESET << ": ";
+            else
+                war_tail << "warning: ";
             if(verboseMode >= VerboseMode::Normal) {
-                output << "[" << l << "]: " << war_tail << m << endl;
+                output << "[" << l << "]: " << war_tail.str() << m << endl;
                 ++warnings;
             }
         }
@@ -141,9 +156,14 @@ namespace LANG_NAMESPACE
         void
         Driver::warning(const string & m)
         {
+            stringstream war_tail;
+            if (this->colorized)
+                war_tail << COLOR_BPURPLE << "warning" << COLOR_RESET << ": ";
+            else
+                war_tail << "warning: ";
             if(verboseMode >= VerboseMode::Normal) {
                 output << "[" << origin << "] ";
-                output << war_tail << m << endl;
+                output << war_tail.str() << m << endl;
                 ++warnings;
             }
         }
@@ -151,8 +171,13 @@ namespace LANG_NAMESPACE
         void
         Driver::hint(const class location & l, const string & m)
         {
+            stringstream hin_tail;
+            if (this->colorized)
+                hin_tail << COLOR_BBLUE << "warning" << COLOR_RESET << ": ";
+            else
+                hin_tail << "warning: ";
             if(verboseMode >= VerboseMode::High) {
-                output << "[" << l << "]: " << hin_tail << m << endl;
+                output << "[" << l << "]: " << hin_tail.str() << m << endl;
                 ++hints;
             }
         }
@@ -160,9 +185,14 @@ namespace LANG_NAMESPACE
         void
         Driver::hint(const string & m)
         {
+            stringstream hin_tail;
+            if (this->colorized)
+                hin_tail << COLOR_BBLUE << "warning" << COLOR_RESET << ": ";
+            else
+                hin_tail << "warning: ";
             if(verboseMode >= VerboseMode::High) {
                 output << "[" << origin << "] ";
-                output << hin_tail << m << endl;
+                output << hin_tail.str() << m << endl;
                 ++hints;
             }
         }
@@ -179,11 +209,28 @@ namespace LANG_NAMESPACE
         Driver::resumeMessages()
         {
             stringstream result;
-            if(errors > 0 || warnings > 0 || hints > 0) {
+            if(errors > 0 || warnings > 0 || hints > 0)
+            {
                 result << "Messages: ";
-                if(verboseMode >= VerboseMode::Low && errors > 0) result << COLOR_BRED << errors << COLOR_RESET <<(errors > 1 ? " errors " : " error ");
-                if(verboseMode >= VerboseMode::Normal && warnings > 0) result << COLOR_BPURPLE << warnings << COLOR_RESET <<(warnings > 1 ? " warnings " : " warning ");
-                if(verboseMode >= VerboseMode::High && hints > 0) result << COLOR_BBLUE << hints << COLOR_RESET <<(hints > 1 ? " hints " : " hint ");
+                stringstream err_str, war_str, hin_str;
+                if (this->colorized)
+                {
+                    err_str << COLOR_BRED << errors << COLOR_RESET;
+                    war_str << COLOR_BPURPLE << warnings << COLOR_RESET;
+                    hin_str << COLOR_BBLUE << hints << COLOR_RESET;
+                }
+                else
+                {
+                    err_str << errors;
+                    war_str << warnings;
+                    hin_str << hints;
+                }
+                if (verboseMode >= VerboseMode::Low)
+                    result << err_str.str() << (errors > 1 ? " errors " : " error ");
+                if (verboseMode >= VerboseMode::Normal)
+                    result << war_str.str() << (warnings > 1 ? " warnings " : " warning ");
+                if (verboseMode >= VerboseMode::High)
+                    result << hin_str.str() << (hints > 1 ? " hints " : " hint ");
                 result << endl;
             }
             return result.str();
@@ -192,7 +239,12 @@ namespace LANG_NAMESPACE
         void
         Driver::syntaxOkFor(const string what)
         {
-            output << "=> Syntax OK for " << COLOR_BGREEN << what << COLOR_RESET << endl;
+            stringstream msg;
+            if (this->colorized)
+                msg << COLOR_BGREEN << what << COLOR_RESET;
+            else
+                msg << what;
+            output << "=> Syntax OK for " << msg.str() << endl;
         }
 
         void

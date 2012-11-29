@@ -47,10 +47,6 @@
 #include "scanner.h"
 #include "colorize.h"
 
-#define err_tail COLOR_BRED "error" COLOR_RESET ": "
-#define war_tail COLOR_BPURPLE "warning" COLOR_RESET ": "
-#define hin_tail COLOR_BBLUE "hint" COLOR_RESET ": "
-
 #ifdef LANG_DEBUG
 #define DEBUG_OUT(x) uout << x << endl;
 #define DEBUG_ERROR(x) uerr << x << endl;
@@ -78,7 +74,7 @@ namespace LANG_NAMESPACE
         {
         public:
             string origin;
-            bool checkOnly;
+            bool checkOnly, colorized;
             VerboseMode::Mode verboseMode;
             unsigned lines, totalLines;
             unsigned errors, warnings, hints;
@@ -86,7 +82,7 @@ namespace LANG_NAMESPACE
             class SyntaxTree::Environment * enviro;
             std::ostream & output;
         public:
-            Driver(std::ostream &);
+            Driver(std::ostream &, bool);
             virtual ~Driver();
             virtual bool parseStream(istream&, const string& sname = "stream input");
             virtual bool parseString(const string&, const string& sname = "string stream");

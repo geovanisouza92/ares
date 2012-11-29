@@ -81,28 +81,28 @@ LANG_NAMESPACE::Util::getMili()
 }
 
 string
-LANG_NAMESPACE::Util::statistics(unsigned total_files, unsigned total_lines, bool print_time = false)
+LANG_NAMESPACE::Util::statistics(unsigned total_files, unsigned total_lines, bool colorized, bool print_time = false)
 {
     double elapsed = getMili() / 1000;
     stringstream s;
     s << "=> Statistics: "
-      << COLOR_BCYAN
+      << (colorized ? COLOR_BCYAN : "")
       << intToStr(total_files)
-      << COLOR_RESET
-      <<(total_files <= 1 ? " file processed: " : " files processed: ")
-      << COLOR_BBLUE
+      << (colorized ? COLOR_RESET : "")
+      << (total_files <= 1 ? " file processed: " : " files processed: ")
+      << (colorized ? COLOR_BBLUE : "")
       << intToStr(total_lines)
-      << COLOR_RESET
-      <<(total_lines > 1 ? " lines in " : " line in ")
-      << COLOR_BYELLOW
+      << (colorized ? COLOR_RESET : "")
+      << (total_lines > 1 ? " lines in " : " line in ")
+      << (colorized ? COLOR_BYELLOW : "")
       << elapsed
-      << COLOR_RESET
+      << (colorized ? COLOR_RESET : "")
       <<(elapsed <= 1 ? " second" : " seconds");
     if(print_time) {
         s <<(elapsed <= 1 ? " / " : " / =~ ")
-          << COLOR_BGREEN
+          << (colorized ? COLOR_BGREEN : "")
           << intToStr((elapsed >= 1 ?(int)(total_lines / elapsed) : total_lines) )
-          << COLOR_RESET
+          << (colorized ? COLOR_RESET : "")
           <<(total_lines > 1 ? " lines per second." : " line per second.");
     } else
         s << '.';

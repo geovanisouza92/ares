@@ -52,28 +52,17 @@ using namespace LANG_NAMESPACE::Util;
 namespace programOptions = boost::program_options;
 
 #ifndef STATS
-#ifdef LANG_DEBUG
-#define STATS(x) \
+#define STATS(print_exec_time) \
 if (driver.verboseMode >= VerboseMode::Low) { \
     string errors = driver.resumeMessages(); \
     if (!errors.empty()) \
         output << "=> " << errors; \
     if (driver.totalLines > 0) \
-        output << statistics(filesProcessed, driver.totalLines, x); \
+        output << statistics(filesProcessed, driver.totalLines, colorized, print_exec_time); \
     if (driver.verboseMode >= VerboseMode::High) { \
         output << "=> Elapsed miliseconds: " << getMili() << endl; \
     } \
 }
-#else
-#define STATS(x) \
-if (driver.verboseMode >= VerboseMode::Low) { \
-    string errors = driver.resumeMessages(); \
-    if (!errors.empty()) \
-        output << "=> " << errors; \
-    if (driver.totalLines > 0) \
-        output << statistics(filesProcessed, driver.totalLines, x); \
-}
-#endif
 #endif
 
 int
@@ -84,19 +73,20 @@ main(int argc, char ** argv)
     vector<string> files, messages;
     string outputFilename(LANG_SHELL_NAME ".out"), line;
     std::ostream & output = std::cout;
-    bool echo = true;
-    VirtualEngine::Driver driver(output);
+    bool echo = true, colorized = LANG_COLORIZED;
 
     programOptions::options_description desc("Usage: " LANG_SHELL_NAME " [Options] files\n\nOptions");
     desc.add_options()
         ("check-only,c", "Enable check only")
-        ("eval,e", programOptions::value<string>(), "Evaluate and compile <arg>")
-        ("help,h", "Print this message and exit")
+        ("colorized,l", programOptions::value<bool>()->default_value(true), "Set colorized output to console")
+        ("echo,z", programOptions::value<bool>()->default_value(true), "Set echo for console")
+        ("eval,e", programOptions::value<string>(), "Read-eval-print <arg>")
+        ("help,h", "Print this message")
         ("input-file,i", programOptions::value<vector<string> >(), "[Optional] Use <arg> as input file(s).")
         // ("output-file,o", programOptions::value<vector<string> >(), "[Optional] Set <arg> as output file(s).")
         ("verbose,x", programOptions::value<int>()->default_value(0), "Set the verbose mode [0..3]")
         ("version,v", "Print version information")
-        ("echo,z", programOptions::value<bool>()->default_value(true), "Set echo for console");
+        ;
     programOptions::positional_options_description positional_input;
     positional_input.add("input-file", -1);
 
@@ -106,10 +96,15 @@ main(int argc, char ** argv)
             .options(desc).positional(positional_input).run(), options);
         notify(options);
     } catch(programOptions::unknown_option & e) {
-        output << err_tail "Unknown option: " << e.get_option_name() << endl;
+        output << "Unknown option: " << e.get_option_name() << endl;
         output << desc << endl;
         return 1;
     }
+
+    if (LANG_COLORIZED && options.count("colorized"))
+        colorized = options ["colorized"].as<bool>();
+
+    VirtualEngine::Driver driver(output, colorized);
 
     if (options.count("check-only")) {
         driver.checkOnly = true;
@@ -179,7 +174,10 @@ main(int argc, char ** argv)
         int blanks = 0;
         string echo_shell = "";
         if (echo)
-            echo_shell = COLOR_BGREEN LANG_SHELL_NAME COLOR_RESET + guide;
+            if (colorized)
+                echo_shell = COLOR_BGREEN LANG_SHELL_NAME COLOR_RESET + guide;
+            else
+                echo_shell = LANG_SHELL_NAME + guide;
         while(output << echo_shell && getline(cin, line))
             if (!line.empty()) {
                 bool parse_ok = driver.parseString(line, LANG_SHELL_NAME);

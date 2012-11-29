@@ -54,7 +54,7 @@ namespace LANG_NAMESPACE
         string intToStr(int);
         string formatNumber(int, int, char);
         double getMili();
-        string statistics(unsigned, unsigned, bool);
+        string statistics(unsigned, unsigned, bool, bool);
         string trimString(string, char);
     } // Util
 } // LANG_NAMESPACE
