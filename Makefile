@@ -5,7 +5,11 @@ EXTRA_DIST = include
 
 include $(LEVEL)/Makefile.common
 
-tcc:: proposta
+all-local:: pdf test
+
+pdf:: proposta tcc
+
+tcc:: docs
 	@ cd tcc; $(MAKE) tcc.pdf
 
 docs::
