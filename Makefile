@@ -1,6 +1,6 @@
 
 LEVEL = .
-DIRS = lib tools docs tcc
+DIRS = lib tools
 EXTRA_DIST = include
 
 include $(LEVEL)/Makefile.common
@@ -12,6 +12,9 @@ pdf:: proposta tcc
 tcc:: docs
 	@ cd tcc; $(MAKE) tcc.pdf
 
+proposta:: docs
+	@ cd tcc; $(MAKE) proposta-pesquisa
+
 docs::
 	@ cd docs; $(MAKE) docs
 
@@ -20,6 +23,3 @@ test::
 
 clean-local::
 	@ rm -rf *.results
-
-proposta::
-	@ cd tcc; $(MAKE) proposta.pdf; $(MAKE) proposta2.pdf

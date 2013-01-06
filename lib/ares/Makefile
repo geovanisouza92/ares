@@ -7,7 +7,7 @@ BISON = bison
 FFLAGS +=
 BFLAGS += -v -x --defines=$(LEVEL)/include/parser.h
 
-all-local:: parser.cpp scanner.cpp actions/actions.cpp
+all-local:: parser.cpp scanner.cpp
 
 clean-local::
 	@ rm -f parser.cpp
