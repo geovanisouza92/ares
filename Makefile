@@ -5,7 +5,7 @@ EXTRA_DIST = include
 
 include $(LEVEL)/Makefile.common
 
-all-local:: pdf test
+all-local:: pdf
 
 pdf:: proposta tcc
 
@@ -18,7 +18,7 @@ proposta:: docs
 docs::
 	@ cd docs; $(MAKE) docs
 
-test::
+test:: all-local
 	@ $(LEVEL)/Release/bin/arc -x 3 `ls $(LEVEL)/tests/*.ar` 2> $@.results
 
 clean-local::
