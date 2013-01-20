@@ -13,7 +13,7 @@ docs: parser.xml
 	@ echo '</grammar></bison-xml-report>' >> grammar.xml
 	@ xsltproc xslt/xml2xhtml.xsl grammar.xml > grammar.html
 	@ xsltproc xslt/xml2text.xsl grammar.xml > grammar.bnf
-	@ echo "\\\\apendice\\\\chapter{Gram\\\\'atica BNF da linguagem de programa\\\\ca o do prot\\\\'otipo}\\\\begin{espacosimples}\\\\begin{scriptsize}\\\\begin{lstlisting}" > $(LEVEL)/tcc/grammar.tex
+	@ echo "\\\\chapter{Gram\\\\'atica BNF da linguagem de programa\\\\ca o do prot\\\\'otipo}\\\\begin{espacosimples}\\\\begin{scriptsize}\\\\begin{lstlisting}" > $(LEVEL)/tcc/grammar.tex
 	@ cat grammar.bnf | sed "s/\\$$/\\\$$/" >> $(LEVEL)/tcc/grammar.tex
 	@ echo "\\\\end{lstlisting}\\\\end{scriptsize}\\\\end{espacosimples}" >> $(LEVEL)/tcc/grammar.tex
 
