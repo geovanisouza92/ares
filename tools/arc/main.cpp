@@ -49,7 +49,7 @@ using namespace std;
 using namespace LANG_NAMESPACE;
 using namespace LANG_NAMESPACE::Enum;
 using namespace LANG_NAMESPACE::Util;
-namespace programOptions = boost::program_options;
+namespace po = boost::program_options;
 
 #ifndef STATS
 #define STATS(print_exec_time) \
@@ -65,6 +65,9 @@ if (driver.verboseMode >= VerboseMode::Low) { \
 }
 #endif
 
+vector<string>
+split_string (string str);
+
 int
 main(int argc, char ** argv)
 {
@@ -75,27 +78,27 @@ main(int argc, char ** argv)
     std::ostream & output = std::cout;
     bool echo = true, colorized = LANG_COLORIZED;
 
-    programOptions::options_description desc("Usage: " LANG_SHELL_NAME " [Options] files\n\nOptions");
+    po::options_description desc("Usage: " LANG_SHELL_NAME " [Options] files\n\nOptions");
     desc.add_options()
         ("check-only,c", "Enable check only")
-        ("colorized,l", programOptions::value<bool>()->default_value(true), "Set colorized output to console")
-        ("echo,z", programOptions::value<bool>()->default_value(true), "Set echo for console")
-        ("eval,e", programOptions::value<string>(), "Read-eval-print <arg>")
+        ("colorized,l", po::value<bool>()->default_value(true), "Set colorized output to console")
+        ("echo,z", po::value<bool>()->default_value(true), "Set echo for console")
+        ("eval,e", po::value<string>(), "Read-eval-print <arg>")
         ("help,h", "Print this message")
-        ("input-file,i", programOptions::value<vector<string> >(), "[Optional] Use <arg> as input file(s).")
-        // ("output-file,o", programOptions::value<vector<string> >(), "[Optional] Set <arg> as output file(s).")
-        ("verbose,x", programOptions::value<int>()->default_value(0), "Set the verbose mode [0..3]")
+        ("input-file,i", po::value<vector<string> >(), "[Optional] Use <arg> as input file(s).")
+        // ("output-file,o", po::value<vector<string> >(), "[Optional] Set <arg> as output file(s).")
+        ("verbose,x", po::value<int>()->default_value(0), "Set the verbose mode [0..3]")
         ("version,v", "Print version information")
         ;
-    programOptions::positional_options_description positional_input;
+    po::positional_options_description positional_input;
     positional_input.add("input-file", -1);
 
-    programOptions::variables_map options;
+    po::variables_map options;
     try {
-        programOptions::store(programOptions::command_line_parser(argc, argv)
+        po::store(po::command_line_parser(argc, argv)
             .options(desc).positional(positional_input).run(), options);
-        notify(options);
-    } catch(programOptions::unknown_option & e) {
+        po::notify(options);
+    } catch(po::unknown_option & e) {
         output << "Unknown option: " << e.get_option_name() << endl;
         output << desc << endl;
         return 1;
@@ -170,25 +173,144 @@ main(int argc, char ** argv)
     } else if (mode == InteractionMode::None) mode = InteractionMode::Shell;
 
     if (mode == InteractionMode::Shell) {
-        string guide(">>> ");
-        int blanks = 0;
-        string echo_shell = "";
+
+        vector<string> args;
+
+        po::options_description shell("Interactive shell");
+        shell.add_options()
+            ("\\q", "Quit")
+            ("\\h", "Print this help message")
+            ("\\c", "Clear the buffer")
+            ("\\l", "List the buffer")
+            ("/", "Execute the command buffer")
+            ;
+        po::variables_map commands;
+
+        string guide(">>> "), prompt = "", buffer = "";
         if (echo)
             if (colorized)
-                echo_shell = COLOR_BGREEN LANG_SHELL_NAME COLOR_RESET + guide;
+                prompt = COLOR_BGREEN LANG_SHELL_NAME COLOR_RESET + guide;
             else
-                echo_shell = LANG_SHELL_NAME + guide;
-        while(output << echo_shell && getline(cin, line))
+                prompt = LANG_SHELL_NAME + guide;
+        while(output << prompt && getline(cin, line))
             if (!line.empty()) {
-                bool parse_ok = driver.parseString(line, LANG_SHELL_NAME);
-                if (parse_ok) {
-                    if (driver.errors > maxErrors) break;
-                    driver.produce((driver.checkOnly ? FinallyAction::None : FinallyAction::PrintOnConsole), output);
+
+                try
+                {
+                    args = split_string(string("--") + line);
+                    po::store(po::command_line_parser(args).options(shell).run(), commands);
+                    po::notify(commands);
+
+                    if (commands.count("\\q"))
+                        break;
+
+                    if (commands.count("\\h"))
+                        output << shell << endl;
+
+                    if (commands.count("\\l"))
+                        output << buffer << endl;
+
+                    if (commands.count("\\c"))
+                        buffer.clear();
+
+                    if (commands.count("/"))
+                    {
+                        bool parse_ok = driver.parseString(buffer, LANG_SHELL_NAME);
+                        if (parse_ok) {
+                            if (driver.errors > maxErrors) break;
+                            driver.produce((driver.checkOnly ? FinallyAction::None : FinallyAction::PrintOnConsole), output);
+                        }
+                    }
+
                 }
-                blanks = 0; line.clear();
-            } else if (++blanks && blanks >= 3) break;
+                catch (po::unknown_option & e)
+                {
+                    buffer.append(line);
+                    buffer.append("\n");
+                }
+
+                commands.clear();
+                line.clear();
+            }
         STATS(false)
     }
 
     return 0;
+}
+
+vector<string>
+split_string (string str)
+{
+    vector<string> result;
+
+    string::const_iterator i = str.begin(), e = str.end();
+    for(;i != e; ++i)
+    if (!isspace((unsigned char)*i))
+        break;
+
+    if (i != e)
+    {
+        string current;
+        bool inside_quoted = false;
+        int backslash_count = 0;
+
+        for(; i != e; ++i)
+        {
+            if (*i == '"')
+            {
+                // '"' preceded by even number (n) of backslashes generates
+                // n/2 backslashes and is a quoted block delimiter
+                if (backslash_count % 2 == 0)
+                {
+                    current.append(backslash_count / 2, '\\');
+                    inside_quoted = !inside_quoted;
+                    // '"' preceded by odd number (n) of backslashes generates
+                    // (n-1)/2 backslashes and is literal quote.
+                }
+                else
+                {
+                    current.append(backslash_count / 2, '\\');
+                    current += '"';
+                }
+
+                backslash_count = 0;
+
+            }
+            else if (*i == '\\')
+                ++backslash_count;
+            else
+            {
+                // Not quote or backslash. All accumulated backslashes should be
+                // added
+                if (backslash_count)
+                {
+                    current.append(backslash_count, '\\');
+                    backslash_count = 0;
+                }
+
+                if (isspace((unsigned char)*i) && !inside_quoted)
+                {
+                    // Space outside quoted section terminate the current argument
+                    result.push_back(current);
+                    current.resize(0);
+                    for(;i != e && isspace((unsigned char)*i); ++i)
+                    ;
+                    --i;
+                }
+                else
+                    current += *i;
+            }
+        }
+
+        // If we have trailing backslashes, add them
+        if (backslash_count)
+            current.append(backslash_count, '\\');
+
+        // If we have non-empty 'current' or we're still in quoted
+        // section (even if 'current' is empty), add the last token.
+        if (!current.empty() || inside_quoted)
+            result.push_back(current);
+    }
+
+    return result;
 }
