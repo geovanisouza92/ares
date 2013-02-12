@@ -68,7 +68,7 @@ if (driver.verboseMode >= VerboseMode::Low) { \
 int
 main(int argc, char ** argv)
 {
-    unsigned maxErrors = 3, filesProcessed = 0;
+    unsigned filesProcessed = 0;
     InteractionMode::Mode mode = InteractionMode::None;
     vector<string> files, messages;
     string outputFilename(LANG_SHELL_NAME ".out"), line;
@@ -116,7 +116,7 @@ main(int argc, char ** argv)
         if (!line.empty()) {
             bool parse_result = driver.parseString(line, "line eval");
             if (parse_result) {
-                if (driver.errors > maxErrors) return 1;
+                if (driver.errors) return 1;
                 driver.produce((driver.checkOnly ? FinallyAction::None : FinallyAction::PrintOnConsole), output);
             }
             STATS(false)
@@ -161,7 +161,7 @@ main(int argc, char ** argv)
             bool parse_ok = driver.parseFile(*file);
             if (parse_ok) {
                 filesProcessed++;
-                if (driver.errors > maxErrors) return 1;
+                if (driver.errors) return 1;
                 driver.produce((driver.checkOnly ? FinallyAction::None : FinallyAction::PrintOnConsole), output);
             } else
                 break;
@@ -179,8 +179,11 @@ main(int argc, char ** argv)
             ("\\h", "Print this help message")
             ("\\c", "Clear the buffer")
             ("\\l", "List the buffer")
+            ("\\i", po::value<string>(), "Process file")
             ("/", "Execute the command buffer")
             ;
+        po::positional_options_description shell_input;
+        shell_input.add("\\i", -1);
         po::variables_map commands;
 
         string guide(">>> "), prompt = "", buffer = "";
@@ -195,7 +198,8 @@ main(int argc, char ** argv)
                 try
                 {
                     args = Util::splitString(string("--") + line);
-                    po::store(po::command_line_parser(args).options(shell).run(), commands);
+                    po::store(po::command_line_parser(args).options(shell)
+                        .positional(shell_input).run(), commands);
                     po::notify(commands);
 
                     if (commands.count("\\q"))
@@ -210,17 +214,29 @@ main(int argc, char ** argv)
                     if (commands.count("\\c"))
                         buffer.clear();
 
+                    if (commands.count("\\i"))
+                    {
+                        string file = commands["\\i"].as<string>();
+                        bool parse_ok = driver.parseFile(file);
+                        if (driver.errors) return 1;
+                            driver.produce((driver.checkOnly ? FinallyAction::None : FinallyAction::PrintOnConsole), output);
+                    }
+
                     if (commands.count("/"))
                     {
                         bool parse_ok = driver.parseString(buffer, LANG_SHELL_NAME);
                         if (parse_ok) {
-                            if (driver.errors > maxErrors) break;
+                            if (driver.errors) break;
                             driver.produce((driver.checkOnly ? FinallyAction::None : FinallyAction::PrintOnConsole), output);
                         }
                     }
 
                 }
-                catch (po::unknown_option & e)
+                catch (po::ambiguous_option & e1)
+                {
+                    output << "Ambiguous option" << endl;
+                }
+                catch (po::unknown_option & e2)
                 {
                     buffer.append(line + "\n");
                     line.clear();
