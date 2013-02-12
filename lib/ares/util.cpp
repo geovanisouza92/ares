@@ -37,6 +37,7 @@
  */
 
 #include <string>
+#include <vector>
 #include <sstream>
 #include "util.h"
 #include "version.h"
@@ -171,4 +172,81 @@ LANG_NAMESPACE::langCopy()
       << LANG_AUTHOR_EMAIL
       << ")";
     return s.str();
+}
+
+vector<string>
+LANG_NAMESPACE::Util::splitString(string str)
+{
+    vector<string> result;
+
+    string::const_iterator i = str.begin(), e = str.end();
+    for(;i != e; ++i)
+    if (!isspace((unsigned char)*i))
+        break;
+
+    if (i != e)
+    {
+        string current;
+        bool inside_quoted = false;
+        int backslash_count = 0;
+
+        for(; i != e; ++i)
+        {
+            if (*i == '"')
+            {
+                // '"' preceded by even number (n) of backslashes generates
+                // n/2 backslashes and is a quoted block delimiter
+                if (backslash_count % 2 == 0)
+                {
+                    current.append(backslash_count / 2, '\\');
+                    inside_quoted = !inside_quoted;
+                    // '"' preceded by odd number (n) of backslashes generates
+                    // (n-1)/2 backslashes and is literal quote.
+                }
+                else
+                {
+                    current.append(backslash_count / 2, '\\');
+                    current += '"';
+                }
+
+                backslash_count = 0;
+
+            }
+            else if (*i == '\\')
+                ++backslash_count;
+            else
+            {
+                // Not quote or backslash. All accumulated backslashes should be
+                // added
+                if (backslash_count)
+                {
+                    current.append(backslash_count, '\\');
+                    backslash_count = 0;
+                }
+
+                if (isspace((unsigned char)*i) && !inside_quoted)
+                {
+                    // Space outside quoted section terminate the current argument
+                    result.push_back(current);
+                    current.resize(0);
+                    for(;i != e && isspace((unsigned char)*i); ++i)
+                    ;
+                    --i;
+                }
+                else
+                    current += *i;
+            }
+        }
+
+        // If we have trailing backslashes, add them
+        if (backslash_count)
+            current.append(backslash_count, '\\');
+
+        // If we have non-empty 'current' or we're still in quoted
+        // section (even if 'current' is empty), add the last token.
+        if (!current.empty() || inside_quoted)
+            result.push_back(current);
+    }
+
+    return result;
 }
