@@ -69,7 +69,7 @@ namespace LANG_NAMESPACE
         }
 
         Environment *
-        Environment::putStatements(VectorNode * v)
+        Environment::push(VectorNode * v)
         {
             for(VectorNode::iterator stmt = v->begin(); stmt < v->end(); stmt++)
                 statements->push_back(*stmt);
@@ -86,109 +86,109 @@ namespace LANG_NAMESPACE
             }
         }
 
-        NullNode::NullNode()
+        NullLiteralNode::NullLiteralNode()
         {
             setNodeType(NodeType::Null);
         }
 
         void
-        NullNode::print(ostream & out, unsigned d)
+        NullLiteralNode::print(ostream & out, unsigned d)
         {
             TAB(d) << "Null" << endl;
         }
 
-        IntegerNode::IntegerNode(int v)
+        IntegerLiteralNode::IntegerLiteralNode(int v)
             : value(v)
         {
             setNodeType(NodeType::Integer);
         }
 
         void
-        IntegerNode::print(ostream & out, unsigned d)
+        IntegerLiteralNode::print(ostream & out, unsigned d)
         {
             TAB(d) << "Integer => " << value << endl;
         }
 
-        FloatNode::FloatNode(double v)
+        FloatLiteralNode::FloatLiteralNode(double v)
             : value(v)
         {
             setNodeType(NodeType::Float);
         }
 
         void
-        FloatNode::print(ostream & out, unsigned d)
+        FloatLiteralNode::print(ostream & out, unsigned d)
         {
             TAB(d) << "Float => " << value << endl;
         }
 
-        CharNode::CharNode(char v)
+        CharLiteralNode::CharLiteralNode(char v)
             : value(v)
         {
             setNodeType(NodeType::Char);
         }
 
         void
-        CharNode::print(ostream & out, unsigned d)
+        CharLiteralNode::print(ostream & out, unsigned d)
         {
             TAB(d) << "Char => " << value << endl;
         }
 
-        StringNode::StringNode(string v)
+        StringLiteralNode::StringLiteralNode(string v)
             : value(v)
         {
             setNodeType(NodeType::String);
         }
 
         void
-        StringNode::append(string v)
+        StringLiteralNode::append(string v)
         {
             value += v;
         }
 
         void
-        StringNode::print(ostream & out, unsigned d)
+        StringLiteralNode::print(ostream & out, unsigned d)
         {
             TAB(d) << "String => " << value << endl;
         }
 
-        RegexNode::RegexNode(string v)
+        RegexLiteralNode::RegexLiteralNode(string v)
             : value(v)
         {
             setNodeType(NodeType::Regex);
         }
 
         void
-        RegexNode::print(ostream & out, unsigned d)
+        RegexLiteralNode::print(ostream & out, unsigned d)
         {
             TAB(d) << "Regex => " << value << endl;
         }
 
-        BooleanNode::BooleanNode(bool v)
+        BooleanLiteralNode::BooleanLiteralNode(bool v)
             : value(v)
         {
             setNodeType(NodeType::Boolean);
         }
 
         void
-        BooleanNode::print(ostream & out, unsigned d)
+        BooleanLiteralNode::print(ostream & out, unsigned d)
         {
             TAB(d) << "Boolean => " <<(value ? "True" : "False") << endl;
         }
 
-        ArrayNode::ArrayNode()
+        ArrayLiteralNode::ArrayLiteralNode()
             : value(new VectorNode())
         {
             setNodeType(NodeType::Array);
         }
 
-        ArrayNode::ArrayNode(VectorNode * v)
+        ArrayLiteralNode::ArrayLiteralNode(VectorNode * v)
             : value(v)
         {
             setNodeType(NodeType::Array);
         }
 
         void
-        ArrayNode::print(ostream & out, unsigned d)
+        ArrayLiteralNode::print(ostream & out, unsigned d)
         {
             TAB(d) << "Array => [" << endl;
             for(VectorNode::iterator elem = value->begin(); elem < value->end(); elem++) {
@@ -198,33 +198,33 @@ namespace LANG_NAMESPACE
             TAB(d) << "]" << endl;
         }
 
-        KeyValuePairNode::KeyValuePairNode(SyntaxNode * k, SyntaxNode * v)
+        PairNode::PairNode(SyntaxNode * k, SyntaxNode * v)
             : key(k), value(v)
         {
             setNodeType(NodeType::HashPair);
         }
 
         void
-        KeyValuePairNode::print(ostream & out, unsigned d)
+        PairNode::print(ostream & out, unsigned d)
         {
             key->print(out, d + 1);
             TAB(d + 1) << "^" << endl;
             value->print(out, d + 1);
         }
 
-        HashNode::HashNode() : value(new VectorNode())
+        HashLiteralNode::HashLiteralNode() : value(new VectorNode())
         {
             setNodeType(NodeType::Hash);
         }
 
-        HashNode::HashNode(VectorNode * v)
+        HashLiteralNode::HashLiteralNode(VectorNode * v)
             : value(v)
         {
             setNodeType(NodeType::Hash);
         }
 
         void
-        HashNode::print(ostream & out, unsigned d)
+        HashLiteralNode::print(ostream & out, unsigned d)
         {
             TAB(d) << "Hash => {" << endl;
             for(VectorNode::iterator elem = value->begin(); elem < value->end(); elem++) {
@@ -243,16 +243,24 @@ namespace LANG_NAMESPACE
         	type->print(out, d + 2);
         }
 
-        IdentifierNode::IdentifierNode(string v)
+        IdNode::IdNode(string v)
             : id(v)
         {
             setNodeType(NodeType::Identifier);
         }
 
         void
-        IdentifierNode::print(ostream & out, unsigned d)
+        IdNode::print(ostream & out, unsigned d)
         {
             TAB(d) << "Identifier => " << id << endl;
+        }
+
+        Type::Type(string ty) : type(ty) { }
+
+        void
+        Type::print(ostream & out, unsigned d)
+        {
+            TAB(d) << type << endl;
         }
 
         void

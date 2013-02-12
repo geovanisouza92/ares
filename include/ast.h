@@ -86,65 +86,65 @@ namespace LANG_NAMESPACE
             Environment(Environment *);
             virtual ~Environment();
             virtual Environment * clear();
-            virtual Environment * putStatements(VectorNode *);
+            virtual Environment * push(VectorNode *);
             virtual void print(ostream &, unsigned);
         };
 
         /**
          * Represents a null literal
          */
-        class NullNode : public SyntaxNode
+        class NullLiteralNode : public SyntaxNode
         {
         public:
-            NullNode();
+            NullLiteralNode();
             virtual void print(ostream &, unsigned);
         };
 
         /**
          * Represents a integer literal number
          */
-        class IntegerNode : public SyntaxNode
+        class IntegerLiteralNode : public SyntaxNode
         {
         protected:
             int value;
         public:
-            IntegerNode(int);
+            IntegerLiteralNode(int);
             virtual void print(ostream &, unsigned);
         };
 
         /**
          * Represents a floating-point literal number
          */
-        class FloatNode : public SyntaxNode
+        class FloatLiteralNode : public SyntaxNode
         {
         protected:
             double value;
         public:
-            FloatNode(double);
+            FloatLiteralNode(double);
             virtual void print(ostream &, unsigned);
         };
 
         /**
          * Represents a character literal
          */
-        class CharNode : public SyntaxNode
+        class CharLiteralNode : public SyntaxNode
         {
         protected:
             char value;
         public:
-            CharNode(char);
+            CharLiteralNode(char);
             virtual void print(ostream &, unsigned);
         };
 
         /**
          * Represents a string literal
          */
-        class StringNode : public SyntaxNode
+        class StringLiteralNode : public SyntaxNode
         {
         protected:
             string value;
         public:
-            StringNode(string);
+            StringLiteralNode(string);
             virtual void append(string);
             virtual void print(ostream &, unsigned);
         };
@@ -152,63 +152,63 @@ namespace LANG_NAMESPACE
         /**
          * Represents a regular expression literal
          */
-        class RegexNode : public SyntaxNode
+        class RegexLiteralNode : public SyntaxNode
         {
         protected:
             string value;
         public:
-            RegexNode(string);
+            RegexLiteralNode(string);
             virtual void print(ostream &, unsigned);
         };
 
         /**
          * Represents a boolean literal
          */
-        class BooleanNode : public SyntaxNode
+        class BooleanLiteralNode : public SyntaxNode
         {
         protected:
             bool value;
         public:
-            BooleanNode(bool);
+            BooleanLiteralNode(bool);
             virtual void print(ostream &, unsigned);
         };
 
         /**
          * Represents an array (heterogeneous collection) literal
          */
-        class ArrayNode : public SyntaxNode
+        class ArrayLiteralNode : public SyntaxNode
         {
         protected:
             VectorNode * value;
         public:
-            ArrayNode();
-            ArrayNode(VectorNode *);
+            ArrayLiteralNode();
+            ArrayLiteralNode(VectorNode *);
             virtual void print(ostream &, unsigned);
         };
 
         /**
          * Represents a key-value pair literal
          */
-        class KeyValuePairNode : public SyntaxNode
+        class PairNode : public SyntaxNode
         {
         protected:
             SyntaxNode * key;
             SyntaxNode * value;
         public:
-            KeyValuePairNode(SyntaxNode *, SyntaxNode *);
+            PairNode(SyntaxNode *, SyntaxNode *);
             virtual void print(ostream &, unsigned);
         };
 
         /**
          * Represents a hash (heterogeneous key-value pairs collection) literal
          */
-        class HashNode : public SyntaxNode
+        class HashLiteralNode : public SyntaxNode
         {
         protected:
             VectorNode * value;
         public:
-            HashNode();
-            HashNode(VectorNode *);
+            HashLiteralNode();
+            HashLiteralNode(VectorNode *);
             virtual void print(ostream &, unsigned);
         };
 
@@ -227,12 +227,24 @@ namespace LANG_NAMESPACE
         /**
          * Represents an identifier literal
          */
-        class IdentifierNode : public SyntaxNode
+        class IdNode : public SyntaxNode
         {
         protected:
             string id;
         public:
-            IdentifierNode(string);
+            IdNode(string);
+            virtual void print(ostream &, unsigned);
+        };
+
+        /**
+         * The type name
+         */
+        class Type : public SyntaxNode
+        {
+        protected:
+            string type;
+        public:
+            Type(string);
             virtual void print(ostream &, unsigned);
         };
 
