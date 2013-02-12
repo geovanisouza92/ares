@@ -116,7 +116,7 @@ main(int argc, char ** argv)
         if (!line.empty()) {
             bool parse_result = driver.parseString(line, "line eval");
             if (parse_result) {
-                if (driver.errors) return 1;
+                // if (driver.errors) return 1;
                 driver.produce((driver.checkOnly ? FinallyAction::None : FinallyAction::PrintOnConsole), output);
             }
             STATS(false)
@@ -161,7 +161,7 @@ main(int argc, char ** argv)
             bool parse_ok = driver.parseFile(*file);
             if (parse_ok) {
                 filesProcessed++;
-                if (driver.errors) return 1;
+                // if (driver.errors) return -1;
                 driver.produce((driver.checkOnly ? FinallyAction::None : FinallyAction::PrintOnConsole), output);
             } else
                 break;
@@ -218,15 +218,15 @@ main(int argc, char ** argv)
                     {
                         string file = commands["\\i"].as<string>();
                         bool parse_ok = driver.parseFile(file);
-                        if (driver.errors) return 1;
-                            driver.produce((driver.checkOnly ? FinallyAction::None : FinallyAction::PrintOnConsole), output);
+                        // if (driver.errors) return 1;
+                        driver.produce((driver.checkOnly ? FinallyAction::None : FinallyAction::PrintOnConsole), output);
                     }
 
                     if (commands.count("/"))
                     {
                         bool parse_ok = driver.parseString(buffer, LANG_SHELL_NAME);
                         if (parse_ok) {
-                            if (driver.errors) break;
+                            // if (driver.errors) break;
                             driver.produce((driver.checkOnly ? FinallyAction::None : FinallyAction::PrintOnConsole), output);
                         }
                     }
