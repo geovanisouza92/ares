@@ -216,10 +216,8 @@ rgx \/(\\.|[^\/\ ])*\/
 "true"          return token::kTRUE;
 "try"           return token::kTRY;
 "typeof"        return token::kTYPEOF;
-"uint"          return token::kUINT;
-"ulong"         return token::kULONG;
 "unless"        return token::kUNLESS;
-"ushort"        return token::kUSHORT;
+"unsigned"      return token::kUNSIGNED;
 "using"         return token::kUSING;
 "var"           return token::kVAR;
 "void"          return token::kVOID;
