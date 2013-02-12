@@ -18,7 +18,7 @@
  *  4. Neither the name of the Ares Programming Language Project nor the names
  *     of its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE ARES PROGRAMMING LANGUAGE PROJECT AND
  * CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
  * NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -56,7 +56,7 @@ typedef Parser::token_type token_type;
 #define YY_NO_UNISTD_H
 %}
 
-%option c++ prefix="arc" batch yywrap nounput stack debug
+%option c++ prefix="arc" batch yywrap yylineno nounput stack debug
 
 %{
 #define YY_USER_ACTION yylloc->columns(yyleng);
@@ -112,7 +112,7 @@ rgx \/(\\.|[^\/\ ])*\/
 <ML_COMMENT>\n {
     yylloc->step();
     yylloc->lines();
-    driver.incLines();
+    // driver.incLines();
 }
 
 <ML_COMMENT>"*/" {
@@ -123,7 +123,7 @@ rgx \/(\\.|[^\/\ ])*\/
 {csl} {
     yylloc->step();
     yylloc->lines();
-    driver.incLines();
+    // driver.incLines();
 }
 
 "%="    return token::oMOE;
@@ -264,7 +264,7 @@ rgx \/(\\.|[^\/\ ])*\/
 {nl} {
     yylloc->step();
     yylloc->lines();
-    driver.incLines();
+    // driver.incLines();
 }
 
 . {
