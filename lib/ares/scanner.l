@@ -127,7 +127,7 @@ rgx \/(\\.|[^\/\ ])*\/
 }
 
 "%="    return token::oMOE;
-"^="    return token::oXOE;
+"^="    return token::oMDE;
 "|="    return token::oORE;
 "&="    return token::oANE;
 "<<="   return token::oSLE;

@@ -16,7 +16,7 @@
  *  4. Neither the name of the Ares Programming Language Project nor the names
  *     of its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE ARES PROGRAMMING LANGUAGE PROJECT AND
  * CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
  * NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -55,7 +55,7 @@
  *  4. Neither the name of the Ares Programming Language Project nor the names
  *     of its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE ARES PROGRAMMING LANGUAGE PROJECT AND
  * CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
  * NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -93,10 +93,11 @@ using namespace SyntaxTree;
 %require "2.3"
 %start Goal
 %skeleton "lalr1.cc"
-%define namespace "Ares::VirtualEngine"
+%defines "parser.h"
+%define namespace "LANG_NAMESPACE::VirtualEngine"
 %define "parser_class_name" "Parser"
 %parse-param { class Driver& driver }
-%lex-param { class Driver& driver }
+// %lex-param { class Driver& driver }
 %locations
 %error-verbose
 %initial-action {
@@ -110,6 +111,7 @@ using namespace SyntaxTree;
     string *                        v_str;
     SyntaxTree::SyntaxNode *        v_node;
     SyntaxTree::VectorNode *        v_list;
+    Operator::Binary                v_bop;
 }
 
 %{
@@ -191,10 +193,8 @@ using namespace SyntaxTree;
 %token  kTRUE       "true"
 %token  kTRY        "try"
 %token  kTYPEOF     "typeof"
-%token  kUINT       "uint"
-%token  kULONG      "ulong"
+%token  kUNSIGNED   "unsigned"
 %token  kUNLESS     "unless"
-%token  kUSHORT     "ushort"
 %token  kUSING      "using"
 %token  kVAR        "var"
 %token  kVOID       "void"
@@ -235,7 +235,7 @@ using namespace SyntaxTree;
 %token  oMUE        "*="
 %token  oDIE        "/="
 %token  oMOE        "%="
-%token  oXOE        "^="
+%token  oMDE        "^="
 %token  oORE        "|="
 %token  oANE        "&="
 %token  oSLE        "<<="
@@ -262,49 +262,186 @@ using namespace SyntaxTree;
 %left ';' '{' '}' ',' '(' ')' ':' '=' '.' '?' '^' '<' '>' '+' '-' '*' '/'
 %left '%' '!' '[' ']' '&' '|' '~'
 %left oADE oSUE oMUE oDIE oRAI oRAE oPOW oEQL oNEQ oLEE oGEE oMAT oNMA oFAR
-%left oCOA oAND oOR oINC oDEC oSHR oSHL oIND oMOE oXOE oORE oANE oSLE oSRE
+%left oCOA oAND oOR oINC oDEC oSHR oSHL oIND oMOE oMDE oORE oANE oSLE oSRE
 
 %right UNARY
+
+%type   <v_node>    Literal
+%type   <v_node>    BooleanLiteral
+%type   <v_node>    ArrayLiteral
+%type   <v_node>    HashLiteral
+%type   <v_node>    HashPair
+%type   <v_node>    Expression
+%type   <v_node>    QualifiedIdentifier
+%type   <v_node>    ModuleName
+%type   <v_node>    TypeName
+%type   <v_node>    Type
+%type   <v_node>    NonArrayType
+%type   <v_node>    ArrayType
+%type   <v_node>    SimpleType
+%type   <v_node>    PrimitiveType
+%type   <v_node>    NumericType
+%type   <v_node>    IntegralType
+%type   <v_node>    FloatingPointType
+%type   <v_node>    ClassType
+%type   <v_node>    PointerType
+%type   <v_node>    Argument
+%type   <v_node>    PrimaryExpression
+%type   <v_node>    ParenthesizedExpression
+%type   <v_node>    PrimaryExpressionNoParentesis
+%type   <v_node>    ArrayCreationExpression
+%type   <v_node>    MemberAccess
+%type   <v_node>    InvocationExpression
+%type   <v_node>    ArraySlice
+%type   <v_node>    ElementAccess
+%type   <v_node>    NewExpression
+%type   <v_node>    TypeofExpression
+%type   <v_node>    SizeofExpression
+
+%type   <v_node>    PostIncrementExpression
+%type   <v_node>    PostDecrementExpression
+%type   <v_node>    PreIncrementExpression
+%type   <v_node>    PreDecrementExpression
+%type   <v_node>    UnaryExpressionNotPlusMinus
+%type   <v_node>    UnaryExpression
+%type   <v_node>    PowerExpression
+%type   <v_node>    MultiplicativeExpression
+%type   <v_node>    AdditiveExpression
+%type   <v_node>    ShiftExpression
+%type   <v_node>    RelationalExpression
+%type   <v_node>    EqualityExpression
+%type   <v_node>    AndExpression
+%type   <v_node>    ExclusiveOrExpression
+%type   <v_node>    InclusiveOrExpression
+%type   <v_node>    ConditionalAndExpression
+%type   <v_node>    ConditionalOrExpression
+%type   <v_node>    RangeExpression
+%type   <v_node>    ConditionalExpression
+%type   <v_node>    TimedExpression
+%type   <v_node>    ObjectCreationExpression
+%type   <v_node>    PostfixExpression
+%type   <v_node>    NullCoalescingExpression
+
+
+%type   <v_node>    LambdaParameter
+%type   <v_node>    LambdaExpressionBody
+%type   <v_node>    LambdaExpression
+
+%type   <v_node>    GoalOption
+%type   <v_node>    Statement
+%type   <v_node>    TypeDeclaration
+%type   <v_node>    UsingDirective
+//
+%type   <v_list>    ArgumentList
+%type   <v_list>    ExpressionList
+%type   <v_list>    LambdaParameterList
+%type   <v_list>    LambdaParameterListOpt
+%type   <v_list>    HashPairList
+%type   <v_list>    HashPairListOpt
+%type   <v_list>    GoalOptionRepeat
+%type   <v_list>    StatementRepeat
+%type   <v_list>    UsingDirectiveRepeat
+
+%type   <v_bop>      AssignmentOperator
 
 %%
 
 Goal
     : /* empty */
+    {
+        driver.enviro->push(new VectorNode());
+    }
     | GoalOptionRepeat
+    {
+        driver.enviro->push($1);
+    }
     ;
 
 GoalOptionRepeat
     : GoalOption
+    {
+        $$ = new VectorNode();
+        $$->push_back($1);
+    }
     | GoalOptionRepeat GoalOption
+    {
+        $1->push_back($2);
+        $$ = $1;
+    }
     ;
 
 GoalOption
     : TypeDeclaration
+    {
+        // $$ = $1;
+    }
     | UsingDirectiveRepeat
     // | Statement
     ;
 
 Literal
     : kNULL
+    {
+        $$ = new NullLiteralNode();
+    }
     | INTEGER
+    {
+        $$ = new IntegerLiteralNode($1);
+    }
     | FLOAT
+    {
+        $$ = new FloatLiteralNode($1);
+    }
     | CHAR
+    {
+        $$ = new CharLiteralNode((*$1)[0]);
+    }
     | STRING
+    {
+        $$ = new StringLiteralNode(*$1);
+    }
     | REGEX
+    {
+        $$ = new RegexLiteralNode(*$1);
+    }
     | BooleanLiteral
+    {
+        $$ = $1;
+    }
     | ArrayLiteral
+    {
+        $$ = $1;
+    }
     | HashLiteral
+    {
+        $$ = $1;
+    }
     ;
 
 BooleanLiteral
     : kFALSE
+    {
+        $$ = new BooleanLiteralNode(false);
+    }
     | kTRUE
+    {
+        $$ = new BooleanLiteralNode(true);
+    }
     ;
 
 ArrayLiteral
     : '[' ']'
+    {
+        $$ = new ArrayLiteralNode();
+    }
     | '[' ExpressionList ']'
+    {
+        $$ = new ArrayLiteralNode($2);
+    }
     | '[' ExpressionList ',' ']'
+    {
+        $$ = new ArrayLiteralNode($2);
+    }
     ;
 
 // ExpressionListOpt
@@ -313,91 +450,218 @@ ArrayLiteral
 //     ;
 
 HashLiteral
-    : '{' ',' '}'
-    | '{' KeyValuePairList '}'
-    | '{' KeyValuePairList ',' '}'
+    : '{' HashPairListOpt '}'
+    {
+        $$ = new HashLiteralNode($2);
+    }
+/*    {
+        $$ = new HashLiteralNode();
+    } * /
+    | '{' HashPairList '}'
+    {
+        $$ = new HashLiteralNode($2);
+    }
+    | '{' HashPairList ',' '}'
+    {
+        $$ = new HashLiteralNode($2);
+    } */
     ;
 
-// KeyValuePairListOpt
-//     : /* empty */
-//     | KeyValuePairList
-//     ;
-
-KeyValuePairList
-    : KeyValuePair
-    | KeyValuePairList ',' KeyValuePair
+HashPairListOpt
+    : /* empty */
+    {
+        $$ = new VectorNode();
+    }
+    | HashPairList
+    {
+        $$ = $1;
+    }
     ;
 
-KeyValuePair
+HashPairList
+    : HashPair
+    {
+        $$ = new VectorNode();
+        $$->push_back($1);
+    }
+    | HashPairList ',' HashPair
+    {
+        $$ = $1;
+        $$->push_back($3);
+    }
+    ;
+
+HashPair
     : IDENTIFIER ':' Expression
+    {
+        $$ = new PairNode(new IdNode(*$1), $3);
+    }
     | STRING ':' Expression
+    {
+        $$ = new PairNode(new IdNode(*$1), $3);
+    }
     ;
 
 ModuleName
     : QualifiedIdentifier
+    {
+        $$ = $1;
+    }
     ;
 
 TypeName
     : QualifiedIdentifier
+    {
+        $$ = $1;
+    }
     ;
 
 Type
     : NonArrayType
+    {
+        $$ = $1;
+    }
     | ArrayType
+    {
+        $$ = $1;
+    }
     | kVAR
+    {
+        $$ = new Type("var");
+    }
     ;
 
 NonArrayType
     : SimpleType
+    {
+        $$ = $1;
+    }
     | TypeName
+    {
+        $$ = $1;
+    }
     ;
 
 SimpleType
     : PrimitiveType
+    {
+        $$ = $1;
+    }
     | ClassType
+    {
+        $$ = $1;
+    }
     | PointerType
+    {
+        $$ = $1;
+    }
     ;
 
 PrimitiveType
     : NumericType
+    {
+        $$ = $1;
+    }
     | kBOOL
+    {
+        $$ = new Type("bool");
+    }
     ;
 
 NumericType
     : IntegralType
+    {
+        $$ = $1;
+    }
     | FloatingPointType
+    {
+        $$ = $1;
+    }
     | kDECIMAL
+    {
+        $$ = new Type("decimal");
+    }
     ;
 
 IntegralType
     : kBYTE
+    {
+        $$ = new Type("byte");
+    }
     | kSHORT
-    | kUSHORT
+    {
+        $$ = new Type("short");
+    }
+    | kUNSIGNED kSHORT
+    {
+        $$ = new Type("ushort");
+    }
     | kINT
-    | kUINT
+    {
+        $$ = new Type("int");
+    }
+    | kUNSIGNED kINT
+    {
+        $$ = new Type("uint");
+    }
     | kLONG
+    {
+        $$ = new Type("long");
+    }
+    | kUNSIGNED kLONG
+    {
+        $$ = new Type("ulong");
+    }
     | kLONG kLONG
-    | kULONG
+    {
+        $$ = new Type("long long");
+    }
     | kCHAR
-    // | kUCHAR
+    {
+        $$ = new Type("char");
+    }
     ;
 
 FloatingPointType
     : kFLOAT
+    {
+        $$ = new Type("float");
+    }
     | kDOUBLE
+    {
+        $$ = new Type("double");
+    }
     ;
 
 ClassType
     : kSTRING
+    {
+        $$ = new Type("string");
+    }
     | kREGEX
+    {
+        $$ = new Type("regex");
+    }
     | kARRAY
+    {
+        $$ = new Type("array");
+    }
     | kHASH
+    {
+        $$ = new Type("hash");
+    }
     // | kOBJECT
     ;
 
 PointerType
     : Type '*'
+    {
+        $$ = new PointerNode($1);
+    }
     | kVOID '*'
+    {
+        $$ = new PointerNode(new Type("void"));
+    }
     ;
 
 ArrayType
@@ -422,34 +686,81 @@ DimSeparators
 
 ArgumentList
     : Argument
+    {
+        $$ = new VectorNode();
+        $$->push_back($1);
+    }
     | ArgumentList ',' Argument
+    {
+        $1->push_back($3);
+        $$ = $1;
+    }
     ;
 
 Argument
     : Expression
+    {
+        $$ = $1;
+    }
     ;
 
 PrimaryExpression
     : ParenthesizedExpression
+    {
+        $$ = $1;
+    }
     | PrimaryExpressionNoParentesis
+    {
+        $$ = $1;
+    }
     ;
 
 ParenthesizedExpression
     : '(' Expression ')'
+    {
+        $$ =  $2;
+    }
     ;
 
 PrimaryExpressionNoParentesis
     : Literal
+    {
+        $$ = $1;
+    }
     | ArrayCreationExpression
+    {
+        $$ = $1;
+    }
     | MemberAccess
+    {
+        $$ = $1;
+    }
     | InvocationExpression
+    {
+        $$ = $1;
+    }
     | ArraySlice
+    {
+        $$ = $1;
+    }
     | ElementAccess
+    {
+        $$ = $1;
+    }
     // | ThisAccess
     // | BaseAccess
     | NewExpression
+    {
+        $$ = $1;
+    }
     | TypeofExpression
+    {
+        $$ = $1;
+    }
     | SizeofExpression
+    {
+        $$ = $1;
+    }
     ;
 
 ArrayCreationExpression
@@ -497,7 +808,16 @@ ElementAccess
 
 ExpressionList
     : Expression
+    {
+        $$ = new VectorNode();
+        $$->push_back($1);
+    }
+
     | ExpressionList ',' Expression
+    {
+        $1->push_back($3);
+        $$ = $1;
+    }
     ;
 
 // ThisAccess
@@ -511,28 +831,52 @@ ExpressionList
 
 PostIncrementExpression
     : PostfixExpression oINC
+    {
+        $$ = new UnaryExpressionNode(Operator::UPosInc, $1);
+    }
     ;
 
 PostDecrementExpression
     : PostfixExpression oDEC
+    {
+        $$ = new UnaryExpressionNode(Operator::UPosDec, $1);
+    }
     ;
 
 NewExpression
     : ObjectCreationExpression
+    {
+        $$ = $1;
+    }
     ;
 
 ObjectCreationExpression
     : kNEW Type '(' ')'
+    {
+        // $$ = new NewNode($2);
+    }
     | kNEW Type '(' ArgumentList ')'
+    {
+        // $$ = new NewNode($2, $4);
+    }
     ;
 
 TypeofExpression
     : kTYPEOF '(' Type ')'
+    {
+        // $$ = new TypeofNode($3);
+    }
     | kTYPEOF '(' kVOID ')'
+    {
+        // $$ = new TypeofNode(new Type("void"));
+    }
     ;
 
 SizeofExpression
     : kSIZEOF '(' Type ')'
+    {
+        // $$ = new SizeofNode($3);
+    }
     // | kSIZEOF '(' Expression ')'
     ;
 
@@ -546,34 +890,76 @@ AddressofExpression
 
 PostfixExpression
     : PrimaryExpression
+    {
+        $$ = $1;
+    }
     | QualifiedIdentifier
+    {
+        $$ = $1;
+    }
     | PostIncrementExpression
+    {
+        $$ = $1;
+    }
     | PostDecrementExpression
+    {
+        $$ = $1;
+    }
     | PointerMemberAccess
     ;
 
 UnaryExpressionNotPlusMinus
     : PostfixExpression
+    {
+        $$ = $1;
+    }
     | '!' UnaryExpression %prec UNARY
+    {
+        $$ = new UnaryExpressionNode(Operator::UNot, $2);
+    }
     | '~' UnaryExpression %prec UNARY
+    {
+        $$ = new UnaryExpressionNode(Operator::UCompl, $2);
+    }
     | CastExpression
     ;
 
 PreIncrementExpression
     : oINC UnaryExpression %prec UNARY
+    {
+        $$ = new UnaryExpressionNode(Operator::UPreInc, $2);
+    }
     ;
 
 PreDecrementExpression
     : oDEC UnaryExpression %prec UNARY
+    {
+        $$ = new UnaryExpressionNode(Operator::UPreDec, $2);
+    }
     ;
 
 UnaryExpression
     : UnaryExpressionNotPlusMinus
+    {
+        $$ = $1;
+    }
     | '+' UnaryExpression %prec UNARY
+    {
+        $$ = new UnaryExpressionNode(Operator::UAdd, $2);
+    }
     | '-' UnaryExpression %prec UNARY
+    {
+        $$ = new UnaryExpressionNode(Operator::USub, $2);
+    }
     | '*' UnaryExpression %prec UNARY
     | PreIncrementExpression
+    {
+        $$ = $1;
+    }
     | PreDecrementExpression
+    {
+        $$ = $1;
+    }
     | AddressofExpression
     ;
 
@@ -608,85 +994,205 @@ TypeQual
 
 PowerExpression
     : UnaryExpression
+    {
+        $$ = $1;
+    }
     | PowerExpression oPOW UnaryExpression
+    {
+        $$ = new BinaryExpressionNode(Operator::Pow, $1, $3);
+    }
     ;
 
 MultiplicativeExpression
     : PowerExpression
+    {
+        $$ = $1;
+    }
     | MultiplicativeExpression '*' PowerExpression
+    {
+        $$ = new BinaryExpressionNode(Operator::Mul, $1, $3);
+    }
     | MultiplicativeExpression '/' PowerExpression
+    {
+        $$ = new BinaryExpressionNode(Operator::Div, $1, $3);
+    }
     | MultiplicativeExpression '%' PowerExpression
+    {
+        $$ = new BinaryExpressionNode(Operator::Mod, $1, $3);
+    }
     ;
 
 AdditiveExpression
     : MultiplicativeExpression
+    {
+        $$ = $1;
+    }
     | AdditiveExpression '+' MultiplicativeExpression
+    {
+        $$ = new BinaryExpressionNode(Operator::Add, $1, $3);
+    }
     | AdditiveExpression '-' MultiplicativeExpression
+    {
+        $$ = new BinaryExpressionNode(Operator::Sub, $1, $3);
+    }
     ;
 
 ShiftExpression
     : AdditiveExpression
+    {
+        $$ = $1;
+    }
     | ShiftExpression oSHL AdditiveExpression
+    {
+        $$ = new BinaryExpressionNode(Operator::Shl, $1, $3);
+    }
     | ShiftExpression oSHR AdditiveExpression
+    {
+        $$ = new BinaryExpressionNode(Operator::Shr, $1, $3);
+    }
     ;
 
 RelationalExpression
     : ShiftExpression
+    {
+        $$ = $1;
+    }
     | RelationalExpression '<' ShiftExpression
+    {
+        $$ = new BinaryExpressionNode(Operator::Let, $1, $3);
+    }
     | RelationalExpression '>' ShiftExpression
+    {
+        $$ = new BinaryExpressionNode(Operator::Get, $1, $3);
+    }
     | RelationalExpression oLEE ShiftExpression
+    {
+        $$ = new BinaryExpressionNode(Operator::Lee, $1, $3);
+    }
     | RelationalExpression oGEE ShiftExpression
+    {
+        $$ = new BinaryExpressionNode(Operator::Gee, $1, $3);
+    }
     | RelationalExpression oMAT ShiftExpression
+    {
+        $$ = new BinaryExpressionNode(Operator::Mat, $1, $3);
+    }
     | RelationalExpression oNMA ShiftExpression
+    {
+        $$ = new BinaryExpressionNode(Operator::Nma, $1, $3);
+    }
     | RelationalExpression kIS Type
+    {
+        $$ = new BinaryExpressionNode(Operator::Is, $1, $3);
+    }
     // | RelationalExpression kAS Type
     ;
 
 EqualityExpression
     : RelationalExpression
+    {
+        $$ = $1;
+    }
     | EqualityExpression oEQL RelationalExpression
+    {
+        $$ = new BinaryExpressionNode(Operator::Eql, $1, $3);
+    }
     | EqualityExpression oNEQ RelationalExpression
+    {
+        $$ = new BinaryExpressionNode(Operator::Neq, $1, $3);
+    }
     ;
 
 AndExpression
     : EqualityExpression
+    {
+        $$ = $1;
+    }
     | AndExpression '&' EqualityExpression
+    {
+        $$ = new BinaryExpressionNode(Operator::And, $1, $3);
+    }
     ;
 
 ExclusiveOrExpression
     : AndExpression
+    {
+        $$ = $1;
+    }
     | ExclusiveOrExpression '^' AndExpression
+    {
+        $$ = new BinaryExpressionNode(Operator::Xor, $1, $3);
+    }
     ;
 
 InclusiveOrExpression
     : ExclusiveOrExpression
+    {
+        $$ = $1;
+    }
     | InclusiveOrExpression '|' ExclusiveOrExpression
+    {
+        $$ = new BinaryExpressionNode(Operator::Or, $1, $3);
+    }
     ;
 
 ConditionalAndExpression
     : InclusiveOrExpression
+    {
+        $$ = $1;
+    }
     | ConditionalAndExpression oAND InclusiveOrExpression
+    {
+        $$ = new BinaryExpressionNode(Operator::BAnd, $1, $3);
+    }
     ;
 
 ConditionalOrExpression
     : ConditionalAndExpression
+    {
+        $$ = $1;
+    }
     | ConditionalOrExpression oOR ConditionalAndExpression
+    {
+        $$ = new BinaryExpressionNode(Operator::BOr, $1, $3);
+    }
     ;
 
 RangeExpression
     : ConditionalOrExpression
+    {
+        $$ = $1;
+    }
     | RangeExpression oRAE ConditionalOrExpression
+    {
+        $$ = new BinaryExpressionNode(Operator::Rae, $1, $3);
+    }
     | RangeExpression oRAI ConditionalOrExpression
+    {
+        $$ = new BinaryExpressionNode(Operator::Rai, $1, $3);
+    }
     ;
 
 NullCoalescingExpression
     : RangeExpression
+    {
+        $$ = $1;
+    }
     | NullCoalescingExpression oCOA RangeExpression
+    {
+        $$ = new BinaryExpressionNode(Operator::Coa, $1, $3);
+    }
     ;
 
 ConditionalExpression
     : NullCoalescingExpression
+    {
+        $$ = $1;
+    }
     | ConditionalExpression '?' Expression ':' Expression
+    {
+        $$ = new TernaryExpressionNode(Operator::Iif, $1, $3, $5);
+    }
     ;
 
 AssignmentExpression
@@ -695,16 +1201,34 @@ AssignmentExpression
 
 AssignmentOperator
     : '='
+    {
+        $$ = Operator::Assign;
+    }
     | oADE /* += */
+    {
+        $$ = Operator::Ade;
+    }
     | oSUE /* -= */
+    {
+        $$ = Operator::Sue;
+    }
     | oMUE /* *= */
+    {
+        $$ = Operator::Mue;
+    }
     | oDIE /* /= */
-    | oXOE /* %= */
-    | oMOE /* ^= */
-    | oANE /* &= */
-    | oORE /* |= */
-    | oSLE /* <<= */
-    | oSRE /* >>= */
+    {
+        $$ = Operator::Die;
+    }
+    | oMDE /* %= */
+    {
+        $$ = Operator::Mde;
+    }
+    // | oMOE /* ^= */
+    // | oANE /* &= */
+    // | oORE /* |= */
+    // | oSLE /* <<= */
+    // | oSRE /* >>= */
     ;
 
 SelectOrGroupClause
@@ -751,7 +1275,7 @@ JoinClause
     ;
 
 QueryBodyMemberRepeat
-    : QueryBodyMember 
+    : QueryBodyMember
     | QueryBodyMemberRepeat QueryBodyMember
     ;
 
@@ -778,43 +1302,93 @@ QueryExpression
     | kFROM QueryOrigin QueryBody
     ;
 
-LambdaParameterList
-    : LambdaParameter
-    | LambdaParameterList ',' LambdaParameter
-    ;
-
 LambdaParameter
     : Type IDENTIFIER
+    {
+        // $$ = new LambdaParameter($2, $1);
+    }
     | IDENTIFIER
+    {
+        // $$ = new LambdaParameter($1, new Type("var"));
+    }
     ;
 
-// LambdaParameterListOpt
-//     : /* empty */
-//     | LambdaParameterList
-//     ;
+LambdaParameterList
+    : LambdaParameter
+    {
+        $$ = new VectorNode();
+        $$->push_back($1);
+    }
+    | LambdaParameterList ',' LambdaParameter
+    {
+        $1->push_back($3);
+        $$ = $1;
+    }
+    ;
+
+LambdaParameterListOpt
+    : /* empty */
+    {
+        $$ = new VectorNode();
+    }
+    | LambdaParameterList
+    {
+        $$ = $1;
+    }
+    ;
 
 LambdaExpressionBody
     : Expression
+    {
+        $$ = $1;
+    }
     | Block
     ;
 
 LambdaExpression
     : IDENTIFIER oFAR LambdaExpressionBody
+    {
+        auto _id = new IdNode(*$1);
+        auto _params = new VectorNode();
+        _params->push_back(_id);
+        // $$ = new LambdaNode($3, _params);
+    }
     | '(' ')' oFAR LambdaExpressionBody
-    | '(' LambdaParameterList ')' oFAR LambdaExpressionBody
+    {
+        // $$ = new LambdaNode($4);
+    }
+    | '(' LambdaParameterListOpt ')' oFAR LambdaExpressionBody
+    {
+        // $$ = new LambdaNode($2, $5);
+    }
     ;
 
 TimedExpression
     : kASYNC Expression
+    {
+        // $$ = new AsyncExpression($2);
+    }
     | kAWAIT Expression
+    {
+        // $$ = new AwaitExpression($2);
+    }
     ;
 
 Expression
     : ConditionalExpression
+    {
+        $$ = $1;
+    }
     | AssignmentExpression
     | QueryExpression
     | LambdaExpression
+    {
+        $$ = $1;
+    }
     | TimedExpression
+    {
+        $$ = $1;
+    }
     ;
 
 ConstantExpression
@@ -827,10 +1401,10 @@ BooleanExpression
 
 Statement
     : DeclarationStatement
-    | EmbeddedStatement
+    | NormalStatement
     ;
 
-EmbeddedStatement
+NormalStatement
     : Block
     | EmptyStatement
     | ExpressionStatement
@@ -843,18 +1417,25 @@ EmbeddedStatement
     ;
 
 Block
-    : '{' '}'
-    | '{' StatementRepeat '}'
+    : '{' StatementRepeatOpt '}'
     ;
 
-// StatementRepeatOpt
-//     : /* empty */
-//     | StatementRepeat
-//     ;
+StatementRepeatOpt
+    : /* empty */
+    | StatementRepeat
+    ;
 
 StatementRepeat
     : Statement
+    {
+        $$ = new VectorNode();
+        $$->push_back($1);
+    }
     | StatementRepeat Statement
+    {
+        $1->push_back($2);
+        $$ = $1;
+    }
     ;
 
 EmptyStatement
@@ -920,13 +1501,13 @@ SelectionStatement
     ;
 
 IfStatement
-    : kIF '(' Expression ')' EmbeddedStatement
-    | kIF '(' Expression ')' EmbeddedStatement kELSE EmbeddedStatement
+    : kIF '(' Expression ')' NormalStatement
+    | kIF '(' Expression ')' NormalStatement kELSE NormalStatement
     ;
 
 UnlessStatement
-    : kUNLESS '(' Expression ')' EmbeddedStatement
-    | kUNLESS '(' Expression ')' EmbeddedStatement kELSE EmbeddedStatement
+    : kUNLESS '(' Expression ')' NormalStatement
+    | kUNLESS '(' Expression ')' NormalStatement kELSE NormalStatement
 
 SwitchStatement
     : kSWITCH '(' Expression ')' SwitchBlock
@@ -968,15 +1549,15 @@ IterationStatement
     ;
 
 WhileStatement
-    : kWHILE '(' BooleanExpression ')' EmbeddedStatement
+    : kWHILE '(' BooleanExpression ')' NormalStatement
     ;
 
 DoStatement
-    : kDO EmbeddedStatement kWHILE '(' BooleanExpression ')' ';'
+    : kDO NormalStatement kWHILE '(' BooleanExpression ')' ';'
     ;
 
 ForStatement
-    : kFOR '(' ForInitializerOpt ';' ForConditionOpt ';' ForIteratorOpt ')' EmbeddedStatement
+    : kFOR '(' ForInitializerOpt ';' ForConditionOpt ';' ForIteratorOpt ')' NormalStatement
     ;
 
 ForInitializerOpt
@@ -1013,7 +1594,7 @@ StatementExpressionList
     ;
 
 ForeachStatement
-    : kFOREACH '(' Type IDENTIFIER kIN Expression ')' EmbeddedStatement
+    : kFOREACH '(' Type IDENTIFIER kIN Expression ')' NormalStatement
     ;
 
 JumpStatement
@@ -1081,11 +1662,11 @@ FinallyClause
     ;
 
 LockStatement
-    : kLOCK '(' Expression ')' EmbeddedStatement
+    : kLOCK '(' Expression ')' NormalStatement
     ;
 
 UsingStatement
-    : kUSING '(' ResourceAquisition ')' EmbeddedStatement
+    : kUSING '(' ResourceAquisition ')' NormalStatement
     ;
 
 ResourceAquisition
@@ -1169,12 +1750,12 @@ TypeDeclaration
     | StructDeclaration
     | EnumDeclaration
     // | DelegateDeclaration
-    // | InterfaceDeclaration 
+    // | InterfaceDeclaration
     // | ClassDeclaration
     ;
 
 // ModifierRepeatOpt
-//     : /* empty */
+//     : /* empty * /
 //     | ModifierRepeat
 //     ;
 
@@ -1356,5 +1937,5 @@ namespace LANG_NAMESPACE
         {
             driver.error (l, m);
         }
-    } // Compiler
+    } // VirtualEngine
 } // LANG_NAMESPACE

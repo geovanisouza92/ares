@@ -16,7 +16,7 @@
  *  4. Neither the name of the Ares Programming Language Project nor the names
  *     of its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE ARES PROGRAMMING LANGUAGE PROJECT AND
  * CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
  * NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -52,10 +52,10 @@ namespace LANG_NAMESPACE
 		namespace InteractionMode
 		{
 			enum Mode {
-				None,
-				Shell,
-				LineEval,
-				FileParse
+				None
+				, Shell
+				, LineEval
+				, FileParse
 			};
 		}
 
@@ -66,10 +66,10 @@ namespace LANG_NAMESPACE
 		{
 			enum Mode
 			{
-				Low,
-				Normal,
-				High,
-				Debug
+				Low
+				, Normal
+				, High
+				, Debug
 			};
 		}
 
@@ -80,10 +80,10 @@ namespace LANG_NAMESPACE
 		{
 			enum Action
 			{
-				None,
-				PrintOnConsole,
-				ExecuteOnTheFly,
-				GenerateBinaries
+				None
+				, PrintOnConsole
+				, ExecuteOnTheFly
+				, GenerateBinaries
 			};
 		}
 
@@ -94,9 +94,9 @@ namespace LANG_NAMESPACE
 		{
 			enum Type
 			{
-				None,
-				Left,
-				Right
+				None
+				, Left
+				, Right
 			};
 		}
 
@@ -107,9 +107,9 @@ namespace LANG_NAMESPACE
 		{
 			enum Type
 			{
-				None,
-				Asc,
-				Desc
+				None
+				, Asc
+				, Desc
 			};
 		}
 
@@ -120,9 +120,9 @@ namespace LANG_NAMESPACE
 		{
 			enum Type
 			{
-				Skip,
-				Step,
-				Take
+				Skip
+				, Step
+				, Take
 			};
 		}
 
@@ -139,11 +139,17 @@ namespace LANG_NAMESPACE
 			 */
 			enum Unary
 			{
-				UNot = 0x1,
-				UAdd,
-				USub,
-				UPtr, // *
-				URef  // &
+				UNot = 0x1
+				, UCompl
+				, UAdd
+				, USub
+				, UPtr
+				, URef
+				, UPreInc
+				, UPreDec
+				, UPosInc
+				, UPosDec
+				, New
 			};
 
 			/**
@@ -151,35 +157,40 @@ namespace LANG_NAMESPACE
 			 */
 			enum Binary
 			{
-				Cast = 0x6,
-				Mul,
-				Div,
-				Mod,
-				Pow,
-				Add,
-				Sub,
-				Shl,
-				Shr,
-				Let,
-				Lee,
-				Get,
-				Gee,
-				Eql,
-				Neq,
-				Mat,
-				Nma,
-				ROut,
-				RIn,
-				And,
-				Or,
-				Xor,
-				Implies,
-				Access,
-				Assign,
-				Ade,
-				Sue,
-				Mue,
-				Die
+				Cast = 0x32
+				, Mul
+				, Div
+				, Mod
+				, Pow
+				, Add
+				, Sub
+				, Shl
+				, Shr
+				, Let
+				, Lee
+				, Get
+				, Gee
+				, Eql
+				, Neq
+				, Mat
+				, Nma
+				, Rae
+				, Rai
+				, Is
+				, Coa
+				, And
+				, Xor
+				, Or
+				, BOr
+				, BAnd
+				, Implies
+				, Access
+				, Assign
+				, Ade
+				, Sue
+				, Mue
+				, Die
+				, Mde
 			};
 
 			/**
@@ -187,12 +198,12 @@ namespace LANG_NAMESPACE
 			 */
 			enum Ternary
 			{
-				If = 0x28,
-				Between
+				Iif = 0x64
+				, Between
 			};
 
 			static std::ostream & operator<<(std::ostream & os, Any & op)
-					{
+			{
 				switch(op)
 				{
 				case UNot:
@@ -210,6 +221,18 @@ namespace LANG_NAMESPACE
 				case URef:
 					os << "& ref";
 					break;
+				case UPreInc:
+					os << "++ var";
+					break;
+				case UPreDec:
+					os << "-- var";
+					break;
+				case UPosInc:
+					os << "var ++";
+					break;
+				case UPosDec:
+					os << "var --";
+					break;
 				case Cast:
 					os << "( )";
 					break;
@@ -220,7 +243,7 @@ namespace LANG_NAMESPACE
 					os << "/";
 					break;
 				case Mod:
-					os << "%";
+					os << "\%";
 					break;
 				case Add:
 					os << "+";
@@ -258,11 +281,17 @@ namespace LANG_NAMESPACE
 				case Nma:
 					os << "!~";
 					break;
-				case ROut:
+				case Rae:
 					os << "..";
 					break;
-				case RIn:
+				case Rai:
 					os << "...";
+					break;
+				case Is:
+					os << "is";
+					break;
+				case Coa:
+					os << "??";
 					break;
 				case And:
 					os << "&&";
@@ -294,12 +323,14 @@ namespace LANG_NAMESPACE
 				case Die:
 					os << "/=";
 					break;
-				case If:
+				case Iif:
 					os << "?:";
 					break;
 				case Between:
 					os << "between";
 					break;
+				default:
+					throw "Unknown operator";
 				}
 				return os;
 			}
@@ -312,8 +343,8 @@ namespace LANG_NAMESPACE
 		{
 			enum Type
 			{
-				If,
-				Unless
+				If
+				, Unless
 			};
 		}
 
@@ -324,10 +355,10 @@ namespace LANG_NAMESPACE
 		{
 			enum Type
 			{
-				For,
-				Foreach,
-				While,
-				DoWhile
+				For
+				, Foreach
+				, While
+				, DoWhile
 			};
 		}
 
@@ -338,9 +369,9 @@ namespace LANG_NAMESPACE
 		{
 			enum Type
 			{
-				Return,
-				Break,
-				Yield
+				Return
+				, Break
+				, Yield
 			};
 		}
 
@@ -351,10 +382,10 @@ namespace LANG_NAMESPACE
 		{
 			enum Type
 			{
-				Abstract,
-				Sealed,
-				Class,
-				Async
+				Abstract
+				, Sealed
+				, Class
+				, Async
 			};
 		}
 
@@ -365,18 +396,18 @@ namespace LANG_NAMESPACE
 		{
 			enum Type
 			{
-				Null,
-				Identifier,
-				Char,
-				String,
-				Regex,
-				Float,
-				Integer,
-				Boolean,
-				Array,
-				HashPair,
-				Hash,
-				Expression
+				Null
+				, Identifier
+				, Char
+				, String
+				, Regex
+				, Float
+				, Integer
+				, Boolean
+				, Array
+				, HashPair
+				, Hash
+				, Expression
 			};
 		}
 
