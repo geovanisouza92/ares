@@ -274,7 +274,7 @@ namespace LANG_NAMESPACE
                 break;
             case FinallyAction::PrintOnConsole:
                 if(errors == 0 && verboseMode >= VerboseMode::High) {
-                    enviro->toString(out, 0);
+                    enviro->print(out, 0);
                     syntaxOkFor(origin);
                 } else {
                     resetMessages();

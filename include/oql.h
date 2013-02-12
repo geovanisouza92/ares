@@ -16,7 +16,7 @@
  *  4. Neither the name of the Ares Programming Language Project nor the names
  *     of its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE ARES PROGRAMMING LANGUAGE PROJECT AND
  * CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
  * NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -55,7 +55,7 @@ namespace LANG_NAMESPACE
             SyntaxNode * queryBody;
         public:
             QueryNode(SyntaxNode *, SyntaxNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -68,7 +68,7 @@ namespace LANG_NAMESPACE
             SyntaxNode * originExpression;
         public:
             QueryOriginNode(SyntaxNode *, SyntaxNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -83,7 +83,7 @@ namespace LANG_NAMESPACE
             QueryBodyNode();
             virtual QueryBodyNode * set_body(VectorNode *);
             virtual QueryBodyNode * set_finally(SyntaxNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -95,7 +95,7 @@ namespace LANG_NAMESPACE
             SyntaxNode * whereExpression;
         public:
             WhereNode(SyntaxNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -109,7 +109,7 @@ namespace LANG_NAMESPACE
             SyntaxNode * joinExpression;
         public:
             JoinNode(JoinType::Type, SyntaxNode *, SyntaxNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -122,7 +122,7 @@ namespace LANG_NAMESPACE
             SyntaxNode * orderExpression;
         public:
             OrderingNode(OrderType::Type, SyntaxNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -134,7 +134,7 @@ namespace LANG_NAMESPACE
             VectorNode * orders;
         public:
             OrderByNode(VectorNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -146,7 +146,7 @@ namespace LANG_NAMESPACE
             SyntaxNode * groupExpression;
         public:
             GroupByNode(SyntaxNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -159,7 +159,7 @@ namespace LANG_NAMESPACE
             SyntaxNode * rangeRange;
         public:
             RangeNode(RangeType::Type, SyntaxNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -171,7 +171,7 @@ namespace LANG_NAMESPACE
             VectorNode * selection;
         public:
             SelectNode(VectorNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
     } // SyntaxTree
 } // LANG_NAMESPACE

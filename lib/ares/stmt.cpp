@@ -16,7 +16,7 @@
  *  4. Neither the name of the Ares Programming Language Project nor the names
  *     of its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE ARES PROGRAMMING LANGUAGE PROJECT AND
  * CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
  * NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -46,10 +46,10 @@ namespace LANG_NAMESPACE
             : asyncItem(i) { }
 
         void
-        AsyncStatementNode::toString(ostream & out, unsigned d)
+        AsyncStatementNode::print(ostream & out, unsigned d)
         {
             TAB(d) << "Async =>" << endl;
-            asyncItem->toString(out, d + 1);
+            asyncItem->print(out, d + 1);
         }
 
         ConditionNode::ConditionNode(ConditionType::Type o, SyntaxNode * i, SyntaxNode * t)
@@ -72,21 +72,21 @@ namespace LANG_NAMESPACE
         }
 
         void
-        ConditionNode::toString(ostream & out, unsigned d)
+        ConditionNode::print(ostream & out, unsigned d)
         {
             TAB(d) << "Condition =>" << endl;
-            conditionExpression->toString(out, d + 2);
+            conditionExpression->print(out, d + 2);
             TAB(d + 1) << "Then =>" << endl;
-            conditionThen->toString(out, d + 2);
+            conditionThen->print(out, d + 2);
             if(conditionElifs->size() > 0) {
                 for(VectorNode::iterator elif = conditionElifs->begin(); elif < conditionElifs->end(); elif++) {
                     TAB(d + 1) << "Elif =>" << endl;
-                   (*elif)->toString(out, d + 2);
+                   (*elif)->print(out, d + 2);
                 }
             }
             if(conditionElse != NULL) {
                 TAB(d + 1) << "Else =>" << endl;
-                conditionElse->toString(out, d + 2);
+                conditionElse->print(out, d + 2);
             }
         }
 
@@ -110,18 +110,18 @@ namespace LANG_NAMESPACE
         }
 
         void
-        CaseNode::toString(ostream & out, unsigned d)
+        CaseNode::print(ostream & out, unsigned d)
         {
             TAB(d) << "Case =>" << endl;
-            caseExpression->toString(out, d + 1);
+            caseExpression->print(out, d + 1);
             if(caseWhen->size() > 0) {
                 for(VectorNode::iterator when = caseWhen->begin(); when < caseWhen->end(); when++)
-                   (*when)->toString(out, d + 2);
+                   (*when)->print(out, d + 2);
             }
             if(caseElse != NULL) {
                 TAB(d + 1) << "Else =>" << endl;
                 for(VectorNode::iterator Else = caseElse->begin(); Else < caseElse->end(); Else++)
-                   (*Else)->toString(out, d + 2);
+                   (*Else)->print(out, d + 2);
             }
         }
 
@@ -129,12 +129,12 @@ namespace LANG_NAMESPACE
             : whenExpression(e), whenBlock(b) { }
 
         void
-        WhenNode::toString(ostream & out, unsigned d)
+        WhenNode::print(ostream & out, unsigned d)
         {
             TAB(d) << "When =>" << endl;
-            whenExpression->toString(out, d + 1);
+            whenExpression->print(out, d + 1);
             TAB(d + 1) << "Block =>" << endl;
-            whenBlock->toString(out, d + 2);
+            whenBlock->print(out, d + 2);
         }
 
         ForNode::ForNode(LoopType::Type t, SyntaxNode * l, SyntaxNode * r, SyntaxNode * b)
@@ -148,7 +148,7 @@ namespace LANG_NAMESPACE
         }
 
         void
-        ForNode::toString(ostream & out, unsigned d)
+        ForNode::print(ostream & out, unsigned d)
         {
             switch(forType) {
             case LoopType::For:
@@ -158,22 +158,22 @@ namespace LANG_NAMESPACE
                 TAB(d) << "Foreach =>" << endl;
                 break;
             }
-            forLhs->toString(out, d + 1);
+            forLhs->print(out, d + 1);
             TAB(d + 1) << "To =>" << endl;
-            forRhs->toString(out, d + 1);
+            forRhs->print(out, d + 1);
             if(forStep != NULL) {
                 TAB(d + 1) << "By step =>" << endl;
-                forStep->toString(out, d + 2);
+                forStep->print(out, d + 2);
             }
             TAB(d + 1) << "Block =>" << endl;
-            forBlock->toString(out, d + 2);
+            forBlock->print(out, d + 2);
         }
 
         LoopNode::LoopNode(LoopType::Type t, SyntaxNode * e, SyntaxNode * b)
             : loopType(t), loopExpression(e), loopBlock(b) { }
 
         void
-        LoopNode::toString(ostream & out, unsigned d)
+        LoopNode::print(ostream & out, unsigned d)
         {
             switch(loopType) {
             case LoopType::While:
@@ -183,9 +183,9 @@ namespace LANG_NAMESPACE
                 TAB(d) << "Until expression =>" << endl;
                 break;
             }
-            loopExpression->toString(out, d + 1);
+            loopExpression->print(out, d + 1);
             TAB(d + 1) << "Block =>" << endl;
-            loopBlock->toString(out, d + 2);
+            loopBlock->print(out, d + 2);
         }
 
         ControlNode::ControlNode(ControlType::Type t)
@@ -195,7 +195,7 @@ namespace LANG_NAMESPACE
             : controlType(t), controlExpression(e) { }
 
         void
-        ControlNode::toString(ostream & out, unsigned d)
+        ControlNode::print(ostream & out, unsigned d)
         {
             switch(controlType) {
             case ControlType::Break:
@@ -204,7 +204,7 @@ namespace LANG_NAMESPACE
             case ControlType::Return:
                 if(controlExpression != NULL) {
                     TAB(d) << "Return statement with expression =>" << endl;
-                    controlExpression->toString(out, d + 1);
+                    controlExpression->print(out, d + 1);
                 } else {
                     TAB(d) << "Return statement" << endl;
                 }
@@ -212,7 +212,7 @@ namespace LANG_NAMESPACE
             case ControlType::Yield:
                 if(controlExpression != NULL) {
                     TAB(d) << "Yield statement with expression =>" << endl;
-                    controlExpression->toString(out, d + 1);
+                    controlExpression->print(out, d + 1);
                 } else {
                     TAB(d) << "Yield statement" << endl;
                 }
@@ -249,27 +249,27 @@ namespace LANG_NAMESPACE
         }
 
         void
-        BlockNode::toString(ostream & out, unsigned d)
+        BlockNode::print(ostream & out, unsigned d)
         {
             if(blockRequire != NULL) {
                 for(VectorNode::iterator req = blockRequire->begin(); req < blockRequire->end(); req++) {
                     TAB(d) << "Require =>" << endl;
-                   (*req)->toString(out, d + 1);
+                   (*req)->print(out, d + 1);
                 }
             }
             for(VectorNode::iterator stmt = blockStatements->begin(); stmt < blockStatements->end(); stmt++) {
-               (*stmt)->toString(out, d + 1);
+               (*stmt)->print(out, d + 1);
             }
             if(blockRescue != NULL) {
                 for(VectorNode::iterator res = blockRescue->begin(); res < blockRescue->end(); res++) {
                     TAB(d) << "Rescue =>" << endl;
-                   (*res)->toString(out, d + 1);
+                   (*res)->print(out, d + 1);
                 }
             }
             if(blockEnsure != NULL) {
                 for(VectorNode::iterator ens = blockEnsure->begin(); ens < blockEnsure->end(); ens++) {
                     TAB(d) << "Ensure =>" << endl;
-                   (*ens)->toString(out, d + 1);
+                   (*ens)->print(out, d + 1);
                 }
             }
         }
@@ -278,13 +278,13 @@ namespace LANG_NAMESPACE
             : validationExpression(e), validationRaise(r) { }
 
         void
-        ValidationNode::toString(ostream & out, unsigned d)
+        ValidationNode::print(ostream & out, unsigned d)
         {
             TAB(d) << "Validation require =>" << endl;
-            validationExpression->toString(out, d + 1);
+            validationExpression->print(out, d + 1);
             if(validationRaise != NULL) {
                 TAB(d + 1) << "Raising the exception" << endl;
-                validationRaise->toString(out, d + 2);
+                validationRaise->print(out, d + 2);
             }
         }
 
@@ -292,11 +292,11 @@ namespace LANG_NAMESPACE
             : variables(v) { }
 
         void
-        VariableNode::toString(ostream & out, unsigned d)
+        VariableNode::print(ostream & out, unsigned d)
         {
             TAB(d) << "Declare variables =>" << endl;
             for(VectorNode::iterator var = variables->begin(); var < variables->end(); var++)
-               (*var)->toString(out, d + 1);
+               (*var)->print(out, d + 1);
         }
 
         RescueNode::RescueNode(SyntaxNode * s)
@@ -310,12 +310,12 @@ namespace LANG_NAMESPACE
         }
 
         void
-        RescueNode::toString(ostream & out, unsigned d)
+        RescueNode::print(ostream & out, unsigned d)
         {
             TAB(d) << "On exception =>";
             if(rescueException)
-                rescueException->toString(out, d + 1);
-            rescueStatement->toString(out, d + 2);
+                rescueException->print(out, d + 1);
+            rescueStatement->print(out, d + 2);
         }
 
         ElementNode::ElementNode(SyntaxNode * n)
@@ -344,21 +344,21 @@ namespace LANG_NAMESPACE
         }
 
         void
-        ElementNode::toString(ostream & out, unsigned d)
+        ElementNode::print(ostream & out, unsigned d)
         {
             TAB(d) << "Element named =>" << endl;
-            elementName->toString(out, d + 1);
+            elementName->print(out, d + 1);
             if(elementType != NULL) {
                 TAB(d + 1) << "Of type" << endl;
-                elementType->toString(out, d + 2);
+                elementType->print(out, d + 2);
             }
             if(elementInitialValue != NULL) {
                 TAB(d + 1) << "With initial value =>" << endl;
-                elementInitialValue->toString(out, d + 2);
+                elementInitialValue->print(out, d + 2);
             }
             if(elementInvariants != NULL) {
                 TAB(d + 1) << "With invariants condition =>" << endl;
-                elementInvariants->toString(out, d + 2);
+                elementInvariants->print(out, d + 2);
             }
         }
 
@@ -366,11 +366,11 @@ namespace LANG_NAMESPACE
             : constants(v) { }
 
         void
-        ConstantNode::toString(ostream & out, unsigned d)
+        ConstantNode::print(ostream & out, unsigned d)
         {
             TAB(d) << "Declare constants =>" << endl;
             for(VectorNode::iterator cons = constants->begin(); cons < constants->end(); cons++)
-               (*cons)->toString(out, d + 1);
+               (*cons)->print(out, d + 1);
         }
 
         FunctionNode::FunctionNode(SyntaxNode * n, VectorNode * p)
@@ -406,10 +406,10 @@ namespace LANG_NAMESPACE
         }
 
         void
-        FunctionNode::toString(ostream & out, unsigned d)
+        FunctionNode::print(ostream & out, unsigned d)
         {
             TAB(d) << "Function named =>" << endl;
-            functionName->toString(out, d + 1);
+            functionName->print(out, d + 1);
             if(functionSpecifiers.size() > 0) {
                 for(vector<SpecifierType::Type>::iterator spec = functionSpecifiers.begin(); spec < functionSpecifiers.end(); spec++)
                     TAB(d + 1) << "With specifier =>" << *spec << endl;
@@ -417,18 +417,18 @@ namespace LANG_NAMESPACE
             if(functionParams->size() > 0) {
                 TAB(d) << "With parameters =>" << endl;
                 for(VectorNode::iterator param = functionParams->begin(); param < functionParams-> end(); param++) {
-                   (*param)->toString(out, d + 1);
+                   (*param)->print(out, d + 1);
                 }
             } else
                 TAB(d) << "Without parameters" << endl;
             if(functionReturnType != NULL) {
                 TAB(d) << "With return type =>" << endl;
-                functionReturnType->toString(out, d + 1);
+                functionReturnType->print(out, d + 1);
             }
-            if(functionIntercept != NULL) functionIntercept->toString(out, d + 1);
+            if(functionIntercept != NULL) functionIntercept->print(out, d + 1);
             if(functionBlock != NULL) {
                 TAB(d) << "Block =>" << endl;
-                functionBlock->toString(out, d + 1);
+                functionBlock->print(out, d + 1);
             }
         }
     } // SyntaxTree

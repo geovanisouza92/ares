@@ -16,7 +16,7 @@
  *  4. Neither the name of the Ares Programming Language Project nor the names
  *     of its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE ARES PROGRAMMING LANGUAGE PROJECT AND
  * CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
  * NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -56,7 +56,7 @@ namespace LANG_NAMESPACE
             SyntaxNode * asyncItem;
         public:
             AsyncStatementNode(SyntaxNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         // TODO Dividir em IfNode e UnlessNode
@@ -75,7 +75,7 @@ namespace LANG_NAMESPACE
             ConditionNode(ConditionType::Type, SyntaxNode *, SyntaxNode *);
             virtual ConditionNode * setElif(VectorNode *);
             virtual ConditionNode * setElse(SyntaxNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -91,7 +91,7 @@ namespace LANG_NAMESPACE
             CaseNode(SyntaxNode *);
             virtual CaseNode * setWhen(VectorNode *);
             virtual CaseNode * setElse(VectorNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -104,7 +104,7 @@ namespace LANG_NAMESPACE
             SyntaxNode * whenBlock;
         public:
             WhenNode(SyntaxNode *, SyntaxNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -121,7 +121,7 @@ namespace LANG_NAMESPACE
         public:
             ForNode(LoopType::Type, SyntaxNode *, SyntaxNode *, SyntaxNode *);
             virtual ForNode * setStep(SyntaxNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         // TODO Dividir em WhileNode e UntilNode
@@ -136,7 +136,7 @@ namespace LANG_NAMESPACE
             SyntaxNode * loopBlock;
         public:
             LoopNode(LoopType::Type, SyntaxNode *, SyntaxNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -150,7 +150,7 @@ namespace LANG_NAMESPACE
         public:
             ControlNode(ControlType::Type);
             ControlNode(ControlType::Type, SyntaxNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -168,7 +168,7 @@ namespace LANG_NAMESPACE
             virtual BlockNode * setBlockRequire(VectorNode *);
             virtual BlockNode * setBlockEnsure(VectorNode *);
             virtual BlockNode * setBlockRescue(VectorNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -181,7 +181,7 @@ namespace LANG_NAMESPACE
             SyntaxNode * validationRaise;
         public:
             ValidationNode(SyntaxNode *, SyntaxNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -195,7 +195,7 @@ namespace LANG_NAMESPACE
         public:
             RescueNode(SyntaxNode *);
             virtual RescueNode * setException(SyntaxNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -207,7 +207,7 @@ namespace LANG_NAMESPACE
             VectorNode * variables;
         public:
             VariableNode(VectorNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -225,7 +225,7 @@ namespace LANG_NAMESPACE
             virtual ElementNode * setElementType(SyntaxNode *);
             virtual ElementNode * setElementInitialValue(SyntaxNode *);
             virtual ElementNode * setElementInvariants(SyntaxNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -237,7 +237,7 @@ namespace LANG_NAMESPACE
             VectorNode * constants;
         public:
             ConstantNode(VectorNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -258,7 +258,7 @@ namespace LANG_NAMESPACE
             virtual FunctionNode * setFunctionIntercept(SyntaxNode *);
             virtual FunctionNode * addSpecifier(SpecifierType::Type);
             virtual FunctionNode * setBlock(SyntaxNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
     } // SyntaxTree
 } // LANG_NAMESPACE

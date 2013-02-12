@@ -16,7 +16,7 @@
  *  4. Neither the name of the Ares Programming Language Project nor the names
  *     of its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE ARES PROGRAMMING LANGUAGE PROJECT AND
  * CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
  * NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -65,7 +65,7 @@ namespace LANG_NAMESPACE
             virtual ~SyntaxNode();
             virtual NodeType::Type getNodeType();
             virtual void setNodeType(NodeType::Type t);
-            virtual void toString(ostream &, unsigned) = 0;
+            virtual void print(ostream &, unsigned) = 0;
             // virtual Value * genCode() = 0;
         };
 
@@ -87,7 +87,7 @@ namespace LANG_NAMESPACE
             virtual ~Environment();
             virtual Environment * clear();
             virtual Environment * putStatements(VectorNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -97,7 +97,7 @@ namespace LANG_NAMESPACE
         {
         public:
             NullNode();
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -109,7 +109,7 @@ namespace LANG_NAMESPACE
             int value;
         public:
             IntegerNode(int);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -121,7 +121,7 @@ namespace LANG_NAMESPACE
             double value;
         public:
             FloatNode(double);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -133,7 +133,7 @@ namespace LANG_NAMESPACE
             char value;
         public:
             CharNode(char);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -146,7 +146,7 @@ namespace LANG_NAMESPACE
         public:
             StringNode(string);
             virtual void append(string);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -158,7 +158,7 @@ namespace LANG_NAMESPACE
             string value;
         public:
             RegexNode(string);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -170,7 +170,7 @@ namespace LANG_NAMESPACE
             bool value;
         public:
             BooleanNode(bool);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -183,7 +183,7 @@ namespace LANG_NAMESPACE
         public:
             ArrayNode();
             ArrayNode(VectorNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -196,7 +196,7 @@ namespace LANG_NAMESPACE
             SyntaxNode * value;
         public:
             KeyValuePairNode(SyntaxNode *, SyntaxNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -209,7 +209,7 @@ namespace LANG_NAMESPACE
         public:
             HashNode();
             HashNode(VectorNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -221,7 +221,7 @@ namespace LANG_NAMESPACE
             SyntaxNode * type;
         public:
             PointerNode(SyntaxNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -233,7 +233,7 @@ namespace LANG_NAMESPACE
             string id;
         public:
             IdentifierNode(string);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -248,7 +248,7 @@ namespace LANG_NAMESPACE
         public:
             UnaryExpressionNode(Operator::Unary, SyntaxNode *);
             UnaryExpressionNode(Operator::Unary, VectorNode *);
-            virtual void toString(ostream &, unsigned );
+            virtual void print(ostream &, unsigned );
         };
 
         /**
@@ -262,7 +262,7 @@ namespace LANG_NAMESPACE
             SyntaxNode * member2;
         public:
             BinaryExpressionNode(Operator::Binary, SyntaxNode *, SyntaxNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -277,7 +277,7 @@ namespace LANG_NAMESPACE
             SyntaxNode * member3;
         public:
             TernaryExpressionNode(Operator::Ternary, SyntaxNode *, SyntaxNode *, SyntaxNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -291,7 +291,7 @@ namespace LANG_NAMESPACE
         public:
             FunctionInvocationNode(SyntaxNode *);
             FunctionInvocationNode(SyntaxNode *, VectorNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
@@ -304,7 +304,7 @@ namespace LANG_NAMESPACE
             SyntaxNode * lambdaExpression;
         public:
             LambdaExpressionNode(VectorNode *, SyntaxNode *);
-            virtual void toString(ostream &, unsigned);
+            virtual void print(ostream &, unsigned);
         };
     } // SyntaxTree
 } // LANG_NAMESPACE
