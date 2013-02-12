@@ -16,7 +16,7 @@
  *  4. Neither the name of the Ares Programming Language Project nor the names
  *     of its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE ARES PROGRAMMING LANGUAGE PROJECT AND
  * CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
  * NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -80,7 +80,10 @@ namespace LANG_NAMESPACE
         Environment::toString(ostream & out, unsigned d)
         {
             for(VectorNode::iterator stmt = statements->begin(); stmt < statements->end(); stmt++)
-               (*stmt)->toString(out, 0);
+            {
+                out << *stmt << endl;
+                // (*stmt)->toString(out, 0);
+            }
         }
 
         NullNode::NullNode()
