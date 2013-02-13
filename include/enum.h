@@ -139,17 +139,19 @@ namespace LANG_NAMESPACE
 			 */
 			enum Unary
 			{
-				UNot = 0x1
-				, UCompl
+				Not = 0x1
+				, Compl
 				, UAdd
 				, USub
-				, UPtr
-				, URef
-				, UPreInc
-				, UPreDec
-				, UPosInc
-				, UPosDec
+				, Ptr
+				, Ref
+				, PreInc
+				, PreDec
+				, PostInc
+				, PostDec
 				, New
+				, Typeof
+				, Sizeof
 			};
 
 			/**
@@ -177,6 +179,7 @@ namespace LANG_NAMESPACE
 				, Rae
 				, Rai
 				, Is
+				, As
 				, Coa
 				, And
 				, Xor
@@ -206,8 +209,11 @@ namespace LANG_NAMESPACE
 			{
 				switch(op)
 				{
-				case UNot:
+				case Not:
 					os << "! unary";
+					break;
+				case Compl:
+					os << "~";
 					break;
 				case UAdd:
 					os << "+ unary";
@@ -215,26 +221,32 @@ namespace LANG_NAMESPACE
 				case USub:
 					os << "- unary";
 					break;
-				case UPtr:
+				case Ptr:
 					os << "* ptr";
 					break;
-				case URef:
+				case Ref:
 					os << "& ref";
 					break;
-				case UPreInc:
+				case PreInc:
 					os << "++ var";
 					break;
-				case UPreDec:
+				case PreDec:
 					os << "-- var";
 					break;
-				case UPosInc:
+				case PostInc:
 					os << "var ++";
 					break;
-				case UPosDec:
+				case PostDec:
 					os << "var --";
 					break;
 				case Cast:
 					os << "( )";
+					break;
+				case Typeof:
+					os << "typeof";
+					break;
+				case Sizeof:
+					os << "sizeof";
 					break;
 				case Mul:
 					os << "*";
@@ -290,6 +302,9 @@ namespace LANG_NAMESPACE
 				case Is:
 					os << "is";
 					break;
+				case As:
+					os << "as";
+					break;
 				case Coa:
 					os << "??";
 					break;
@@ -322,6 +337,10 @@ namespace LANG_NAMESPACE
 					break;
 				case Die:
 					os << "/=";
+					break;
+				case Mde:
+					os << "%=";
+					break;
 					break;
 				case Iif:
 					os << "?:";
@@ -408,6 +427,7 @@ namespace LANG_NAMESPACE
 				, HashPair
 				, Hash
 				, Expression
+				, Ty
 			};
 		}
 
