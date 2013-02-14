@@ -156,8 +156,9 @@ rgx \/(\\.|[^\/\ ])*\/
 "->"    return token::oIND;
 
 "array"         return token::kARRAY;
-"asc"           return token::kASC;
 "async"         return token::kASYNC;
+"asc"           return token::kASC;
+"as"            return token::kAS;
 "await"         return token::kAWAIT;
 "bool"          return token::kBOOL;
 "break"         return token::kBREAK;

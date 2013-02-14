@@ -87,6 +87,19 @@ namespace LANG_NAMESPACE
         };
 
         /**
+         * Represents the let clause node
+         */
+        class LetNode : public SyntaxNode
+        {
+        protected:
+            SyntaxNode * letId;
+            SyntaxNode * letExpr;
+        public:
+            LetNode(SyntaxNode *, SyntaxNode *);
+            virtual void print(ostream &, unsigned);
+        };
+
+        /**
          * Represents the where condition clause of OQL expression
          */
         class WhereNode: public SyntaxNode
@@ -107,21 +120,23 @@ namespace LANG_NAMESPACE
             JoinType::Type joinDirection;
             SyntaxNode * joinOrigin;
             SyntaxNode * joinExpression;
+            SyntaxNode * joinId;
         public:
             JoinNode(JoinType::Type, SyntaxNode *, SyntaxNode *);
+            virtual void set_new_id(SyntaxNode *);
             virtual void print(ostream &, unsigned);
         };
 
         /**
          * Represents the ordering clause of OQL expression
          */
-        class OrderingNode: public SyntaxNode
+        class OrderExprNode: public SyntaxNode
         {
         public:
             OrderType::Type orderType;
             SyntaxNode * orderExpression;
         public:
-            OrderingNode(OrderType::Type, SyntaxNode *);
+            OrderExprNode(OrderType::Type, SyntaxNode *);
             virtual void print(ostream &, unsigned);
         };
 
@@ -138,14 +153,17 @@ namespace LANG_NAMESPACE
         };
 
         /**
-         * Represents a group clause of OQL expression
+         * Represents a grouping expression
          */
-        class GroupByNode: public SyntaxNode
+        class GroupByNode : public SyntaxNode
         {
         protected:
-            SyntaxNode * groupExpression;
+            SyntaxNode * groupOrigin;
+            SyntaxNode * groupExpr;
+            SyntaxNode * groupId;
         public:
-            GroupByNode(SyntaxNode *);
+            GroupByNode(SyntaxNode *, SyntaxNode *);
+            virtual void set_id(SyntaxNode *);
             virtual void print(ostream &, unsigned);
         };
 

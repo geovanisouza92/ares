@@ -107,6 +107,19 @@ namespace LANG_NAMESPACE
             }
         }
 
+        LetNode::LetNode(SyntaxNode * id, SyntaxNode * expr)
+            : letId(id), letExpr(expr)
+        {
+            setNodeType(NodeType::Null);
+        }
+
+        void
+        LetNode::print(ostream & out, unsigned d)
+        {
+            TAB(d) << "let " << letId << " => " << endl;
+            letExpr->print(out, d + 1);
+        }
+
         WhereNode::WhereNode(SyntaxNode * e)
             : whereExpression(e)
         {
@@ -124,6 +137,12 @@ namespace LANG_NAMESPACE
             : joinDirection(t), joinOrigin(o), joinExpression(e)
         {
             setNodeType(NodeType::Null);
+        }
+
+        void
+        JoinNode::set_new_id(SyntaxNode * new_id)
+        {
+            joinId = new_id;
         }
 
         void
@@ -146,14 +165,14 @@ namespace LANG_NAMESPACE
             joinExpression->print(out, d + 2);
         }
 
-        OrderingNode::OrderingNode(OrderType::Type t, SyntaxNode * e)
+        OrderExprNode::OrderExprNode(OrderType::Type t, SyntaxNode * e)
             : orderType(t), orderExpression(e)
         {
             setNodeType(NodeType::Null);
         }
 
         void
-        OrderingNode::print(ostream & out, unsigned d)
+        OrderExprNode::print(ostream & out, unsigned d)
         {
             orderExpression->print(out, d + 1);
             switch(orderType) {
@@ -184,17 +203,30 @@ namespace LANG_NAMESPACE
             }
         }
 
-        GroupByNode::GroupByNode(SyntaxNode * e)
-            : groupExpression(e)
+        GroupByNode::GroupByNode(SyntaxNode * origin, SyntaxNode * expr)
+            : groupOrigin(origin), groupExpr(expr)
         {
             setNodeType(NodeType::Null);
         }
 
         void
+        GroupByNode::set_id(SyntaxNode * id)
+        {
+            groupId = id;
+        }
+
+        void
         GroupByNode::print(ostream & out, unsigned d)
         {
-            TAB(d) << "Grouping =>" << endl;
-            groupExpression->print(out, d + 1);
+            TAB(d) << "group" << endl;
+            groupOrigin->print(out, d + 1);
+            TAB(d) << "by" << endl;
+            groupExpr->print(out, d + 1);
+            if (groupId != NULL)
+            {
+                TAB(d) << "into" << endl;
+                groupId->print(out, d + 1);
+            }
         }
 
         RangeNode::RangeNode(RangeType::Type t, SyntaxNode * r)

@@ -255,7 +255,10 @@ namespace LANG_NAMESPACE
             TAB(d) << "Identifier => " << id << endl;
         }
 
-        Type::Type(string ty) : type(ty) { }
+        Type::Type(string ty) : type(ty)
+        {
+            setNodeType(NodeType::Ty);
+        }
 
         void
         Type::print(ostream & out, unsigned d)

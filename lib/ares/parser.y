@@ -83,6 +83,7 @@ using namespace std;
 #include "driver.h"
 #include "ast.h"
 #include "oql.h"
+#include "lambda.h"
 #include "stmt.h"
 
 using namespace SyntaxTree;
@@ -106,12 +107,13 @@ using namespace SyntaxTree;
 }
 
 %union {
-    int                             v_int;
-    double                          v_flt;
-    string *                        v_str;
-    SyntaxTree::SyntaxNode *        v_node;
-    SyntaxTree::VectorNode *        v_list;
-    Operator::Binary                v_bop;
+    int                         v_int;
+    double                      v_flt;
+    string *                    v_str;
+    SyntaxTree::SyntaxNode *    v_node;
+    SyntaxTree::VectorNode *    v_list;
+    Operator::Binary            v_bop;
+    OrderType::Type             v_oop;
 }
 
 %{
@@ -133,8 +135,9 @@ using namespace SyntaxTree;
 %nonassoc IDENTIFIER FLOAT INTEGER CHAR STRING REGEX
 
 %token  kARRAY      "array"
-%token  kASC        "asc"
 %token  kASYNC      "async"
+%token  kASC        "asc"
+%token  kAS         "as"
 %token  kAWAIT      "await"
 %token  kBOOL       "bool"
 %token  kBREAK      "break"
@@ -297,12 +300,14 @@ using namespace SyntaxTree;
 %type   <v_node>    NewExpression
 %type   <v_node>    TypeofExpression
 %type   <v_node>    SizeofExpression
-
+%type   <v_node>    AddressofExpression
 %type   <v_node>    PostIncrementExpression
 %type   <v_node>    PostDecrementExpression
 %type   <v_node>    PreIncrementExpression
 %type   <v_node>    PreDecrementExpression
 %type   <v_node>    UnaryExpressionNotPlusMinus
+%type   <v_node>    PointerMemberAccess
+%type   <v_node>    CastExpression
 %type   <v_node>    UnaryExpression
 %type   <v_node>    PowerExpression
 %type   <v_node>    MultiplicativeExpression
@@ -317,32 +322,52 @@ using namespace SyntaxTree;
 %type   <v_node>    ConditionalOrExpression
 %type   <v_node>    RangeExpression
 %type   <v_node>    ConditionalExpression
+%type   <v_node>    BooleanExpression
 %type   <v_node>    TimedExpression
 %type   <v_node>    ObjectCreationExpression
 %type   <v_node>    PostfixExpression
 %type   <v_node>    NullCoalescingExpression
+%type   <v_node>    AssignmentExpression
 
+// OQL
+%type   <v_node>    SelectOrGroupClause
+%type   <v_node>    GroupByClause
+%type   <v_node>    SelectClause
+%type   <v_node>    LetClause
+%type   <v_node>    RangeClause
+%type   <v_node>    OrderExpression
+%type   <v_node>    JoinClause
+%type   <v_node>    QueryBodyMember
+%type   <v_node>    QueryBody
+%type   <v_node>    QueryOrigin
+%type   <v_node>    QueryExpression
 
+// Lambda
 %type   <v_node>    LambdaParameter
 %type   <v_node>    LambdaExpressionBody
 %type   <v_node>    LambdaExpression
 
+// Top-level goal
 %type   <v_node>    GoalOption
 %type   <v_node>    Statement
 %type   <v_node>    TypeDeclaration
 %type   <v_node>    UsingDirective
-//
+
+// Collections
 %type   <v_list>    ArgumentList
 %type   <v_list>    ExpressionList
-%type   <v_list>    LambdaParameterList
-%type   <v_list>    LambdaParameterListOpt
 %type   <v_list>    HashPairList
 %type   <v_list>    HashPairListOpt
+%type   <v_list>    LambdaParameterList
+%type   <v_list>    LambdaParameterListOpt
+%type   <v_list>    OrderExpressionList
+%type   <v_list>    QueryBodyMemberRepeat
 %type   <v_list>    GoalOptionRepeat
 %type   <v_list>    StatementRepeat
 %type   <v_list>    UsingDirectiveRepeat
 
 %type   <v_bop>      AssignmentOperator
+%type   <v_oop>      OrderOperatorOpt
 
 %%
 
@@ -832,14 +857,14 @@ ExpressionList
 PostIncrementExpression
     : PostfixExpression oINC
     {
-        $$ = new UnaryExpressionNode(Operator::UPosInc, $1);
+        $$ = new UnaryExpressionNode(Operator::PostInc, $1);
     }
     ;
 
 PostDecrementExpression
     : PostfixExpression oDEC
     {
-        $$ = new UnaryExpressionNode(Operator::UPosDec, $1);
+        $$ = new UnaryExpressionNode(Operator::PostDec, $1);
     }
     ;
 
@@ -864,18 +889,18 @@ ObjectCreationExpression
 TypeofExpression
     : kTYPEOF '(' Type ')'
     {
-        // $$ = new TypeofNode($3);
+        $$ = new UnaryExpressionNode(Operator::Typeof, $3);
     }
     | kTYPEOF '(' kVOID ')'
     {
-        // $$ = new TypeofNode(new Type("void"));
+        $$ = new UnaryExpressionNode(Operator::Typeof, new Type("void"));
     }
     ;
 
 SizeofExpression
     : kSIZEOF '(' Type ')'
     {
-        // $$ = new SizeofNode($3);
+        $$ = new UnaryExpressionNode(Operator::Sizeof, $3);
     }
     // | kSIZEOF '(' Expression ')'
     ;
@@ -886,6 +911,9 @@ PointerMemberAccess
 
 AddressofExpression
     : '&' UnaryExpression %prec UNARY
+    {
+        $$ = new UnaryExpressionNode(Operator::Ref, $2);
+    }
     ;
 
 PostfixExpression
@@ -906,6 +934,9 @@ PostfixExpression
         $$ = $1;
     }
     | PointerMemberAccess
+    {
+        $$ = $1;
+    }
     ;
 
 UnaryExpressionNotPlusMinus
@@ -915,26 +946,29 @@ UnaryExpressionNotPlusMinus
     }
     | '!' UnaryExpression %prec UNARY
     {
-        $$ = new UnaryExpressionNode(Operator::UNot, $2);
+        $$ = new UnaryExpressionNode(Operator::Not, $2);
     }
     | '~' UnaryExpression %prec UNARY
     {
-        $$ = new UnaryExpressionNode(Operator::UCompl, $2);
+        $$ = new UnaryExpressionNode(Operator::Compl, $2);
     }
     | CastExpression
+    {
+        $$ = $1;
+    }
     ;
 
 PreIncrementExpression
     : oINC UnaryExpression %prec UNARY
     {
-        $$ = new UnaryExpressionNode(Operator::UPreInc, $2);
+        $$ = new UnaryExpressionNode(Operator::PreInc, $2);
     }
     ;
 
 PreDecrementExpression
     : oDEC UnaryExpression %prec UNARY
     {
-        $$ = new UnaryExpressionNode(Operator::UPreDec, $2);
+        $$ = new UnaryExpressionNode(Operator::PreDec, $2);
     }
     ;
 
@@ -952,6 +986,9 @@ UnaryExpression
         $$ = new UnaryExpressionNode(Operator::USub, $2);
     }
     | '*' UnaryExpression %prec UNARY
+    {
+        $$ = new UnaryExpressionNode(Operator::Ptr, $2);
+    }
     | PreIncrementExpression
     {
         $$ = $1;
@@ -961,6 +998,9 @@ UnaryExpression
         $$ = $1;
     }
     | AddressofExpression
+    {
+        $$ = $1;
+    }
     ;
 
 CastExpression
@@ -1085,7 +1125,10 @@ RelationalExpression
     {
         $$ = new BinaryExpressionNode(Operator::Is, $1, $3);
     }
-    // | RelationalExpression kAS Type
+    | RelationalExpression kAS Type
+    {
+        $$ = new BinaryExpressionNode(Operator::As, $1, $3);
+    }
     ;
 
 EqualityExpression
@@ -1197,6 +1240,9 @@ ConditionalExpression
 
 AssignmentExpression
     : UnaryExpression AssignmentOperator Expression
+    {
+        $$ = new BinaryExpressionNode($2, $1, $3);
+    }
     ;
 
 AssignmentOperator
@@ -1233,73 +1279,199 @@ AssignmentOperator
 
 SelectOrGroupClause
     : GroupByClause
+    {
+        $$ = $1;
+    }
     | SelectClause
+    {
+        $$ = $1;
+    }
     ;
 
 GroupByClause
     : kGROUP IDENTIFIER kBY Expression
+    {
+        $$ = new GroupByNode(new IdNode(*$2), $4);
+    }
     | kGROUP IDENTIFIER kBY Expression kINTO IDENTIFIER
+    {
+        auto group = new GroupByNode(new IdNode(*$2), $4);
+        group->set_id(new IdNode(*$6));
+        $$ = group;
+    }
     ;
 
 SelectClause
     : kSELECT ExpressionList
+    {
+        $$ = new SelectNode($2);
+    }
     ;
 
 LetClause
     : kLET IDENTIFIER '=' Expression
+    {
+        $$ = new LetNode(new IdNode(*$2), $4);
+    }
     ;
 
 RangeClause
     : kSKIP Expression
+    {
+        $$ = new RangeNode(RangeType::Skip, $2);
+    }
     | kSTEP Expression
+    {
+        $$ = new RangeNode(RangeType::Step, $2);
+    }
     | kTAKE Expression
+    {
+        $$ = new RangeNode(RangeType::Take, $2);
+    }
+    ;
+
+OrderExpressionList
+    : OrderExpression
+    {
+        $$ = new VectorNode();
+        $$->push_back($1);
+    }
+    | OrderExpressionList ',' OrderExpression
+    {
+        $1->push_back($3);
+        $$ = $1;
+    }
     ;
 
 OrderExpression
     : Expression OrderOperatorOpt
+    {
+        $$ = new OrderExprNode($2, $1);
+    }
     ;
 
 OrderOperatorOpt
     : /* empty */
+    {
+        $$ = OrderType::None;
+    }
     | kASC
+    {
+        $$ = OrderType::Asc;
+    }
     | kDESC
+    {
+        $$ = OrderType::Desc;
+    }
     ;
 
 JoinClause
     : kJOIN QueryOrigin kON BooleanExpression
+    {
+        $$ = new JoinNode(JoinType::None, $2, $4);
+    }
     | kLEFT kJOIN QueryOrigin kON BooleanExpression
+    {
+        $$ = new JoinNode(JoinType::Left, $3, $5);
+    }
     | kRIGHT kJOIN QueryOrigin kON BooleanExpression
+    {
+        $$ = new JoinNode(JoinType::Right, $3, $5);
+    }
     | kJOIN QueryOrigin kON BooleanExpression kINTO IDENTIFIER
+    {
+        auto join = new JoinNode(JoinType::None, $2, $4);
+        join->set_new_id(new IdNode(*$6));
+        $$ = join;
+    }
     | kLEFT kJOIN QueryOrigin kON BooleanExpression kINTO IDENTIFIER
+    {
+        auto join = new JoinNode(JoinType::Left, $3, $5);
+        join->set_new_id(new IdNode(*$7));
+        $$ = join;
+    }
     | kRIGHT kJOIN QueryOrigin kON BooleanExpression kINTO IDENTIFIER
+    {
+        auto join = new JoinNode(JoinType::Right, $3, $5);
+        join->set_new_id(new IdNode(*$7));
+        $$ = join;
+    }
     ;
 
 QueryBodyMemberRepeat
     : QueryBodyMember
+    {
+        $$ = new VectorNode();
+        $$->push_back($1);
+    }
     | QueryBodyMemberRepeat QueryBodyMember
+    {
+        $1->push_back($2);
+        $$ = $1;
+    }
     ;
 
 QueryBodyMember
     : kWHERE BooleanExpression
-    | kORDER kBY OrderExpression
+    {
+        $$ = new WhereNode($2);
+    }
+    | kORDER kBY OrderExpressionList
+    {
+        $$ = new OrderByNode($3);
+    }
     | JoinClause
+    {
+        $$ = $1;
+    }
     | RangeClause
+    {
+        $$ = $1;
+    }
     | LetClause
+    {
+        $$ = $1;
+    }
     ;
 
 QueryBody
     : QueryBodyMemberRepeat SelectOrGroupClause
+    {
+        auto query = new QueryBodyNode();
+        query->set_body($1);
+        query->set_finally($2);
+        $$ = query;
+    }
     | QueryBodyMemberRepeat
+    {
+        auto query = new QueryBodyNode();
+        query->set_body($1);
+        $$ = query;
+    }
     | SelectOrGroupClause
+    {
+        auto query = new QueryBodyNode();
+        query->set_finally($1);
+        $$ = query;
+    }
     ;
 
 QueryOrigin
     : IDENTIFIER kIN Expression
+    {
+        $$ = new QueryOriginNode(new IdNode(*$1), $3);
+    }
     ;
 
 QueryExpression
     : kFROM QueryOrigin
+    {
+        $$ = new QueryNode($2, new QueryBodyNode());
+    }
     | kFROM QueryOrigin QueryBody
+    {
+        $$ = new QueryNode($2, $3);
+    }
     ;
 
 LambdaParameter
