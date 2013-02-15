@@ -47,23 +47,11 @@ namespace LANG_NAMESPACE
 {
     namespace SyntaxTree
     {
-    	/**
-    	 * Represents an asynchronous statement
-    	 */
-        class AsyncStatementNode : public SyntaxNode
-        {
-        protected:
-            SyntaxNode * asyncItem;
-        public:
-            AsyncStatementNode(SyntaxNode *);
-            virtual void print(ostream &, unsigned);
-        };
-
         // TODO Dividir em IfNode e UnlessNode
         /**
          * Represents a condition expression
          */
-        class ConditionNode: public SyntaxNode
+        class ConditionNode : public SyntaxNode
         {
         protected:
             ConditionType::Type conditionOperator;
@@ -81,7 +69,7 @@ namespace LANG_NAMESPACE
         /**
          * Represents a case expression and body of switch
          */
-        class CaseNode: public SyntaxNode
+        class CaseNode : public SyntaxNode
         {
         protected:
             SyntaxNode * caseExpression;
@@ -97,7 +85,7 @@ namespace LANG_NAMESPACE
         /**
          * TODO Nem sei se isso permanece... :/
          */
-        class WhenNode: public SyntaxNode
+        class WhenNode : public SyntaxNode
         {
         protected:
             SyntaxNode * whenExpression;
@@ -110,7 +98,7 @@ namespace LANG_NAMESPACE
         /**
          * Represents a for loop
          */
-        class ForNode: public SyntaxNode
+        class ForNode : public SyntaxNode
         {
         protected:
             LoopType::Type forType;
@@ -128,7 +116,7 @@ namespace LANG_NAMESPACE
         /**
          * Represents a while/do-while loop
          */
-        class LoopNode: public SyntaxNode
+        class LoopNode : public SyntaxNode
         {
         protected:
             LoopType::Type loopType;
@@ -142,7 +130,7 @@ namespace LANG_NAMESPACE
         /**
          * Represents a control/interruption of execution
          */
-        class ControlNode: public SyntaxNode
+        class ControlNode : public SyntaxNode
         {
         protected:
             ControlType::Type controlType;
@@ -156,7 +144,7 @@ namespace LANG_NAMESPACE
         /**
          * Represents a block os statements
          */
-        class BlockNode: public SyntaxNode
+        class BlockNode : public SyntaxNode
         {
         protected:
             VectorNode * blockRequire;
@@ -174,34 +162,34 @@ namespace LANG_NAMESPACE
         /**
          * TODO Nem sei pra que serve isso... (:
          */
-        class ValidationNode: public SyntaxNode
-        {
-        protected:
-            SyntaxNode * validationExpression;
-            SyntaxNode * validationRaise;
-        public:
-            ValidationNode(SyntaxNode *, SyntaxNode *);
-            virtual void print(ostream &, unsigned);
-        };
+        // class ValidationNode : public SyntaxNode
+        // {
+        // protected:
+        //     SyntaxNode * validationExpression;
+        //     SyntaxNode * validationRaise;
+        // public:
+        //     ValidationNode(SyntaxNode *, SyntaxNode *);
+        //     virtual void print(ostream &, unsigned);
+        // };
 
         /**
          * TODO Jamaz funcionará
          */
-        class RescueNode : public SyntaxNode
-        {
-        protected:
-            SyntaxNode * rescueStatement;
-            SyntaxNode * rescueException;
-        public:
-            RescueNode(SyntaxNode *);
-            virtual RescueNode * setException(SyntaxNode *);
-            virtual void print(ostream &, unsigned);
-        };
+        // class RescueNode : public SyntaxNode
+        // {
+        // protected:
+        //     SyntaxNode * rescueStatement;
+        //     SyntaxNode * rescueException;
+        // public:
+        //     RescueNode(SyntaxNode *);
+        //     virtual RescueNode * setException(SyntaxNode *);
+        //     virtual void print(ostream &, unsigned);
+        // };
 
         /**
          * Represents a variable
          */
-        class VariableNode: public SyntaxNode
+        class VariableNode : public SyntaxNode
         {
         protected:
             VectorNode * variables;
@@ -213,7 +201,7 @@ namespace LANG_NAMESPACE
         /**
          * TODO Prq Deus quis assim...
          */
-        class ElementNode: public SyntaxNode
+        class ElementNode : public SyntaxNode
         {
         protected:
             SyntaxNode * elementName;
@@ -231,7 +219,7 @@ namespace LANG_NAMESPACE
         /**
          * Represents a constant
          */
-        class ConstantNode: public SyntaxNode
+        class ConstantNode : public SyntaxNode
         {
         protected:
             VectorNode * constants;
@@ -241,9 +229,22 @@ namespace LANG_NAMESPACE
         };
 
         /**
+         * Represents a parameter for lambda and functions
+         */
+        class Parameter : public SyntaxNode
+        {
+        protected:
+            SyntaxNode * paramType;
+            SyntaxNode * paramName;
+        public:
+            Parameter(SyntaxNode *, SyntaxNode *);
+            virtual void print(ostream &, unsigned);
+        };
+
+        /**
          * Represents a function
          */
-        class FunctionNode: public SyntaxNode
+        class FunctionNode : public SyntaxNode
         {
         protected:
             vector<SpecifierType::Type> functionSpecifiers;

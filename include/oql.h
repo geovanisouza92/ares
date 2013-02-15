@@ -45,10 +45,10 @@ namespace LANG_NAMESPACE
 {
     namespace SyntaxTree
     {
-    	/**
-    	 * Represents a generic OQL expression node
-    	 */
-        class QueryNode: public SyntaxNode
+        /**
+         * Represents a generic OQL expression node
+         */
+        class QueryNode : public SyntaxNode
         {
         protected:
             SyntaxNode * queryOrigin;
@@ -61,7 +61,7 @@ namespace LANG_NAMESPACE
         /**
          * Represents the origin source part of OQL expression
          */
-        class QueryOriginNode: public SyntaxNode
+        class QueryOriginNode : public SyntaxNode
         {
         protected:
             SyntaxNode * originIdentifier;
@@ -74,7 +74,7 @@ namespace LANG_NAMESPACE
         /**
          * Represents the body of OQL expression
          */
-        class QueryBodyNode: public SyntaxNode
+        class QueryBodyNode : public SyntaxNode
         {
         protected:
             VectorNode * queryBody;
@@ -102,7 +102,7 @@ namespace LANG_NAMESPACE
         /**
          * Represents the where condition clause of OQL expression
          */
-        class WhereNode: public SyntaxNode
+        class WhereNode : public SyntaxNode
         {
         protected:
             SyntaxNode * whereExpression;
@@ -114,7 +114,7 @@ namespace LANG_NAMESPACE
         /**
          * Represents a join clause of OQL expression
          */
-        class JoinNode: public SyntaxNode
+        class JoinNode : public SyntaxNode
         {
         protected:
             JoinType::Type joinDirection;
@@ -130,7 +130,7 @@ namespace LANG_NAMESPACE
         /**
          * Represents the ordering clause of OQL expression
          */
-        class OrderExprNode: public SyntaxNode
+        class OrderExprNode : public SyntaxNode
         {
         public:
             OrderType::Type orderType;
@@ -143,7 +143,7 @@ namespace LANG_NAMESPACE
         /**
          * Represents a order condition of OQL expression
          */
-        class OrderByNode: public SyntaxNode
+        class OrderByNode : public SyntaxNode
         {
         protected:
             VectorNode * orders;
@@ -170,7 +170,7 @@ namespace LANG_NAMESPACE
         /**
          * Represents a range selection of select OQL expression
          */
-        class RangeNode: public SyntaxNode
+        class RangeNode : public SyntaxNode
         {
         protected:
             RangeType::Type rangeType;
@@ -183,7 +183,7 @@ namespace LANG_NAMESPACE
         /**
          * Represents a select clause of OQL expression
          */
-        class SelectNode: public SyntaxNode
+        class SelectNode : public SyntaxNode
         {
         protected:
             VectorNode * selection;
