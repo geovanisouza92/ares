@@ -85,6 +85,7 @@ using namespace std;
 #include "oql.h"
 #include "lambda.h"
 #include "stmt.h"
+#include "async.h"
 
 using namespace SyntaxTree;
 
@@ -328,6 +329,7 @@ using namespace SyntaxTree;
 %type   <v_node>    PostfixExpression
 %type   <v_node>    NullCoalescingExpression
 %type   <v_node>    AssignmentExpression
+%type   <v_node>    Block
 
 // OQL
 %type   <v_node>    SelectOrGroupClause
@@ -1478,10 +1480,12 @@ LambdaParameter
     : Type IDENTIFIER
     {
         // $$ = new LambdaParameter($2, $1);
+        $$ = new Parameter($1, new IdNode(*$2));
     }
     | IDENTIFIER
     {
         // $$ = new LambdaParameter($1, new Type("var"));
+        $$ = new Parameter(new Type("var"), new IdNode(*$1));
     }
     ;
 
@@ -1515,6 +1519,9 @@ LambdaExpressionBody
         $$ = $1;
     }
     | Block
+    {
+        $$ = $1;
+    }
     ;
 
 LambdaExpression
@@ -1523,26 +1530,26 @@ LambdaExpression
         auto _id = new IdNode(*$1);
         auto _params = new VectorNode();
         _params->push_back(_id);
-        // $$ = new LambdaNode($3, _params);
+        $$ = new LambdaNode(_params, $3);
     }
     | '(' ')' oFAR LambdaExpressionBody
     {
-        // $$ = new LambdaNode($4);
+        $$ = new LambdaNode(new VectorNode(), $4);
     }
     | '(' LambdaParameterListOpt ')' oFAR LambdaExpressionBody
     {
-        // $$ = new LambdaNode($2, $5);
+        $$ = new LambdaNode($2, $5);
     }
     ;
 
 TimedExpression
     : kASYNC Expression
     {
-        // $$ = new AsyncExpression($2);
+        $$ = new AsyncStatementNode($2);
     }
     | kAWAIT Expression
     {
-        // $$ = new AwaitExpression($2);
+        $$ = new AwaitStatementNode($2);
     }
     ;
 
@@ -1552,7 +1559,13 @@ Expression
         $$ = $1;
     }
     | AssignmentExpression
+    {
+        $$ = $1;
+    }
     | QueryExpression
+    {
+        $$ = $1;
+    }
     | LambdaExpression
     {
         $$ = $1;
