@@ -42,19 +42,12 @@ namespace LANG_NAMESPACE
 {
     namespace SyntaxTree
     {
-        AsyncStatementNode::AsyncStatementNode(SyntaxNode * i)
-            : asyncItem(i) { }
-
-        void
-        AsyncStatementNode::print(ostream & out, unsigned d)
-        {
-            TAB(d) << "Async =>" << endl;
-            asyncItem->print(out, d + 1);
-        }
-
         ConditionNode::ConditionNode(ConditionType::Type o, SyntaxNode * i, SyntaxNode * t)
             : conditionOperator(o), conditionExpression(i), conditionThen(t),
-            conditionElifs(new VectorNode()), conditionElse(NULL) { }
+            conditionElifs(new VectorNode()), conditionElse(NULL)
+        {
+            setNodeType(NodeType::Null);
+        }
 
         ConditionNode *
         ConditionNode::setElif(VectorNode * e)
@@ -91,7 +84,10 @@ namespace LANG_NAMESPACE
         }
 
         CaseNode::CaseNode(SyntaxNode * c)
-            : caseExpression(c), caseWhen(new VectorNode()), caseElse(NULL) { }
+            : caseExpression(c), caseWhen(new VectorNode()), caseElse(NULL)
+        {
+            setNodeType(NodeType::Null);
+        }
 
         CaseNode *
         CaseNode::setWhen(VectorNode * w)
@@ -126,7 +122,10 @@ namespace LANG_NAMESPACE
         }
 
         WhenNode::WhenNode(SyntaxNode * e, SyntaxNode * b)
-            : whenExpression(e), whenBlock(b) { }
+            : whenExpression(e), whenBlock(b)
+        {
+            setNodeType(NodeType::Null);
+        }
 
         void
         WhenNode::print(ostream & out, unsigned d)
@@ -138,7 +137,10 @@ namespace LANG_NAMESPACE
         }
 
         ForNode::ForNode(LoopType::Type t, SyntaxNode * l, SyntaxNode * r, SyntaxNode * b)
-            : forType(t), forLhs(l), forRhs(r), forBlock(b), forStep(NULL) { }
+            : forType(t), forLhs(l), forRhs(r), forBlock(b), forStep(NULL)
+        {
+            setNodeType(NodeType::Null);
+        }
 
         ForNode *
         ForNode::setStep(SyntaxNode * s)
@@ -170,7 +172,10 @@ namespace LANG_NAMESPACE
         }
 
         LoopNode::LoopNode(LoopType::Type t, SyntaxNode * e, SyntaxNode * b)
-            : loopType(t), loopExpression(e), loopBlock(b) { }
+            : loopType(t), loopExpression(e), loopBlock(b)
+        {
+            setNodeType(NodeType::Null);
+        }
 
         void
         LoopNode::print(ostream & out, unsigned d)
@@ -189,10 +194,16 @@ namespace LANG_NAMESPACE
         }
 
         ControlNode::ControlNode(ControlType::Type t)
-            : controlType(t), controlExpression(NULL) { }
+            : controlType(t), controlExpression(NULL)
+        {
+            setNodeType(NodeType::Null);
+        }
 
         ControlNode::ControlNode(ControlType::Type t, SyntaxNode * e)
-            : controlType(t), controlExpression(e) { }
+            : controlType(t), controlExpression(e)
+        {
+            setNodeType(NodeType::Null);
+        }
 
         void
         ControlNode::print(ostream & out, unsigned d)
@@ -222,7 +233,10 @@ namespace LANG_NAMESPACE
 
         BlockNode::BlockNode(VectorNode * s)
             : blockRequire(new VectorNode()), blockEnsure(new VectorNode()),
-            blockStatements(s), blockRescue(new VectorNode()) { }
+            blockStatements(s), blockRescue(new VectorNode())
+        {
+            setNodeType(NodeType::Null);
+        }
 
         BlockNode *
         BlockNode::setBlockRequire(VectorNode * r)
@@ -274,22 +288,28 @@ namespace LANG_NAMESPACE
             }
         }
 
-        ValidationNode::ValidationNode(SyntaxNode * e, SyntaxNode * r)
-            : validationExpression(e), validationRaise(r) { }
+        // ValidationNode::ValidationNode(SyntaxNode * e, SyntaxNode * r)
+        //     : validationExpression(e), validationRaise(r)
+        // {
+        //     setNodeType(NodeType::Null);
+        // }
 
-        void
-        ValidationNode::print(ostream & out, unsigned d)
-        {
-            TAB(d) << "Validation require =>" << endl;
-            validationExpression->print(out, d + 1);
-            if(validationRaise != NULL) {
-                TAB(d + 1) << "Raising the exception" << endl;
-                validationRaise->print(out, d + 2);
-            }
-        }
+        // void
+        // ValidationNode::print(ostream & out, unsigned d)
+        // {
+        //     TAB(d) << "Validation require =>" << endl;
+        //     validationExpression->print(out, d + 1);
+        //     if(validationRaise != NULL) {
+        //         TAB(d + 1) << "Raising the exception" << endl;
+        //         validationRaise->print(out, d + 2);
+        //     }
+        // }
 
         VariableNode::VariableNode(VectorNode * v)
-            : variables(v) { }
+            : variables(v)
+        {
+            setNodeType(NodeType::Null);
+        }
 
         void
         VariableNode::print(ostream & out, unsigned d)
@@ -299,28 +319,34 @@ namespace LANG_NAMESPACE
                (*var)->print(out, d + 1);
         }
 
-        RescueNode::RescueNode(SyntaxNode * s)
-            : rescueStatement(s) { }
+        // RescueNode::RescueNode(SyntaxNode * s)
+        //     : rescueStatement(s)
+        // {
+        //     setNodeType(NodeType::Null);
+        // }
 
-        RescueNode *
-        RescueNode::setException(SyntaxNode * e)
-        {
-            rescueException = e;
-            return this;
-        }
+        // RescueNode *
+        // RescueNode::setException(SyntaxNode * e)
+        // {
+        //     rescueException = e;
+        //     return this;
+        // }
 
-        void
-        RescueNode::print(ostream & out, unsigned d)
-        {
-            TAB(d) << "On exception =>";
-            if(rescueException)
-                rescueException->print(out, d + 1);
-            rescueStatement->print(out, d + 2);
-        }
+        // void
+        // RescueNode::print(ostream & out, unsigned d)
+        // {
+        //     TAB(d) << "On exception =>";
+        //     if(rescueException)
+        //         rescueException->print(out, d + 1);
+        //     rescueStatement->print(out, d + 2);
+        // }
 
         ElementNode::ElementNode(SyntaxNode * n)
             : elementName(n), elementType(NULL), elementInitialValue(NULL),
-            elementInvariants(NULL) { }
+            elementInvariants(NULL)
+        {
+            setNodeType(NodeType::Null);
+        }
 
         ElementNode *
         ElementNode::setElementType(SyntaxNode * t)
@@ -363,7 +389,10 @@ namespace LANG_NAMESPACE
         }
 
         ConstantNode::ConstantNode(VectorNode * v)
-            : constants(v) { }
+            : constants(v)
+        {
+            setNodeType(NodeType::Null);
+        }
 
         void
         ConstantNode::print(ostream & out, unsigned d)
@@ -373,9 +402,27 @@ namespace LANG_NAMESPACE
                (*cons)->print(out, d + 1);
         }
 
+        Parameter::Parameter(SyntaxNode * type, SyntaxNode * name)
+            : paramType(type), paramName(name)
+        {
+            setNodeType(NodeType::Null);
+        }
+
+        void
+        Parameter::print(ostream & out, unsigned d)
+        {
+            TAB(d) << "parameter" << endl;
+            paramName->print(out, d + 1);
+            TAB(d) << "of type" << endl;
+            paramType->print(out, d + 1);
+        }
+
         FunctionNode::FunctionNode(SyntaxNode * n, VectorNode * p)
             : functionName(n), functionParams(p), functionReturnType(NULL),
-            functionIntercept(NULL), functionBlock(NULL) { }
+            functionIntercept(NULL), functionBlock(NULL)
+        {
+            setNodeType(NodeType::Null);
+        }
 
         FunctionNode *
         FunctionNode::setFunctionReturn(SyntaxNode * r)
