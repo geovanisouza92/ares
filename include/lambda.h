@@ -45,12 +45,18 @@ namespace LANG_NAMESPACE
 {
     namespace SyntaxTree
     {
-
-        class LambdaParameterNode : public SyntaxNode
+        /**
+         * Represents a lambda expression node
+         */
+        class LambdaNode : public SyntaxNode
         {
-            //
+        protected:
+            VectorNode * lambdaParams;
+            SyntaxNode * lambdaBody;
+        public:
+            LambdaNode(VectorNode *, SyntaxNode *);
+            virtual void print(ostream &, unsigned);
         };
-
     } // SyntaxTree
 } // LANG_NAMESPACE
 

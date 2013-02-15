@@ -42,6 +42,21 @@ namespace LANG_NAMESPACE
 {
     namespace SyntaxTree
     {
+        LambdaNode::LambdaNode(VectorNode * params, SyntaxNode * body)
+            : lambdaParams(params), lambdaBody(body)
+        {
+            setNodeType(NodeType::Null);
+        }
 
+        void
+        LambdaNode::print(ostream & out, unsigned d)
+        {
+            TAB(d) << "lambda params" << endl;
+            // lambdaParams->print(out, d + 1);
+            for (VectorNode::iterator it = lambdaParams->begin(); it < lambdaParams->end(); it++)
+                (*it)->print(out, d + 1);
+            TAB(d) << "lambda body" << endl;
+            lambdaBody->print(out, d + 1);
+        }
     } // SyntaxTree
 } // LANG_NAMESPACE
