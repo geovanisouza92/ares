@@ -70,6 +70,16 @@ namespace LANG_NAMESPACE
         };
 
         /**
+         * Represents a empty node that not to be included in code
+         */
+        class Epsilon : public SyntaxNode
+        {
+        public:
+            Epsilon();
+            virtual void print(ostream &, unsigned);
+        };
+
+        /**
          * Represents a node collection
          */
         class VectorNode : public vector<SyntaxNode *> { };

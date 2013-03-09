@@ -56,6 +56,17 @@ namespace LANG_NAMESPACE
             nodeType = t;
         }
 
+        Epsilon::Epsilon()
+        {
+            setNodeType(NodeType::Epsilon);
+        }
+
+        void
+        Epsilon::print(ostream & out, unsigned d)
+        {
+            TAB(d) << "𝛆" << endl;
+        }
+
         Environment::Environment(Environment * p)
             : parent(p), statements(new VectorNode()) { }
 
