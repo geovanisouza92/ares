@@ -1,0 +1,33 @@
+% Formato do documento - Análise de Requisitos
+\documentclass[12pt,a4paper,tocpage=prefix,pagestart=folhaderosto,floatnumber=chapter,chapter=TITLE,section=Title,header=plain]{abnt}
+
+\pagenumbering{arabic}
+
+\include{config}
+\include{er/metainfo}
+\include{pdfinfo}
+
+\begin{document}
+  \begin{espacosimples}
+    \include{er/capa} % Capa do documento
+    \include{er/rosto}
+  \end{espacosimples}
+  \begin{espacoumemeio}
+    \include{resumo}
+    \include{abstract}
+    \listoffigures
+    % \listoftables
+    % \listadesiglas
+    \sumario
+    \include{er/introducao}
+    \include{er/revisao}
+    \include{er/desenvolvimento}
+    \include{er/conclusao}
+  \end{espacoumemeio}
+  \begin{espacosimples}
+    \bibliography{wiki,bibliografia,auxiliar}
+  \end{espacosimples}
+  \begin{espacoumemeio}
+    \include{er/apendice-a}
+  \end{espacoumemeio}
+\end{document}

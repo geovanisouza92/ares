@@ -16,53 +16,49 @@ CLEAN= \
   *.results \
   tcc.pdf \
   proposta-pesquisa.pdf \
-  proposta/*.aux
+  proposta/*.aux \
+  er.pdf \
+  er/*.aux
 
 clean-local::
 	@ rm -rRf $(CLEAN)
 
-all-local:: tcc proposta-pesquisa
+all-local:: pp er tcc
 
-tcc:
-	@ $(MAKE) grammar-tex
-	@ $(MAKE) bb
-	@ $(MAKE) tcc-tex
-	@ $(MAKE) index
-	@ $(MAKE) bibtex-tcc
-	@ $(MAKE) tcc-tex
-	@ $(MAKE) tcc-tex
-	@ $(MAKE) tcc-tex
+#########################################
 
-proposta-pesquisa:
-	@ $(MAKE) bb
-	@ $(MAKE) proposta-pesquisa-tex
-	@ $(MAKE) bibtex-proposta-pesquisa
-	@ $(MAKE) proposta-pesquisa-tex
-	@ $(MAKE) proposta-pesquisa-tex
-	@ $(MAKE) proposta-pesquisa-tex
-
-grammar-tex:
-	cd $(LEVEL)/docs && $(MAKE) docs
-
-bb:
-	@ ebb figuras/*.png
-	@ ebb figuras/*.jpg
-
-tcc-tex:
-	@ pdflatex tcc.tex
-
-proposta-pesquisa-tex:
+pp: common-bb
+	@ pdflatex proposta-pesquisa.tex
+	@ bibtex proposta-pesquisa
+	@ pdflatex proposta-pesquisa.tex
+	@ pdflatex proposta-pesquisa.tex	@ echo foo
 	@ pdflatex proposta-pesquisa.tex
 
-index: sigla
+#########################################
 
-sigla: tcc-tex
+er: common-bb
+	@ pdflatex er.tex
+	@ makeindex -s tabela-simbolos.ist -o er.sigla er.siglax
+	@ bibtex er
+	@ pdflatex er.tex
+	@ pdflatex er.tex
+	@ pdflatex er.tex
+
+#########################################
+
+tcc: common-bb
+	cd $(LEVEL)/docs && $(MAKE) docs
+	@ pdflatex tcc.tex
 	@ makeindex -s tabela-simbolos.ist -o tcc.sigla tcc.siglax
-
-bibtex-tcc: tcc-tex
 	@ bibtex tcc
+	@ pdflatex tcc.tex
+	@ pdflatex tcc.tex
+	@ pdflatex tcc.tex
 
-bibtex-proposta-pesquisa: proposta-pesquisa-tex
-	@ bibtex proposta-pesquisa
+#########################################
+
+common-bb:
+	@ ebb figuras/*.png
+	@ ebb figuras/*.jpg
 
 include $(LEVEL)/Makefile.common
