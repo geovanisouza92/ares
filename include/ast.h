@@ -72,17 +72,23 @@ namespace LANG_NAMESPACE
         /**
          * Represents a empty node that not to be included in code
          */
-        class Epsilon : public SyntaxNode
+        class Empty : public SyntaxNode
         {
         public:
-            Epsilon();
+            Empty();
             virtual void print(ostream &, unsigned);
         };
 
         /**
          * Represents a node collection
          */
-        class VectorNode : public vector<SyntaxNode *> { };
+        class VectorNode : public SyntaxNode, public vector<SyntaxNode *>
+        {
+        public:
+            virtual void print(ostream &, unsigned);
+        };
+
+        class EmptyVector : public Empty, public VectorNode { };
 
         /**
          * Represents the environment to manage the AST
@@ -223,18 +229,6 @@ namespace LANG_NAMESPACE
         };
 
         /**
-         * Represents a pointer-type literal
-         */
-        class PointerNode : public SyntaxNode
-        {
-        protected:
-            SyntaxNode * type;
-        public:
-            PointerNode(SyntaxNode *);
-            virtual void print(ostream &, unsigned);
-        };
-
-        /**
          * Represents an identifier literal
          */
         class IdNode : public SyntaxNode
@@ -247,14 +241,41 @@ namespace LANG_NAMESPACE
         };
 
         /**
+         * Represents a pointer-type literal
+         */
+        class PointerTypeNode : public SyntaxNode
+        {
+        protected:
+            SyntaxNode * type;
+        public:
+            PointerTypeNode(SyntaxNode *);
+            virtual void print(ostream &, unsigned);
+        };
+
+        /**
          * The type name
          */
+        class ArrayTypeNode;
         class Type : public SyntaxNode
         {
         protected:
             string type;
+            Type();
         public:
             Type(string);
+            virtual void print(ostream &, unsigned);
+            friend class ArrayTypeNode;
+        };
+
+        /**
+         * Represents an array type
+         */
+        class ArrayTypeNode : public Type
+        {
+        protected:
+            unsigned dimension;
+        public:
+            ArrayTypeNode(SyntaxNode *, unsigned);
             virtual void print(ostream &, unsigned);
         };
 

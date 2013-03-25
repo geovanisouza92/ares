@@ -56,15 +56,21 @@ namespace LANG_NAMESPACE
             nodeType = t;
         }
 
-        Epsilon::Epsilon()
+        Empty::Empty()
         {
-            setNodeType(NodeType::Epsilon);
+            setNodeType(NodeType::Empty);
         }
 
         void
-        Epsilon::print(ostream & out, unsigned d)
+        Empty::print(ostream & out, unsigned d)
         {
             TAB(d) << "𝛆" << endl;
+        }
+
+        void
+        VectorNode::print(ostream & out, unsigned d)
+        {
+            throw "Impossible print a vector";
         }
 
         Environment::Environment(Environment * p)
@@ -245,15 +251,6 @@ namespace LANG_NAMESPACE
             TAB(d) << "}" << endl;
         }
 
-        PointerNode::PointerNode(SyntaxNode * value) : type(value) { }
-
-        void
-        PointerNode::print(ostream & out, unsigned d)
-        {
-        	TAB(d) << "Pointer => " << endl;
-        	type->print(out, d + 2);
-        }
-
         IdNode::IdNode(string v)
             : id(v)
         {
@@ -266,6 +263,20 @@ namespace LANG_NAMESPACE
             TAB(d) << "Identifier => " << id << endl;
         }
 
+        PointerTypeNode::PointerTypeNode(SyntaxNode * value) : type(value) { }
+
+        void
+        PointerTypeNode::print(ostream & out, unsigned d)
+        {
+            TAB(d) << "Pointer => " << endl;
+            type->print(out, d + 2);
+        }
+
+        Type::Type() : type("var")
+        {
+            setNodeType(NodeType::Ty);
+        }
+
         Type::Type(string ty) : type(ty)
         {
             setNodeType(NodeType::Ty);
@@ -275,6 +286,18 @@ namespace LANG_NAMESPACE
         Type::print(ostream & out, unsigned d)
         {
             TAB(d) << type << endl;
+        }
+
+        ArrayTypeNode::ArrayTypeNode(SyntaxNode * ty, unsigned dim)
+        {
+            type = ((Type *)ty)->type;
+            dimension = dim;
+        }
+
+        void
+        ArrayTypeNode::print(ostream & out, unsigned d)
+        {
+            TAB(d) << "Array type of " << type << " with dimension " << dimension << endl;
         }
 
         void

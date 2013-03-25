@@ -415,7 +415,7 @@ namespace LANG_NAMESPACE
         {
             enum Type
             {
-                Epsilon
+                Empty
                 , Null
                 , Identifier
                 , Char
