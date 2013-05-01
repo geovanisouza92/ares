@@ -1,0 +1,23 @@
+% Seção: Compiladores e interpretadores
+
+\section{Compiladores e interpretadores}
+\label{revisao:compiladores-interpretadores}
+
+Segundo \cite{Aho08}:
+
+\begin{citacao}
+Linguagens de programa\ca o s\ao\ nota\co es para se descrever computa\co es para pessoas e m\ah quinas. [...] antes que possa rodar, um programa primeiro precisa ser traduzido para um formato que lhe permita ser executado por um computador.
+Os sistemas de software que fazem essa tradu\ca o s\ao\ denominados \emph{compiladores}.
+\end{citacao}
+
+\cite{wiki:interpretadores} afirma que intepretadores s\ao\ programas de computador que leem um c\oh digo fonte de uma linguagem de programa\ca o interpretada e o converte em c\oh digo execut\ah vel, sendo que algumas vezes o converte para bin\ah rio por inteiro e depois o executa.
+
+Compiladores e interpretadores s\ao\ muito semelhantes, divergindo apenas sobre o objetivo dado ao c\oh digo j\ah\ traduzido. Um compilador geralmente o transforma em um arquivo que fica dispon\ih vel ao usu\ah rio para execu\ca o, enquanto um interpretador envia o c\oh digo diretamente para processamento na m\ah quina.
+
+% -- Talvez mais alguns comet\ah rios aqui
+
+\subsection{Impacto dos compiladores}
+
+Al\eh m da facilidade e produtividade trazida pelos compiladores, segundo \cite{Aho08}, as linguagens t\^em imposto maiores demandas para os projetistas de compiladores, pois assim como as linguagens evolu\ih ram para atender novas necessidades e paradigmas, a arquitetura dos computadores tambem evoluiu, necessitando de novos algoritmos para que os recursos sejam aproveitados ao m\ah ximo.
+
+\cite{Aho08} afirma que o projeto de um compilador \eh\ desafiador, pois trata-se de um programa grande, al\eh m de casos em que alguns sistemas de processamento modernos tratam diversas linguagens fontes para v\ah rias arquiteturas, tornando-os em uma fam\ih lia de compiladores. Aqui podemos citar o GNU Compiler Collection (GCC)\footnote{A GNU Compiler Collection inclui compiladores para C, C++, Objective-C, Fortran, Java, Ada, e Go, bem como as bibliotecas para essas linguagens (libstdc++, libgcj,...). Mais informa\co es podem ser encontradas \href{http://gcc.gnu.org}{no site do projeto}.}.

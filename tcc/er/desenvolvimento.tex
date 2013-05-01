@@ -1,0 +1,110 @@
+
+\chapter{Proposta de monografia}
+
+% \section{Reposit\oh rio do projeto}
+
+% Todo o c\oh digo fonte do prot\oh tipo foi disponibilizado na p\ah gina oficial do trabalho no \href{https://github.com/geovanisouza92/ares}{GitHub}\footnote{Dispon\ih vel em \href{https://github.com/geovanisouza92/ares}{https://github.com/geovanisouza92/ares}, acessado em 31 mar. 2013.}, sob licen\cc a BSD.
+
+\section{Tecnologias e ferramentas utilizadas}
+
+O prot\oh tipo ser\ah\ desenvolvido com sistema operacional Ubuntu 12.04 LTS, utilizando a linguagem de programa\ca o C++, o gerador de analisador l\eh xico Flex, o gerador de analisador sint\ah tico Bison e organizado na estrutura de \emph{build} do projeto LLVM, utilizando o utilit\ah rio Make.
+
+% \subsection{Linguagem de programa\ca o C++}
+
+% \subsection{Ferramenta Make para build automatizada}
+
+\subsection{Gerador de analisador l\eh xico Flex}
+
+A ferramenta Flex, uma recente implementa\ca o da ferramenta Lex, permite gerar um analisador l\eh xico definindo padr\oe s para os tokens a partir de express\~oes regulares, que depois s\ao\ convertidos em um diagrama de transi\co es e traduzidos para c\oh digo fonte em um arquivo\footnote{Usualmente a ferramenta gera c\oh digo C ou C++. Contudo h\ah\ implementa\co es que geram c\oh digo Java, C\#, entre outros.}, segundo \cite{Aho08}.
+
+A estrutura geral de um programa Lex/Flex, segue o formato:
+
+\begin{center}
+\begin{tabular}{p{5cm}}
+\begin{verbatim}
+declarações
+%%
+regras de tradução
+%%
+funções auxiliares
+\end{verbatim}
+\end{tabular}
+\end{center}
+
+A se\ca o de declara\co es possui a defini\ca o de vari\ah veis e constates utilizadas pelas regras. A se\ca o de regras cont\eh m os padr\~oes regulares, no formato:
+
+\begin{center}
+\begin{tabular}{p{5cm}}
+\begin{verbatim}
+Padrão { Ação }
+\end{verbatim}
+\end{tabular}
+\end{center}
+
+Onde o padr\ao\ \eh\ uma express\ao\ regular ou nome de uma constante definida na se\ca o de declara\co es e a a\ca o \eh\ cont\eh m o c\oh digo a ser executado quando o padr\ao\ \eh\ encontrado, usualmente retorna o padr\ao\ encontrado para o analisador sint\ah tico. Mais detalhes sobre a implementa\ca o de analisadores l\eh xicos podem ser encontrados em \cite{Niemann99}.
+
+No prot\oh tipo foi implementado um analisador l\eh xico a partir do algoritmo padr\ao\ do Flex, para uma linguagem de programa\ca o inspirada em C\#, gerando c\oh digo C++.
+
+\subsection{Gerador de analisador sint\ah tico Bison}
+
+O Bison, segundo \cite{wiki:bison}, \eh\ um compilador-compilador\footnote{Tamb\eh m chamado de meta-compilador.}, compat\ih vel com Yacc, por\eh m com diversas melhorias em rela\ca o ao software antigo.
+
+No prot\oh tipo ser\ah\ implementado um analisador sint\ah tico LALR\sigla{LALR}{Do ingl\^es, \emph{Look-Ahead Left to Right}}, a partir do algoritmo padr\ao\ do Bison, gerando c\oh digo C++.
+
+\subsection{Estrutura de build do projeto LLVM}
+
+Para cria\ca o do prot\oh tipo, foi utilizada a estrutura disponibilizada pelo projeto LLVM para cria\ca o de projetos de terceiros, que utiliza seus arquivos de cabe\cc alho, bibliotecas e ferramentas, conforme a documenta\ca o disponibilizada por \cite{LLVMorg}\footnote{Dispon\ih vel em \href{http://llvm.org/docs/Projects.html}{Creating an LLVM Project (http://llvm.org/docs/Projects.html)}, acessado em 30 mar. 2013.}.
+
+% \subsection{ECMA-334 - Especifica\ca o da gram\ah tica da linguagem C\#}
+
+\section{Metodologia}
+
+% \subsection{Distribui\ca o do c\oh digo fonte na estrutura de build do projeto LLVM}
+
+% [...]
+
+% \subsection{Desenvolvimento do analisador l\eh xico utilizando a ferramenta Flex}
+
+% [...]
+
+% \subsection{Desenvolvimento do analisador sint\ah tico utilizando a ferramenta Bison}
+
+% [...]
+
+% \subsection{Gram\ah tica da linguagem do prot\oh tipo}
+
+% [...]
+
+% \subsection{Representa\ca o da \ah rvore sint\ah tica com classes C++}
+
+% [...]
+
+% \subsection{Gera\ca o da representa\ca o intermedi\ah ria na linguagem LLVM-IR a partir da \ah rvore sint\ah tica}
+
+% [...]
+
+% \subsection{Integra\ca o do prot\oh tipo com o conjunto de ferramentas do projeto LLVM}
+
+% [...]
+
+% \section{Exemplos de utiliza\ca o e desemepenho observados}
+
+% \subsection{Fatorial}
+
+% [...]
+
+% \subsection{Fibonacci}
+
+% [...]
+
+Esta proposta tem como objetivo o desenvolvimento de um prot\oh tipo de compilador/interpretador, baseado no projeto LLVM, permitindo escrever programas auto-gerenci\ah veis.
+
+O analisador l\eh xico ser\ah\ desenvolvido utilizando a ferramenta Flex resultando em c\oh digo C++.
+
+O analisador sint\ah tico ser\ah\ desenvolvido utilizando a ferramenta Bison resultando em c\oh digo C++.
+
+Ser\ao\ desenvolvidas classes para representar os n\oh s da \ah rvore sint\ah tica, que possuiram as regras necess\ah rias para gera\ca o da representa\ca o intermedi\ah ria do LLVM.
+
+Ser\ah\ desenvolvida uma classe \emph{Driver} que ir\ah\ integrar os analisadores com o programa que o usu\ah rio ir\ah\ utilizar para ativar o programa, assim como a gera\ca o da representa\ca o intermedi\ah ria, que posteriormente ser\ah\ repassada para as ferramentas do LLVM.
+
+O programa ser\ah\ disponibilizado como um execut\ah vel \uh nico, ativado por linha de comando.
