@@ -30,104 +30,51 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *****************************************************************************
- * stmt.h - Statements
+ * func.h - Statements
  *
- * Defines objects used to represent statements
+ * Defines objects used to represent functions
  *
  */
 
-#ifndef LANG_STMT_H
-#define LANG_STMT_H
+#ifndef LANG_FUNC_H
+#define LANG_FUNC_H
 
-#include "ast.h"
-
-using namespace LANG_NAMESPACE::Enum;
+#include "stmt.h"
 
 namespace LANG_NAMESPACE
 {
     namespace SyntaxTree
     {
         /**
-         * Represents a try block statement
+         * Represents a parameter for lambda and functions
          */
-        class TryStatementNode : public SyntaxNode
+        class ParameterNode : public SyntaxNode
         {
         protected:
-            SyntaxNode * tryBlock;
-            VectorNode * tryCatch;
-            SyntaxNode * tryFinally;
+            bool paramArray = false;
+            SyntaxNode * paramType;
+            SyntaxNode * paramName;
+            SyntaxNode * paramDefault;
         public:
-            TryStatementNode(SyntaxNode *);
-            virtual void setCatch(VectorNode *);
-            virtual void setFinally(SyntaxNode *);
+            ParameterNode(SyntaxNode *, SyntaxNode *, SyntaxNode * d = NULL);
+            virtual void setParamArray() { paramArray = true; }
             virtual void print(ostream &, unsigned);
         };
 
         /**
-         * Represents a catch block of try statement
+         * Represents a function
          */
-        class CatchStatementNode : public SyntaxNode
+        class FunctionNode : public SyntaxNode
         {
         protected:
-            SyntaxNode * catchingType;
-            SyntaxNode * catchingId;
-            SyntaxNode * catchingBlock;
+            SyntaxNode * functionName;
+            VectorNode * functionParams;
+            SyntaxNode * functionReturnType;
+            SyntaxNode * functionBlock;
         public:
-            CatchStatementNode(SyntaxNode *);
-            CatchStatementNode(SyntaxNode *, SyntaxNode *);
-            CatchStatementNode(SyntaxNode *, SyntaxNode *, SyntaxNode *);
-            virtual void print(ostream &, unsigned);
-        };
-
-        /**
-         * Represents a block os statements
-         */
-        class BlockNode : public SyntaxNode
-        {
-        protected:
-            VectorNode * blockStatements;
-        public:
-            BlockNode(VectorNode *);
-            virtual void print(ostream &, unsigned);
-        };
-
-        /**
-         * Represents a memory allocation element
-         */
-        class ElementNode : public SyntaxNode
-        {
-        protected:
-            ElementType::Type type;
-            SyntaxNode * name;
-            SyntaxNode * init;
-        public:
-            ElementNode(ElementType::Type, SyntaxNode *, SyntaxNode * i = NULL);
-            virtual void print(ostream &, unsigned);
-        };
-
-        /**
-         * Represents a variable
-         */
-        class VariableDeclStatementNode : public SyntaxNode
-        {
-        protected:
-            SyntaxNode * ty;
-            VectorNode * variables;
-        public:
-            VariableDeclStatementNode(SyntaxNode *, VectorNode *);
-            virtual void print(ostream &, unsigned);
-        };
-
-        /**
-         * Represents a constant
-         */
-        class ConstantDeclStatementNode : public SyntaxNode
-        {
-        protected:
-            SyntaxNode * ty;
-            VectorNode * consts;
-        public:
-            ConstantDeclStatementNode(SyntaxNode *, VectorNode *);
+            FunctionNode(SyntaxNode *, VectorNode *);
+            virtual FunctionNode * setFunctionReturn(SyntaxNode *);
+            virtual FunctionNode * setBlock(SyntaxNode *);
             virtual void print(ostream &, unsigned);
         };
     } // SyntaxTree

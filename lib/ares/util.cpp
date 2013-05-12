@@ -16,7 +16,7 @@
  *  4. Neither the name of the Ares Programming Language Project nor the names
  *     of its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE ARES PROGRAMMING LANGUAGE PROJECT AND
  * CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
  * NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -44,10 +44,9 @@
 string
 LANG_NAMESPACE::Util::trimString(string str, char c)
 {
-    string::size_type posb, pose;
-    posb = str.find_first_not_of(c);
+    auto posb = str.find_first_not_of(c);
     if(posb != string::npos) str = str.substr(posb, str.length());
-    pose = str.find_last_not_of(c);
+    auto pose = str.find_last_not_of(c);
     if(pose != string::npos) str = str.substr(0, pose + 1);
     if(posb == pose) str.clear();
     return str;
@@ -77,7 +76,7 @@ LANG_NAMESPACE::Util::formatNumber(int n, int w, char c = ' ')
 double
 LANG_NAMESPACE::Util::getMili()
 {
-  return(double)((clock() - start) /(CLOCKS_PER_SEC / 1000) );
+    return(double)((clock() - start) /(CLOCKS_PER_SEC / 1000) );
 }
 
 string

@@ -82,12 +82,15 @@ namespace LANG_NAMESPACE
         /**
          * Represents a node collection
          */
-        class VectorNode : public SyntaxNode, public vector<SyntaxNode *>
+        class VectorNode : public Empty, public vector<SyntaxNode *>
         {
         public:
             virtual void print(ostream &, unsigned);
         };
 
+        /**
+         * Represents an empty vector
+         */
         class EmptyVector : public Empty, public VectorNode { };
 
         /**
@@ -102,7 +105,7 @@ namespace LANG_NAMESPACE
             Environment(Environment *);
             virtual ~Environment();
             virtual Environment * clear();
-            virtual Environment * push(VectorNode *);
+            virtual Environment * push_back(VectorNode *);
             virtual void print(ostream &, unsigned);
         };
 
@@ -117,7 +120,7 @@ namespace LANG_NAMESPACE
         };
 
         /**
-         * Represents a integer literal number
+         * Represents an integer literal number
          */
         class IntegerLiteralNode : public SyntaxNode
         {
@@ -190,7 +193,7 @@ namespace LANG_NAMESPACE
         };
 
         /**
-         * Represents an array (heterogeneous collection) literal
+         * Represents an array literal
          */
         class ArrayLiteralNode : public SyntaxNode
         {
@@ -216,7 +219,7 @@ namespace LANG_NAMESPACE
         };
 
         /**
-         * Represents a hash (heterogeneous key-value pairs collection) literal
+         * Represents a hash literal
          */
         class HashLiteralNode : public SyntaxNode
         {
@@ -234,23 +237,24 @@ namespace LANG_NAMESPACE
         class IdNode : public SyntaxNode
         {
         protected:
-            string id;
+            vector<string *> * id;
         public:
-            IdNode(string);
+            IdNode(string *);
+            void AddId(string *);
             virtual void print(ostream &, unsigned);
         };
 
-        /**
-         * Represents a pointer-type literal
-         */
-        class PointerTypeNode : public SyntaxNode
-        {
-        protected:
-            SyntaxNode * type;
-        public:
-            PointerTypeNode(SyntaxNode *);
-            virtual void print(ostream &, unsigned);
-        };
+        // /**
+        //  * Represents a pointer-type literal
+        //  */
+        // class PointerTypeNode : public SyntaxNode
+        // {
+        // protected:
+        //     SyntaxNode * type;
+        // public:
+        //     PointerTypeNode(SyntaxNode *);
+        //     virtual void print(ostream &, unsigned);
+        // };
 
         /**
          * The type name
@@ -268,7 +272,7 @@ namespace LANG_NAMESPACE
         };
 
         /**
-         * Represents an array type
+         * Represents an array type name
          */
         class ArrayTypeNode : public Type
         {
@@ -280,73 +284,12 @@ namespace LANG_NAMESPACE
         };
 
         /**
-         * Represents an unary expression (only one operator)
+         * Represents a rank specifier of an array
          */
-        class UnaryExpressionNode : public SyntaxNode
+        class RankSpecifierNode : public SyntaxNode
         {
-        protected:
-            Operator::Unary op;
-            SyntaxNode * member1;
-            VectorNode * vector1;
         public:
-            UnaryExpressionNode(Operator::Unary, SyntaxNode *);
-            UnaryExpressionNode(Operator::Unary, VectorNode *);
-            virtual void print(ostream &, unsigned );
-        };
-
-        /**
-         * Represents a binary expression (two operators)
-         */
-        class BinaryExpressionNode : public SyntaxNode
-        {
-        protected:
-            Operator::Binary op;
-            SyntaxNode * member1;
-            SyntaxNode * member2;
-        public:
-            BinaryExpressionNode(Operator::Binary, SyntaxNode *, SyntaxNode *);
-            virtual void print(ostream &, unsigned);
-        };
-
-        /**
-         * Represents a ternary expression (three operators)
-         */
-        class TernaryExpressionNode : public SyntaxNode
-        {
-        protected:
-            Operator::Ternary op;
-            SyntaxNode * member1;
-            SyntaxNode * member2;
-            SyntaxNode * member3;
-        public:
-            TernaryExpressionNode(Operator::Ternary, SyntaxNode *, SyntaxNode *, SyntaxNode *);
-            virtual void print(ostream &, unsigned);
-        };
-
-        /**
-         * Represents a function invocation expression
-         */
-        class FunctionInvocationNode : public SyntaxNode
-        {
-        protected:
-            SyntaxNode * functionName;
-            VectorNode * functionArguments;
-        public:
-            FunctionInvocationNode(SyntaxNode *);
-            FunctionInvocationNode(SyntaxNode *, VectorNode *);
-            virtual void print(ostream &, unsigned);
-        };
-
-        /**
-         * Represents a lambda-calculus expression
-         */
-        class LambdaExpressionNode : public SyntaxNode
-        {
-        protected:
-            VectorNode * lambdaArguments;
-            SyntaxNode * lambdaExpression;
-        public:
-            LambdaExpressionNode(VectorNode *, SyntaxNode *);
+            RankSpecifierNode();
             virtual void print(ostream &, unsigned);
         };
     } // SyntaxTree

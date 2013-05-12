@@ -82,7 +82,7 @@ namespace LANG_NAMESPACE
         QueryBodyNode *
         QueryBodyNode::set_body(VectorNode * b)
         {
-            for(VectorNode::iterator item = b->begin(); item < b->end(); item++)
+            for (auto item = b->begin(); item < b->end(); item++)
                 queryBody->push_back(*item);
             return this;
         }
@@ -98,8 +98,8 @@ namespace LANG_NAMESPACE
         QueryBodyNode::print(ostream & out, unsigned d)
         {
             TAB(d) << "Operations =>" << endl;
-            for(VectorNode::iterator b = queryBody->begin(); b < queryBody->end(); b++) {
-               (*b)->print(out, d + 1);
+            for (auto b = queryBody->begin(); b < queryBody->end(); b++) {
+                (*b)->print(out, d + 1);
             }
             if(queryFinally != NULL) {
                 TAB(d + 1) << "Finally =>" << endl;
@@ -197,8 +197,8 @@ namespace LANG_NAMESPACE
         OrderByNode::print(ostream & out, unsigned d)
         {
             TAB(d) << "Ordering =>" << endl;
-            for(VectorNode::iterator order = orders->begin(); order < orders->end(); order++) {
-               (*order)->print(out, d + 1);
+            for (auto order = orders->begin(); order < orders->end(); order++) {
+                (*order)->print(out, d + 1);
                 if(order != orders->end() - 1) TAB(d + 2) << ", " << endl;
             }
         }
@@ -264,8 +264,8 @@ namespace LANG_NAMESPACE
         SelectNode::print(ostream & out, unsigned d)
         {
             TAB(d) << "Select =>" << endl;
-            for(VectorNode::iterator select = selection->begin(); select < selection->end(); select++) {
-               (*select)->print(out, d + 1);
+            for (auto select = selection->begin(); select < selection->end(); select++) {
+                (*select)->print(out, d + 1);
                 if(select != selection->end() - 1) TAB(d + 2) << ", " << endl;
             }
         }

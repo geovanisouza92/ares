@@ -30,104 +30,87 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *****************************************************************************
- * stmt.h - Statements
+ * cond.h - Condition statements
  *
- * Defines objects used to represent statements
+ * Defines objects used to represent condition statements
  *
  */
 
-#ifndef LANG_STMT_H
-#define LANG_STMT_H
+#ifndef LANG_COND_H
+#define LANG_COND_H
 
-#include "ast.h"
-
-using namespace LANG_NAMESPACE::Enum;
+#include "stmt.h"
 
 namespace LANG_NAMESPACE
 {
     namespace SyntaxTree
     {
         /**
-         * Represents a try block statement
+         * Represents an if statement
          */
-        class TryStatementNode : public SyntaxNode
+        class IfNode : public SyntaxNode
         {
         protected:
-            SyntaxNode * tryBlock;
-            VectorNode * tryCatch;
-            SyntaxNode * tryFinally;
+            SyntaxNode * cond;
+            SyntaxNode * stmt;
+            SyntaxNode * elseStmt;
         public:
-            TryStatementNode(SyntaxNode *);
-            virtual void setCatch(VectorNode *);
-            virtual void setFinally(SyntaxNode *);
+            IfNode(SyntaxNode *, SyntaxNode *);
+            IfNode(SyntaxNode *, SyntaxNode *, SyntaxNode *);
             virtual void print(ostream &, unsigned);
         };
 
         /**
-         * Represents a catch block of try statement
+         * Represents an unless statement
          */
-        class CatchStatementNode : public SyntaxNode
+        class UnlessNode : public SyntaxNode
         {
         protected:
-            SyntaxNode * catchingType;
-            SyntaxNode * catchingId;
-            SyntaxNode * catchingBlock;
+            SyntaxNode * cond;
+            SyntaxNode * stmt;
+            SyntaxNode * elseStmt;
         public:
-            CatchStatementNode(SyntaxNode *);
-            CatchStatementNode(SyntaxNode *, SyntaxNode *);
-            CatchStatementNode(SyntaxNode *, SyntaxNode *, SyntaxNode *);
+            UnlessNode(SyntaxNode *, SyntaxNode *);
+            UnlessNode(SyntaxNode *, SyntaxNode *, SyntaxNode *);
             virtual void print(ostream &, unsigned);
         };
 
         /**
-         * Represents a block os statements
+         * Represents a switch statement
          */
-        class BlockNode : public SyntaxNode
+        class SwitchNode : public SyntaxNode
         {
         protected:
-            VectorNode * blockStatements;
+            SyntaxNode * caseExpr;
+            VectorNode * caseSections;
         public:
-            BlockNode(VectorNode *);
+            SwitchNode(SyntaxNode *, VectorNode *);
             virtual void print(ostream &, unsigned);
         };
 
         /**
-         * Represents a memory allocation element
+         * Represents a switch section statement
          */
-        class ElementNode : public SyntaxNode
+        class SwitchSectionNode : public SyntaxNode
         {
         protected:
-            ElementType::Type type;
-            SyntaxNode * name;
-            SyntaxNode * init;
+            VectorNode * labels;
+            VectorNode * stmts;
         public:
-            ElementNode(ElementType::Type, SyntaxNode *, SyntaxNode * i = NULL);
+            SwitchSectionNode(VectorNode *, VectorNode *);
             virtual void print(ostream &, unsigned);
         };
 
         /**
-         * Represents a variable
+         * Represents a switch label
          */
-        class VariableDeclStatementNode : public SyntaxNode
+        class SwitchLabelNode : public SyntaxNode
         {
         protected:
-            SyntaxNode * ty;
-            VectorNode * variables;
+            SyntaxNode * expr;
         public:
-            VariableDeclStatementNode(SyntaxNode *, VectorNode *);
-            virtual void print(ostream &, unsigned);
-        };
-
-        /**
-         * Represents a constant
-         */
-        class ConstantDeclStatementNode : public SyntaxNode
-        {
-        protected:
-            SyntaxNode * ty;
-            VectorNode * consts;
-        public:
-            ConstantDeclStatementNode(SyntaxNode *, VectorNode *);
+            SwitchLabelNode();
+            SwitchLabelNode(SyntaxNode *);
             virtual void print(ostream &, unsigned);
         };
     } // SyntaxTree

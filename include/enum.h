@@ -51,7 +51,8 @@ namespace LANG_NAMESPACE
          */
         namespace InteractionMode
         {
-            enum Mode {
+            enum Mode
+            {
                 None
                 , Shell
                 , LineEval
@@ -131,15 +132,12 @@ namespace LANG_NAMESPACE
          */
         namespace Operator
         {
-            enum Any {
-            };
-
             /**
              * Unary operators
              */
             enum Unary
             {
-                Not = 0x1
+                Not = 0x100
                 , Compl
                 , UAdd
                 , USub
@@ -154,12 +152,28 @@ namespace LANG_NAMESPACE
                 , Sizeof
             };
 
+            static std::string UnaryStrings[] = {
+                "! unary"
+                , "~"
+                , "+ unary"
+                , "- unary"
+                , "*"
+                , "&"
+                , "++ <var>"
+                , "-- <var>"
+                , "<var> ++"
+                , "<var> --"
+                , "new"
+                , "typeof"
+                , "sizeof"
+            };
+
             /**
              * Binary operators
              */
             enum Binary
             {
-                Cast = 0x32
+                Cast = 0x200
                 , Mul
                 , Div
                 , Mod
@@ -196,188 +210,69 @@ namespace LANG_NAMESPACE
                 , Mde
             };
 
+            static std::string BinaryStrings[] = {
+                "(cast)"
+                , "*"
+                , "\\"
+                , "%"
+                , "**"
+                , "+"
+                , "-"
+                , "<<"
+                , ">>"
+                , "<"
+                , "<="
+                , ">"
+                , ">="
+                , "=="
+                , "!="
+                , "=~"
+                , "!~"
+                , ".."
+                , "..."
+                , "is"
+                , "as"
+                , "??"
+                , "&"
+                , "^"
+                , "|"
+                , "||"
+                , "&&"
+                , "=>"
+                , "."
+                , "="
+                , "+="
+                , "-="
+                , "*="
+                , "/="
+                , "%="
+            };
+
             /**
              * Ternary operators
              */
             enum Ternary
             {
-                Iif = 0x64
+                Iif = 0x300
                 , Between
             };
 
-            static std::ostream & operator<<(std::ostream & os, Any & op)
-            {
-                switch(op)
-                {
-                case Not:
-                    os << "! unary";
-                    break;
-                case Compl:
-                    os << "~";
-                    break;
-                case UAdd:
-                    os << "+ unary";
-                    break;
-                case USub:
-                    os << "- unary";
-                    break;
-                case Ptr:
-                    os << "* ptr";
-                    break;
-                case Ref:
-                    os << "& ref";
-                    break;
-                case PreInc:
-                    os << "++ var";
-                    break;
-                case PreDec:
-                    os << "-- var";
-                    break;
-                case PostInc:
-                    os << "var ++";
-                    break;
-                case PostDec:
-                    os << "var --";
-                    break;
-                case Cast:
-                    os << "( )";
-                    break;
-                case Typeof:
-                    os << "typeof";
-                    break;
-                case Sizeof:
-                    os << "sizeof";
-                    break;
-                case Mul:
-                    os << "*";
-                    break;
-                case Div:
-                    os << "/";
-                    break;
-                case Mod:
-                    os << "\%";
-                    break;
-                case Add:
-                    os << "+";
-                    break;
-                case Sub:
-                    os << "-";
-                    break;
-                case Shl:
-                    os << "<<";
-                    break;
-                case Shr:
-                    os << ">>";
-                    break;
-                case Let:
-                    os << "<";
-                    break;
-                case Lee:
-                    os << "<=";
-                    break;
-                case Get:
-                    os << ">";
-                    break;
-                case Gee:
-                    os << ">=";
-                    break;
-                case Eql:
-                    os << "==";
-                    break;
-                case Neq:
-                    os << "!=";
-                    break;
-                case Mat:
-                    os << "=~";
-                    break;
-                case Nma:
-                    os << "!~";
-                    break;
-                case Rae:
-                    os << "..";
-                    break;
-                case Rai:
-                    os << "...";
-                    break;
-                case Is:
-                    os << "is";
-                    break;
-                case As:
-                    os << "as";
-                    break;
-                case Coa:
-                    os << "??";
-                    break;
-                case And:
-                    os << "&&";
-                    break;
-                case Or:
-                    os << "||";
-                    break;
-                case Xor:
-                    os << "^";
-                    break;
-                case Implies:
-                    os << "=>";
-                    break;
-                case Access:
-                    os << ".";
-                    break;
-                case Assign:
-                    os << "=";
-                    break;
-                case Ade:
-                    os << "+=";
-                    break;
-                case Sue:
-                    os << "-=";
-                    break;
-                case Mue:
-                    os << "*=";
-                    break;
-                case Die:
-                    os << "/=";
-                    break;
-                case Mde:
-                    os << "%=";
-                    break;
-                    break;
-                case Iif:
-                    os << "?:";
-                    break;
-                case Between:
-                    os << "between";
-                    break;
-                default:
-                    throw "Unknown operator";
-                }
-                return os;
-            }
-        }
-
-        /**
-         * Defines the type of condition statement
-         */
-        namespace ConditionType
-        {
-            enum Type
-            {
-                If
-                , Unless
+            static std::string TernaryStrings[] = {
+                "?:"
+                , "between"
             };
         }
 
         /**
-         * Defines the type of loop statement
+         * Defines the type of access to a member
          */
-        namespace LoopType
+        namespace AccessType
         {
             enum Type
             {
-                For
-                , Foreach
-                , While
-                , DoWhile
+                ArrayAccess
+                , StaticAccess
+                , MemberAccess
             };
         }
 
@@ -390,21 +285,40 @@ namespace LANG_NAMESPACE
             {
                 Return
                 , Break
+                , Continue
                 , Yield
+                , Throw
             };
         }
 
+        // /**
+        //  * Defines a function speficier
+        //  */
+        // namespace SpecifierType
+        // {
+        //     enum Type
+        //     {
+        //         Abstract
+        //         , Sealed
+        //         , Class
+        //         , Async
+        //     };
+        // }
+
         /**
-         * Defines a function speficier
+         * Defines the type of element
          */
-        namespace SpecifierType
+        namespace ElementType
         {
             enum Type
             {
-                Abstract
-                , Sealed
-                , Class
-                , Async
+                Var
+                , Const
+            };
+
+            static std::string TypeStrings[] = {
+                "Var"
+                , "Const"
             };
         }
 
@@ -425,10 +339,29 @@ namespace LANG_NAMESPACE
                 , Integer
                 , Boolean
                 , Array
+                // , Rank
                 , HashPair
                 , Hash
-                , Expression
-                , Ty
+                // , MemberAccess
+                // , Expression
+            };
+
+            static std::string TypeStrings[] = {
+                "Empty"
+                , "Null"
+                , "Identifier"
+                , "Char"
+                , "String"
+                , "Regex"
+                , "Float"
+                , "Integer"
+                , "Boolean"
+                , "Array"
+                // , "Rank"
+                , "HashPair"
+                , "Hash"
+                // , "MemberAccess"
+                // , "Expression"
             };
         }
 

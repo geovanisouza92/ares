@@ -86,9 +86,9 @@ namespace LANG_NAMESPACE
         }
 
         Environment *
-        Environment::push(VectorNode * v)
+        Environment::push_back(VectorNode * v)
         {
-            for(VectorNode::iterator stmt = v->begin(); stmt < v->end(); stmt++)
+            for (auto stmt = v->begin(); stmt < v->end(); stmt++)
                 statements->push_back(*stmt);
             return this;
         }
@@ -96,11 +96,8 @@ namespace LANG_NAMESPACE
         void
         Environment::print(ostream & out, unsigned d)
         {
-            for(VectorNode::iterator stmt = statements->begin(); stmt < statements->end(); stmt++)
-            {
-                out << *stmt << endl;
-                // (*stmt)->print(out, 0);
-            }
+            for (auto stmt = statements->begin(); stmt < statements->end(); stmt++)
+                (*stmt)->print(out, 0);
         }
 
         NullLiteralNode::NullLiteralNode()
@@ -208,8 +205,8 @@ namespace LANG_NAMESPACE
         ArrayLiteralNode::print(ostream & out, unsigned d)
         {
             TAB(d) << "Array => [" << endl;
-            for(VectorNode::iterator elem = value->begin(); elem < value->end(); elem++) {
-               (*elem)->print(out, d + 1);
+            for (auto elem = value->begin(); elem < value->end(); elem++) {
+                (*elem)->print(out, d + 1);
                 if(elem != value->end() - 1) TAB(d + 2) << ", " << endl;
             }
             TAB(d) << "]" << endl;
@@ -244,42 +241,56 @@ namespace LANG_NAMESPACE
         HashLiteralNode::print(ostream & out, unsigned d)
         {
             TAB(d) << "Hash => {" << endl;
-            for(VectorNode::iterator elem = value->begin(); elem < value->end(); elem++) {
-               (*elem)->print(out, d + 1);
+            for (auto elem = value->begin(); elem < value->end(); elem++) {
+                (*elem)->print(out, d + 1);
                 if(elem != value->end() - 1) TAB(d + 2) << ", " << endl;
             }
             TAB(d) << "}" << endl;
         }
 
-        IdNode::IdNode(string v)
-            : id(v)
+        IdNode::IdNode(string * i)
         {
             setNodeType(NodeType::Identifier);
+            id = new vector<string *>();
+            AddId(i);
+        }
+
+        void
+        IdNode::AddId(string * i)
+        {
+            id->push_back(i);
         }
 
         void
         IdNode::print(ostream & out, unsigned d)
         {
-            TAB(d) << "Identifier => " << id << endl;
+            TAB(d) << "Identifier => ";
+            for (auto i = 0; i < id->size(); i++)
+            {
+                out << *(id->at(i));
+                if (i < id->size() - 1)
+                    out << ".";
+            }
+            out << endl;
         }
 
-        PointerTypeNode::PointerTypeNode(SyntaxNode * value) : type(value) { }
+        // PointerTypeNode::PointerTypeNode(SyntaxNode * value) : type(value) { }
 
-        void
-        PointerTypeNode::print(ostream & out, unsigned d)
-        {
-            TAB(d) << "Pointer => " << endl;
-            type->print(out, d + 2);
-        }
+        // void
+        // PointerTypeNode::print(ostream & out, unsigned d)
+        // {
+        //     TAB(d) << "Pointer => " << endl;
+        //     type->print(out, d + 2);
+        // }
 
         Type::Type() : type("var")
         {
-            setNodeType(NodeType::Ty);
+            setNodeType(NodeType::Null);
         }
 
         Type::Type(string ty) : type(ty)
         {
-            setNodeType(NodeType::Ty);
+            setNodeType(NodeType::Null);
         }
 
         void
@@ -300,98 +311,15 @@ namespace LANG_NAMESPACE
             TAB(d) << "Array type of " << type << " with dimension " << dimension << endl;
         }
 
-        void
-        UnaryExpressionNode::print(ostream & out, unsigned d)
-        {
-            TAB(d) << "Unary expression [ " << op << " ] =>" << endl;
-            member1->print(out, d + 1);
-        }
-
-        UnaryExpressionNode::UnaryExpressionNode(Operator::Unary op, SyntaxNode * m1)
-            : op(op), member1(m1)
-        {
-            setNodeType(NodeType::Null);
-        }
-
-        UnaryExpressionNode::UnaryExpressionNode(Operator::Unary op, VectorNode * m1)
-            : op(op), vector1(m1)
-        {
-            setNodeType(NodeType::Null);
-        }
-
-        BinaryExpressionNode::BinaryExpressionNode(Operator::Binary op, SyntaxNode * m1, SyntaxNode * m2)
-            : op(op), member1(m1), member2(m2)
+        RankSpecifierNode::RankSpecifierNode()
         {
             setNodeType(NodeType::Null);
         }
 
         void
-        BinaryExpressionNode::print(ostream & out, unsigned d)
+        RankSpecifierNode::print(ostream & out, unsigned d)
         {
-            TAB(d) << "Binary expression [ " << op << " ] =>" << endl;
-            member1->print(out, d + 1);
-            member2->print(out, d + 1);
-        }
-
-        TernaryExpressionNode::TernaryExpressionNode(Operator::Ternary op, SyntaxNode *m1, SyntaxNode *m2, SyntaxNode *m3)
-            : op(op), member1(m1), member2(m2), member3(m3)
-        {
-            setNodeType(NodeType::Null);
-        }
-
-        void
-        TernaryExpressionNode::print(ostream & out, unsigned d)
-        {
-            TAB(d) << "Ternary expression [ " << op << " ] =>" << endl;
-            member1->print(out, d + 1);
-            member2->print(out, d + 1);
-            member3->print(out, d + 1);
-        }
-
-        FunctionInvocationNode::FunctionInvocationNode(SyntaxNode * n)
-            : functionName(n), functionArguments(new VectorNode())
-        {
-            setNodeType(NodeType::Null);
-        }
-
-        FunctionInvocationNode::FunctionInvocationNode(SyntaxNode * n, VectorNode * a)
-            : functionName(n), functionArguments(a)
-        {
-            setNodeType(NodeType::Null);
-        }
-
-        void
-        FunctionInvocationNode::print(ostream & out, unsigned d)
-        {
-            TAB(d) << "Function call for =>" << endl;
-            functionName->print(out, d + 1);
-            if(functionArguments->size() > 0) {
-                TAB(d + 1) << "with arguments(" << endl;
-                for(VectorNode::iterator arg = functionArguments->begin(); arg < functionArguments->end(); arg++) {
-                   (*arg)->print(out, d + 2);
-                    if(arg != functionArguments->end() - 1) TAB(d + 2) << ", " << endl;
-                }
-                TAB(d) << ")" << endl;
-            }
-        }
-
-        LambdaExpressionNode::LambdaExpressionNode(VectorNode * a, SyntaxNode * e)
-            : lambdaArguments(a), lambdaExpression(e) { }
-
-        void
-        LambdaExpressionNode::print(ostream & out, unsigned d)
-        {
-            TAB(d) << "Lambda expression ";
-            if(lambdaArguments->size() > 0) {
-                out << "with arguments(" << endl;
-                for(VectorNode::iterator arg = lambdaArguments->begin(); arg < lambdaArguments->end(); arg++) {
-                   (*arg)->print(out, d + 1);
-                    if(arg != lambdaArguments->end() - 1) TAB(d + 2) << ", " << endl;
-                }
-                TAB(d) << ") ";
-            }
-            out << "using expression =>" << endl;
-            lambdaExpression->print(out, d + 1);
+            TAB(d) << "[]";
         }
     } // SyntaxTree
 } // LANG_NAMESPACE

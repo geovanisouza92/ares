@@ -30,16 +30,16 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *****************************************************************************
- * stmt.h - Statements
+ * loop.h - Loop statements
  *
- * Defines objects used to represent statements
+ * Defines objects used to represent loop statements
  *
  */
 
-#ifndef LANG_STMT_H
-#define LANG_STMT_H
+#ifndef LANG_LOOP_H
+#define LANG_LOOP_H
 
-#include "ast.h"
+#include "stmt.h"
 
 using namespace LANG_NAMESPACE::Enum;
 
@@ -48,86 +48,58 @@ namespace LANG_NAMESPACE
     namespace SyntaxTree
     {
         /**
-         * Represents a try block statement
+         * Represents a for loop
          */
-        class TryStatementNode : public SyntaxNode
+        class ForNode : public SyntaxNode
         {
         protected:
-            SyntaxNode * tryBlock;
-            VectorNode * tryCatch;
-            SyntaxNode * tryFinally;
+            VectorNode * forInit;
+            SyntaxNode * forCond;
+            VectorNode * forInc;
+            SyntaxNode * forBlock;
         public:
-            TryStatementNode(SyntaxNode *);
-            virtual void setCatch(VectorNode *);
-            virtual void setFinally(SyntaxNode *);
+            ForNode(VectorNode *, SyntaxNode *, VectorNode *, SyntaxNode *);
             virtual void print(ostream &, unsigned);
         };
 
         /**
-         * Represents a catch block of try statement
+         * Represents a foreach loop
          */
-        class CatchStatementNode : public SyntaxNode
+        class ForeachNode : public SyntaxNode
         {
         protected:
-            SyntaxNode * catchingType;
-            SyntaxNode * catchingId;
-            SyntaxNode * catchingBlock;
+            SyntaxNode * foreachType;
+            SyntaxNode * foreachName;
+            SyntaxNode * foreachSource;
+            SyntaxNode * foreachBlock;
         public:
-            CatchStatementNode(SyntaxNode *);
-            CatchStatementNode(SyntaxNode *, SyntaxNode *);
-            CatchStatementNode(SyntaxNode *, SyntaxNode *, SyntaxNode *);
+            ForeachNode(SyntaxNode *, SyntaxNode *, SyntaxNode *, SyntaxNode *);
             virtual void print(ostream &, unsigned);
         };
 
         /**
-         * Represents a block os statements
+         * Represents a while loop
          */
-        class BlockNode : public SyntaxNode
+        class WhileNode : public SyntaxNode
         {
         protected:
-            VectorNode * blockStatements;
+            SyntaxNode * whileExpr;
+            SyntaxNode * whileBlock;
         public:
-            BlockNode(VectorNode *);
+            WhileNode(SyntaxNode *, SyntaxNode *);
             virtual void print(ostream &, unsigned);
         };
 
         /**
-         * Represents a memory allocation element
+         * Represents a do-while loop
          */
-        class ElementNode : public SyntaxNode
+        class DoWhileNode : public SyntaxNode
         {
         protected:
-            ElementType::Type type;
-            SyntaxNode * name;
-            SyntaxNode * init;
+            SyntaxNode * doBlock;
+            SyntaxNode * doExpr;
         public:
-            ElementNode(ElementType::Type, SyntaxNode *, SyntaxNode * i = NULL);
-            virtual void print(ostream &, unsigned);
-        };
-
-        /**
-         * Represents a variable
-         */
-        class VariableDeclStatementNode : public SyntaxNode
-        {
-        protected:
-            SyntaxNode * ty;
-            VectorNode * variables;
-        public:
-            VariableDeclStatementNode(SyntaxNode *, VectorNode *);
-            virtual void print(ostream &, unsigned);
-        };
-
-        /**
-         * Represents a constant
-         */
-        class ConstantDeclStatementNode : public SyntaxNode
-        {
-        protected:
-            SyntaxNode * ty;
-            VectorNode * consts;
-        public:
-            ConstantDeclStatementNode(SyntaxNode *, VectorNode *);
+            DoWhileNode(SyntaxNode *, SyntaxNode *);
             virtual void print(ostream &, unsigned);
         };
     } // SyntaxTree
