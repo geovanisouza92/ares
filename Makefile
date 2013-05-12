@@ -18,7 +18,7 @@ proposta:: docs
 docs::
 	@ cd docs; $(MAKE) docs
 
-test:: all-local
+test:: all
 	@ $(LEVEL)/Release/bin/arc -x 3 `ls $(LEVEL)/tests/*.ar` 2> $@.results
 
 use: all

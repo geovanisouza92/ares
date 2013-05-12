@@ -31,7 +31,7 @@ pp: common-bb
 	@ pdflatex proposta-pesquisa.tex
 	@ bibtex proposta-pesquisa
 	@ pdflatex proposta-pesquisa.tex
-	@ pdflatex proposta-pesquisa.tex	@ echo foo
+	@ pdflatex proposta-pesquisa.tex
 	@ pdflatex proposta-pesquisa.tex
 
 #########################################
