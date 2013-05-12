@@ -16,7 +16,7 @@
  *  4. Neither the name of the Ares Programming Language Project nor the names
  *     of its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE ARES PROGRAMMING LANGUAGE PROJECT AND
  * CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
  * NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -130,7 +130,7 @@ main(int argc, char ** argv)
 
     if (options.count("input-file")) {
         vector<string> input_files = options ["input-file"].as<vector<string> >();
-        for (vector<string>::iterator file = input_files.begin(); file < input_files.end(); file++) {
+        for (auto file = input_files.begin(); file < input_files.end(); file++) {
             files.push_back(*file);
         }
     }
@@ -150,14 +150,14 @@ main(int argc, char ** argv)
     if (driver.verboseMode >= VerboseMode::High) {
         output << langVersionInfo() << endl;
         if (!messages.empty())
-            for (vector<string>::iterator message = messages.begin(); message < messages.end(); message++)
+            for (auto message = messages.begin(); message < messages.end(); message++)
                 output << *message << endl;
     }
 
     // TODO Transpor código para Driver
     if (!files.empty()) {
         mode = InteractionMode::FileParse;
-        for (vector<string>::iterator file = files.begin(); file < files.end(); file++) {
+        for (auto file = files.begin(); file < files.end(); file++) {
             bool parse_ok = driver.parseFile(*file);
             if (parse_ok) {
                 filesProcessed++;
