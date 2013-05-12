@@ -30,59 +30,79 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *****************************************************************************
- * codegen.h - LLVM-IR code generation
+ * loop.h - Loop statements
  *
- * Defines objects used to generate LLVM-IR code
+ * Defines objects used to represent loop statements
  *
  */
 
-#ifndef LANG_CODEGEN_H
-#define LANG_CODEGEN_H
+#ifndef LANG_LOOP_H
+#define LANG_LOOP_H
 
-#include <stack>
-#include <llvm/Module.h>
-#include <llvm/Function.h>
-#include <llvm/LLVMContext.h>
-#include <llvm/ExecutionEngine/GenericValue.h>
-#include "ast.h"
+#include "stmt.h"
 
-using namespace std;
-using namespace llvm;
-using namespace LANG_NAMESPACE::SyntaxTree;
+using namespace LANG_NAMESPACE::Enum;
 
 namespace LANG_NAMESPACE
 {
-    namespace CodeGen
+    namespace SyntaxTree
     {
-    	/**
-    	 * Represents a block of expression-content pairs
-    	 */
-        class CodeGenBlock
+        /**
+         * Represents a for loop
+         */
+        class ForNode : public SyntaxNode
         {
+        protected:
+            VectorNode * forInit;
+            SyntaxNode * forCond;
+            VectorNode * forInc;
+            SyntaxNode * forBlock;
         public:
-            BasicBlock * block;
-            map<string, Value *> locals;
+            ForNode(VectorNode *, SyntaxNode *, VectorNode *, SyntaxNode *);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
-         * Represents a code generation context
+         * Represents a foreach loop
          */
-        class CodeGenContext
+        class ForeachNode : public SyntaxNode
         {
-        private:
-            stack<CodeGenBlock *> * blocks;
-            Function * mainFunction;
+        protected:
+            SyntaxNode * foreachType;
+            SyntaxNode * foreachName;
+            SyntaxNode * foreachSource;
+            SyntaxNode * foreachBlock;
         public:
-            Module * module;
-            CodeGenContext();
-            void generateCode(SyntaxNode *);
-            GenericValue runCode();
-            map<string, Value *> & getCurrentLocals();
-            BasicBlock * getCurrentBlock();
-            void pushBlock(BasicBlock *);
-            void popBlock();
+            ForeachNode(SyntaxNode *, SyntaxNode *, SyntaxNode *, SyntaxNode *);
+            virtual void print(ostream &, unsigned);
         };
-    } // CodeGen
+
+        /**
+         * Represents a while loop
+         */
+        class WhileNode : public SyntaxNode
+        {
+        protected:
+            SyntaxNode * whileExpr;
+            SyntaxNode * whileBlock;
+        public:
+            WhileNode(SyntaxNode *, SyntaxNode *);
+            virtual void print(ostream &, unsigned);
+        };
+
+        /**
+         * Represents a do-while loop
+         */
+        class DoWhileNode : public SyntaxNode
+        {
+        protected:
+            SyntaxNode * doBlock;
+            SyntaxNode * doExpr;
+        public:
+            DoWhileNode(SyntaxNode *, SyntaxNode *);
+            virtual void print(ostream &, unsigned);
+        };
+    } // SyntaxTree
 } // LANG_NAMESPACE
 
 #endif

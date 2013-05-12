@@ -42,441 +42,139 @@ namespace LANG_NAMESPACE
 {
     namespace SyntaxTree
     {
-        ConditionNode::ConditionNode(ConditionType::Type o, SyntaxNode * i, SyntaxNode * t)
-            : conditionOperator(o), conditionExpression(i), conditionThen(t),
-            conditionElifs(new VectorNode()), conditionElse(NULL)
+        TryStatementNode::TryStatementNode(SyntaxNode * b)
+            : tryBlock(b), tryCatch(NULL), tryFinally(NULL)
         {
             setNodeType(NodeType::Null);
         }
 
-        ConditionNode *
-        ConditionNode::setElif(VectorNode * e)
+        void
+        TryStatementNode::setCatch(VectorNode * c)
         {
-            for(VectorNode::iterator elif = e->begin(); elif < e->end(); elif++)
-                conditionElifs->push_back(*elif);
-            return this;
-        }
-
-        ConditionNode *
-        ConditionNode::setElse(SyntaxNode * e)
-        {
-            conditionElse = e;
-            return this;
+            tryCatch = c;
         }
 
         void
-        ConditionNode::print(ostream & out, unsigned d)
+        TryStatementNode::setFinally(SyntaxNode * f)
         {
-            TAB(d) << "Condition =>" << endl;
-            conditionExpression->print(out, d + 2);
-            TAB(d + 1) << "Then =>" << endl;
-            conditionThen->print(out, d + 2);
-            if(conditionElifs->size() > 0) {
-                for(VectorNode::iterator elif = conditionElifs->begin(); elif < conditionElifs->end(); elif++) {
-                    TAB(d + 1) << "Elif =>" << endl;
-                   (*elif)->print(out, d + 2);
+            tryFinally = f;
+        }
+
+        void
+        TryStatementNode::print(ostream & out, unsigned d)
+        {
+            TAB(d) << "Try" << endl;
+            tryBlock->print(out, d + 1);
+            if (tryCatch)
+            {
+                TAB(d) << "catching errors on" << endl;
+                for (auto c = tryCatch->begin(); c < tryCatch->end(); c++)
+                    (*c)->print(out, d + 1);
+            }
+            if (tryFinally)
+            {
+                TAB(d) << "finally" << endl;
+                tryFinally->print(out, d + 1);
+            }
+        }
+
+        CatchStatementNode::CatchStatementNode(SyntaxNode * b)
+            : catchingBlock(b), catchingType(NULL), catchingId(NULL)
+        {
+            setNodeType(NodeType::Null);
+        }
+
+        CatchStatementNode::CatchStatementNode(SyntaxNode * t, SyntaxNode * b)
+            : catchingType(t), catchingId(NULL), catchingBlock(b)
+        {
+            setNodeType(NodeType::Null);
+        }
+
+        CatchStatementNode::CatchStatementNode(SyntaxNode * t, SyntaxNode * i, SyntaxNode * b)
+            : catchingType(t), catchingId(i), catchingBlock(b)
+        {
+            setNodeType(NodeType::Null);
+        }
+
+        void
+        CatchStatementNode::print(ostream & out, unsigned d)
+        {
+            if (catchingType)
+            {
+                TAB(d) << "Catch errors of type" << endl;
+                catchingType->print(out, d + 1);
+                if (catchingId)
+                {
+                    TAB(d) << "using identifier" << endl;
+                    catchingId->print(out, d + 1);
                 }
-            }
-            if(conditionElse != NULL) {
-                TAB(d + 1) << "Else =>" << endl;
-                conditionElse->print(out, d + 2);
-            }
-        }
-
-        CaseNode::CaseNode(SyntaxNode * c)
-            : caseExpression(c), caseWhen(new VectorNode()), caseElse(NULL)
-        {
-            setNodeType(NodeType::Null);
-        }
-
-        CaseNode *
-        CaseNode::setWhen(VectorNode * w)
-        {
-            if(w != NULL)
-                for(VectorNode::iterator when = w->begin(); when < w->end(); when++)
-                    caseWhen->push_back(*when);
-            return this;
-        }
-
-        CaseNode *
-        CaseNode::setElse(VectorNode * e)
-        {
-            caseElse = e;
-            return this;
-        }
-
-        void
-        CaseNode::print(ostream & out, unsigned d)
-        {
-            TAB(d) << "Case =>" << endl;
-            caseExpression->print(out, d + 1);
-            if(caseWhen->size() > 0) {
-                for(VectorNode::iterator when = caseWhen->begin(); when < caseWhen->end(); when++)
-                   (*when)->print(out, d + 2);
-            }
-            if(caseElse != NULL) {
-                TAB(d + 1) << "Else =>" << endl;
-                for(VectorNode::iterator Else = caseElse->begin(); Else < caseElse->end(); Else++)
-                   (*Else)->print(out, d + 2);
-            }
-        }
-
-        WhenNode::WhenNode(SyntaxNode * e, SyntaxNode * b)
-            : whenExpression(e), whenBlock(b)
-        {
-            setNodeType(NodeType::Null);
-        }
-
-        void
-        WhenNode::print(ostream & out, unsigned d)
-        {
-            TAB(d) << "When =>" << endl;
-            whenExpression->print(out, d + 1);
-            TAB(d + 1) << "Block =>" << endl;
-            whenBlock->print(out, d + 2);
-        }
-
-        ForNode::ForNode(LoopType::Type t, SyntaxNode * l, SyntaxNode * r, SyntaxNode * b)
-            : forType(t), forLhs(l), forRhs(r), forBlock(b), forStep(NULL)
-        {
-            setNodeType(NodeType::Null);
-        }
-
-        ForNode *
-        ForNode::setStep(SyntaxNode * s)
-        {
-            forStep = s;
-            return this;
-        }
-
-        void
-        ForNode::print(ostream & out, unsigned d)
-        {
-            switch(forType) {
-            case LoopType::For:
-                TAB(d) << "For =>" << endl;
-                break;
-            case LoopType::Foreach:
-                TAB(d) << "Foreach =>" << endl;
-                break;
-            }
-            forLhs->print(out, d + 1);
-            TAB(d + 1) << "To =>" << endl;
-            forRhs->print(out, d + 1);
-            if(forStep != NULL) {
-                TAB(d + 1) << "By step =>" << endl;
-                forStep->print(out, d + 2);
-            }
-            TAB(d + 1) << "Block =>" << endl;
-            forBlock->print(out, d + 2);
-        }
-
-        LoopNode::LoopNode(LoopType::Type t, SyntaxNode * e, SyntaxNode * b)
-            : loopType(t), loopExpression(e), loopBlock(b)
-        {
-            setNodeType(NodeType::Null);
-        }
-
-        void
-        LoopNode::print(ostream & out, unsigned d)
-        {
-            switch(loopType) {
-            case LoopType::While:
-                TAB(d) << "While expression =>" << endl;
-                break;
-            case LoopType::DoWhile:
-                TAB(d) << "Until expression =>" << endl;
-                break;
-            }
-            loopExpression->print(out, d + 1);
-            TAB(d + 1) << "Block =>" << endl;
-            loopBlock->print(out, d + 2);
-        }
-
-        ControlNode::ControlNode(ControlType::Type t)
-            : controlType(t), controlExpression(NULL)
-        {
-            setNodeType(NodeType::Null);
-        }
-
-        ControlNode::ControlNode(ControlType::Type t, SyntaxNode * e)
-            : controlType(t), controlExpression(e)
-        {
-            setNodeType(NodeType::Null);
-        }
-
-        void
-        ControlNode::print(ostream & out, unsigned d)
-        {
-            switch(controlType) {
-            case ControlType::Break:
-                TAB(d) << "Break statement" << endl;
-                break;
-            case ControlType::Return:
-                if(controlExpression != NULL) {
-                    TAB(d) << "Return statement with expression =>" << endl;
-                    controlExpression->print(out, d + 1);
-                } else {
-                    TAB(d) << "Return statement" << endl;
-                }
-                break;
-            case ControlType::Yield:
-                if(controlExpression != NULL) {
-                    TAB(d) << "Yield statement with expression =>" << endl;
-                    controlExpression->print(out, d + 1);
-                } else {
-                    TAB(d) << "Yield statement" << endl;
-                }
-                break;
+                TAB(d) << "in block" << endl;
+                catchingBlock->print(out, d + 1);
+            } else {
+                TAB(d) << "Catch all errors in block" << endl;
+                catchingBlock->print(out, d + 1);
             }
         }
 
         BlockNode::BlockNode(VectorNode * s)
-            : blockRequire(new VectorNode()), blockEnsure(new VectorNode()),
-            blockStatements(s), blockRescue(new VectorNode())
+            : blockStatements(s)
         {
             setNodeType(NodeType::Null);
-        }
-
-        BlockNode *
-        BlockNode::setBlockRequire(VectorNode * r)
-        {
-            for(VectorNode::iterator req = r->begin(); req < r->end(); req++)
-                blockRequire->push_back(*req);
-            return this;
-        }
-
-        BlockNode *
-        BlockNode::setBlockEnsure(VectorNode * e)
-        {
-            for(VectorNode::iterator ens = e->begin(); ens < e->end(); ens++)
-                blockEnsure->push_back(*ens);
-            return this;
-        }
-
-        BlockNode *
-        BlockNode::setBlockRescue(VectorNode * r)
-        {
-            for(VectorNode::iterator res = r->begin(); res < r->end(); res++)
-                blockRescue->push_back(*res);
-            return this;
         }
 
         void
         BlockNode::print(ostream & out, unsigned d)
         {
-            if(blockRequire != NULL) {
-                for(VectorNode::iterator req = blockRequire->begin(); req < blockRequire->end(); req++) {
-                    TAB(d) << "Require =>" << endl;
-                   (*req)->print(out, d + 1);
-                }
-            }
-            for(VectorNode::iterator stmt = blockStatements->begin(); stmt < blockStatements->end(); stmt++) {
-               (*stmt)->print(out, d + 1);
-            }
-            if(blockRescue != NULL) {
-                for(VectorNode::iterator res = blockRescue->begin(); res < blockRescue->end(); res++) {
-                    TAB(d) << "Rescue =>" << endl;
-                   (*res)->print(out, d + 1);
-                }
-            }
-            if(blockEnsure != NULL) {
-                for(VectorNode::iterator ens = blockEnsure->begin(); ens < blockEnsure->end(); ens++) {
-                    TAB(d) << "Ensure =>" << endl;
-                   (*ens)->print(out, d + 1);
-                }
+            for (auto stmt = blockStatements->begin(); stmt < blockStatements->end(); stmt++) {
+                (*stmt)->print(out, d + 1);
             }
         }
 
-        // ValidationNode::ValidationNode(SyntaxNode * e, SyntaxNode * r)
-        //     : validationExpression(e), validationRaise(r)
-        // {
-        //     setNodeType(NodeType::Null);
-        // }
-
-        // void
-        // ValidationNode::print(ostream & out, unsigned d)
-        // {
-        //     TAB(d) << "Validation require =>" << endl;
-        //     validationExpression->print(out, d + 1);
-        //     if(validationRaise != NULL) {
-        //         TAB(d + 1) << "Raising the exception" << endl;
-        //         validationRaise->print(out, d + 2);
-        //     }
-        // }
-
-        VariableNode::VariableNode(VectorNode * v)
-            : variables(v)
+        ElementNode::ElementNode(ElementType::Type t, SyntaxNode * n, SyntaxNode * i)
+            : type(t), name(n), init(i)
         {
             setNodeType(NodeType::Null);
-        }
-
-        void
-        VariableNode::print(ostream & out, unsigned d)
-        {
-            TAB(d) << "Declare variables =>" << endl;
-            for(VectorNode::iterator var = variables->begin(); var < variables->end(); var++)
-               (*var)->print(out, d + 1);
-        }
-
-        // RescueNode::RescueNode(SyntaxNode * s)
-        //     : rescueStatement(s)
-        // {
-        //     setNodeType(NodeType::Null);
-        // }
-
-        // RescueNode *
-        // RescueNode::setException(SyntaxNode * e)
-        // {
-        //     rescueException = e;
-        //     return this;
-        // }
-
-        // void
-        // RescueNode::print(ostream & out, unsigned d)
-        // {
-        //     TAB(d) << "On exception =>";
-        //     if(rescueException)
-        //         rescueException->print(out, d + 1);
-        //     rescueStatement->print(out, d + 2);
-        // }
-
-        ElementNode::ElementNode(SyntaxNode * n)
-            : elementName(n), elementType(NULL), elementInitialValue(NULL),
-            elementInvariants(NULL)
-        {
-            setNodeType(NodeType::Null);
-        }
-
-        ElementNode *
-        ElementNode::setElementType(SyntaxNode * t)
-        {
-            elementType = t;
-            return this;
-        }
-
-        ElementNode *
-        ElementNode::setElementInitialValue(SyntaxNode * v)
-        {
-            elementInitialValue = v;
-            return this;
-        }
-
-        ElementNode *
-        ElementNode::setElementInvariants(SyntaxNode * i)
-        {
-            elementInvariants = i;
-            return this;
         }
 
         void
         ElementNode::print(ostream & out, unsigned d)
         {
-            TAB(d) << "Element named =>" << endl;
-            elementName->print(out, d + 1);
-            if(elementType != NULL) {
-                TAB(d + 1) << "Of type" << endl;
-                elementType->print(out, d + 2);
-            }
-            if(elementInitialValue != NULL) {
-                TAB(d + 1) << "With initial value =>" << endl;
-                elementInitialValue->print(out, d + 2);
-            }
-            if(elementInvariants != NULL) {
-                TAB(d + 1) << "With invariants condition =>" << endl;
-                elementInvariants->print(out, d + 2);
+            TAB(d) << ElementType::TypeStrings[nodeType] << " => " << endl;
+            name->print(out, d + 1);
+            if (init)
+            {
+                TAB(d) << "value" << endl;
+                init->print(out, d + 1);
             }
         }
 
-        ConstantNode::ConstantNode(VectorNode * v)
-            : constants(v)
+        VariableDeclStatementNode::VariableDeclStatementNode(SyntaxNode * t, VectorNode * v)
+            : ty(t), variables(v)
         {
             setNodeType(NodeType::Null);
         }
 
         void
-        ConstantNode::print(ostream & out, unsigned d)
+        VariableDeclStatementNode::print(ostream & out, unsigned d)
         {
-            TAB(d) << "Declare constants =>" << endl;
-            for(VectorNode::iterator cons = constants->begin(); cons < constants->end(); cons++)
-               (*cons)->print(out, d + 1);
+            TAB(d) << "Variables" << endl;
+            for (auto var = variables->begin(); var < variables->end(); var++)
+                (*var)->print(out, d + 1);
         }
 
-        Parameter::Parameter(SyntaxNode * type, SyntaxNode * name)
-            : paramType(type), paramName(name)
+        ConstantDeclStatementNode::ConstantDeclStatementNode(SyntaxNode * t, VectorNode * v)
+            : ty(t), consts(v)
         {
             setNodeType(NodeType::Null);
         }
 
         void
-        Parameter::print(ostream & out, unsigned d)
+        ConstantDeclStatementNode::print(ostream & out, unsigned d)
         {
-            TAB(d) << "parameter" << endl;
-            paramName->print(out, d + 1);
-            TAB(d) << "of type" << endl;
-            paramType->print(out, d + 1);
-        }
-
-        FunctionNode::FunctionNode(SyntaxNode * n, VectorNode * p)
-            : functionName(n), functionParams(p), functionReturnType(NULL),
-            functionIntercept(NULL), functionBlock(NULL)
-        {
-            setNodeType(NodeType::Null);
-        }
-
-        FunctionNode *
-        FunctionNode::setFunctionReturn(SyntaxNode * r)
-        {
-            functionReturnType = r;
-            return this;
-        }
-
-        FunctionNode *
-        FunctionNode::setFunctionIntercept(SyntaxNode * i)
-        {
-            functionIntercept = i;
-            return this;
-        }
-
-        FunctionNode *
-        FunctionNode::addSpecifier(SpecifierType::Type f)
-        {
-            functionSpecifiers.push_back(f);
-            return this;
-        }
-
-        FunctionNode *
-        FunctionNode::setBlock(SyntaxNode * s)
-        {
-            functionBlock = s;
-            return this;
-        }
-
-        void
-        FunctionNode::print(ostream & out, unsigned d)
-        {
-            TAB(d) << "Function named =>" << endl;
-            functionName->print(out, d + 1);
-            if(functionSpecifiers.size() > 0) {
-                for(vector<SpecifierType::Type>::iterator spec = functionSpecifiers.begin(); spec < functionSpecifiers.end(); spec++)
-                    TAB(d + 1) << "With specifier =>" << *spec << endl;
-            }
-            if(functionParams->size() > 0) {
-                TAB(d) << "With parameters =>" << endl;
-                for(VectorNode::iterator param = functionParams->begin(); param < functionParams-> end(); param++) {
-                   (*param)->print(out, d + 1);
-                }
-            } else
-                TAB(d) << "Without parameters" << endl;
-            if(functionReturnType != NULL) {
-                TAB(d) << "With return type =>" << endl;
-                functionReturnType->print(out, d + 1);
-            }
-            if(functionIntercept != NULL) functionIntercept->print(out, d + 1);
-            if(functionBlock != NULL) {
-                TAB(d) << "Block =>" << endl;
-                functionBlock->print(out, d + 1);
-            }
+            TAB(d) << "Constants" << endl;
+            ty->print(out, d + 1);
+            for (auto cons = consts->begin(); cons < consts->end(); cons++)
+                (*cons)->print(out, d + 1);
         }
     } // SyntaxTree
 } // LANG_NAMESPACE

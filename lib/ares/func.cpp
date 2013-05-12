@@ -30,33 +30,79 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *****************************************************************************
- * lambda.cpp - Object Query Laguage
+ * func.cpp - Statements
  *
- * Implements objects used to represent lambda expression
+ * Implements objects used to represent functions
  *
  */
 
-#include "lambda.h"
+#include "func.h"
 
 namespace LANG_NAMESPACE
 {
     namespace SyntaxTree
     {
-        LambdaNode::LambdaNode(VectorNode * params, SyntaxNode * body)
-            : lambdaParams(params), lambdaBody(body)
+        ParameterNode::ParameterNode(SyntaxNode * t, SyntaxNode * n, SyntaxNode * d)
+            : paramType(t), paramName(n), paramDefault(d)
         {
             setNodeType(NodeType::Null);
         }
 
         void
-        LambdaNode::print(ostream & out, unsigned d)
+        ParameterNode::print(ostream & out, unsigned d)
         {
-            TAB(d) << "lambda params" << endl;
-            // lambdaParams->print(out, d + 1);
-            for (auto it = lambdaParams->begin(); it < lambdaParams->end(); it++)
-                (*it)->print(out, d + 1);
-            TAB(d) << "lambda body" << endl;
-            lambdaBody->print(out, d + 1);
+            TAB(d) << "parameter" << endl;
+            paramName->print(out, d + 1);
+            TAB(d) << "of type" << endl;
+            paramType->print(out, d + 1);
+            if (paramDefault)
+            {
+                TAB(d) << "default value" << endl;
+                paramDefault->print(out, d + 1);
+            }
+        }
+
+        FunctionNode::FunctionNode(SyntaxNode * n, VectorNode * p)
+            : functionName(n), functionParams(p), functionReturnType(NULL),
+              functionBlock(NULL)//, functionIntercept(NULL)
+        {
+            setNodeType(NodeType::Null);
+        }
+
+        FunctionNode *
+        FunctionNode::setFunctionReturn(SyntaxNode * r)
+        {
+            functionReturnType = r;
+            return this;
+        }
+
+        FunctionNode *
+        FunctionNode::setBlock(SyntaxNode * s)
+        {
+            functionBlock = s;
+            return this;
+        }
+
+        void
+        FunctionNode::print(ostream & out, unsigned d)
+        {
+            if(functionParams->size() > 0) {
+                TAB(d + 1) << "Method with parameters" << endl;
+                for (auto param = functionParams->begin(); param < functionParams-> end(); param++) {
+                    (*param)->print(out, d + 2);
+                }
+            } else
+                TAB(d) << "Method without parameters" << endl;
+            if(functionReturnType) {
+                TAB(d + 1) << "returns" << endl;
+                functionReturnType->print(out, d + 2);
+            }
+            TAB(d + 1) << "name" << endl;
+            functionName->print(out, d + 2);
+            if(functionBlock) {
+                TAB(d) << "block" << endl;
+                functionBlock->print(out, d + 1);
+            }
         }
     } // SyntaxTree
 } // LANG_NAMESPACE

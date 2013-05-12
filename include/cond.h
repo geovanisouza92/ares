@@ -30,59 +30,90 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *****************************************************************************
- * codegen.h - LLVM-IR code generation
+ * cond.h - Condition statements
  *
- * Defines objects used to generate LLVM-IR code
+ * Defines objects used to represent condition statements
  *
  */
 
-#ifndef LANG_CODEGEN_H
-#define LANG_CODEGEN_H
+#ifndef LANG_COND_H
+#define LANG_COND_H
 
-#include <stack>
-#include <llvm/Module.h>
-#include <llvm/Function.h>
-#include <llvm/LLVMContext.h>
-#include <llvm/ExecutionEngine/GenericValue.h>
-#include "ast.h"
-
-using namespace std;
-using namespace llvm;
-using namespace LANG_NAMESPACE::SyntaxTree;
+#include "stmt.h"
 
 namespace LANG_NAMESPACE
 {
-    namespace CodeGen
+    namespace SyntaxTree
     {
-    	/**
-    	 * Represents a block of expression-content pairs
-    	 */
-        class CodeGenBlock
+        /**
+         * Represents an if statement
+         */
+        class IfNode : public SyntaxNode
         {
+        protected:
+            SyntaxNode * cond;
+            SyntaxNode * stmt;
+            SyntaxNode * elseStmt;
         public:
-            BasicBlock * block;
-            map<string, Value *> locals;
+            IfNode(SyntaxNode *, SyntaxNode *);
+            IfNode(SyntaxNode *, SyntaxNode *, SyntaxNode *);
+            virtual void print(ostream &, unsigned);
         };
 
         /**
-         * Represents a code generation context
+         * Represents an unless statement
          */
-        class CodeGenContext
+        class UnlessNode : public SyntaxNode
         {
-        private:
-            stack<CodeGenBlock *> * blocks;
-            Function * mainFunction;
+        protected:
+            SyntaxNode * cond;
+            SyntaxNode * stmt;
+            SyntaxNode * elseStmt;
         public:
-            Module * module;
-            CodeGenContext();
-            void generateCode(SyntaxNode *);
-            GenericValue runCode();
-            map<string, Value *> & getCurrentLocals();
-            BasicBlock * getCurrentBlock();
-            void pushBlock(BasicBlock *);
-            void popBlock();
+            UnlessNode(SyntaxNode *, SyntaxNode *);
+            UnlessNode(SyntaxNode *, SyntaxNode *, SyntaxNode *);
+            virtual void print(ostream &, unsigned);
         };
-    } // CodeGen
+
+        /**
+         * Represents a switch statement
+         */
+        class SwitchNode : public SyntaxNode
+        {
+        protected:
+            SyntaxNode * caseExpr;
+            VectorNode * caseSections;
+        public:
+            SwitchNode(SyntaxNode *, VectorNode *);
+            virtual void print(ostream &, unsigned);
+        };
+
+        /**
+         * Represents a switch section statement
+         */
+        class SwitchSectionNode : public SyntaxNode
+        {
+        protected:
+            VectorNode * labels;
+            VectorNode * stmts;
+        public:
+            SwitchSectionNode(VectorNode *, VectorNode *);
+            virtual void print(ostream &, unsigned);
+        };
+
+        /**
+         * Represents a switch label
+         */
+        class SwitchLabelNode : public SyntaxNode
+        {
+        protected:
+            SyntaxNode * expr;
+        public:
+            SwitchLabelNode();
+            SwitchLabelNode(SyntaxNode *);
+            virtual void print(ostream &, unsigned);
+        };
+    } // SyntaxTree
 } // LANG_NAMESPACE
 
 #endif

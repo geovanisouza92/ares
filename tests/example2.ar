@@ -3,8 +3,8 @@ int main()
   //# Main script
   var repos = updateUsing(
     {
-      git : Path.Join(["E:", "Repos", "GIT"]), 
-      hg : Path.Join(["E:", "Repos", "HG"]), 
+      git : Path.Join(["E:", "Repos", "GIT"]),
+      hg : Path.Join(["E:", "Repos", "HG"]),
       svn : Path.Join(["E:", "Repos", "SVN"])
     }
   );
@@ -14,7 +14,7 @@ int main()
 
 void updateUsing(string[] args)
 {
-  var dirs = /* new */ Array();
+  var dirs = new Array();
   foreach (var pair in args)
   {
     try

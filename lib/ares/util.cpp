@@ -16,7 +16,7 @@
  *  4. Neither the name of the Ares Programming Language Project nor the names
  *     of its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE ARES PROGRAMMING LANGUAGE PROJECT AND
  * CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
  * NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -37,6 +37,7 @@
  */
 
 #include <string>
+#include <vector>
 #include <sstream>
 #include "util.h"
 #include "version.h"
@@ -44,10 +45,9 @@
 string
 LANG_NAMESPACE::Util::trimString(string str, char c)
 {
-    string::size_type posb, pose;
-    posb = str.find_first_not_of(c);
+    auto posb = str.find_first_not_of(c);
     if(posb != string::npos) str = str.substr(posb, str.length());
-    pose = str.find_last_not_of(c);
+    auto pose = str.find_last_not_of(c);
     if(pose != string::npos) str = str.substr(0, pose + 1);
     if(posb == pose) str.clear();
     return str;
@@ -77,7 +77,7 @@ LANG_NAMESPACE::Util::formatNumber(int n, int w, char c = ' ')
 double
 LANG_NAMESPACE::Util::getMili()
 {
-  return(double)((clock() - start) /(CLOCKS_PER_SEC / 1000) );
+    return(double)((clock() - start) /(CLOCKS_PER_SEC / 1000) );
 }
 
 string
@@ -172,4 +172,81 @@ LANG_NAMESPACE::langCopy()
       << LANG_AUTHOR_EMAIL
       << ")";
     return s.str();
+}
+
+vector<string>
+LANG_NAMESPACE::Util::splitString(string str)
+{
+    vector<string> result;
+
+    string::const_iterator i = str.begin(), e = str.end();
+    for(;i != e; ++i)
+    if (!isspace((unsigned char)*i))
+        break;
+
+    if (i != e)
+    {
+        string current;
+        bool inside_quoted = false;
+        int backslash_count = 0;
+
+        for(; i != e; ++i)
+        {
+            if (*i == '"')
+            {
+                // '"' preceded by even number (n) of backslashes generates
+                // n/2 backslashes and is a quoted block delimiter
+                if (backslash_count % 2 == 0)
+                {
+                    current.append(backslash_count / 2, '\\');
+                    inside_quoted = !inside_quoted;
+                    // '"' preceded by odd number (n) of backslashes generates
+                    // (n-1)/2 backslashes and is literal quote.
+                }
+                else
+                {
+                    current.append(backslash_count / 2, '\\');
+                    current += '"';
+                }
+
+                backslash_count = 0;
+
+            }
+            else if (*i == '\\')
+                ++backslash_count;
+            else
+            {
+                // Not quote or backslash. All accumulated backslashes should be
+                // added
+                if (backslash_count)
+                {
+                    current.append(backslash_count, '\\');
+                    backslash_count = 0;
+                }
+
+                if (isspace((unsigned char)*i) && !inside_quoted)
+                {
+                    // Space outside quoted section terminate the current argument
+                    result.push_back(current);
+                    current.resize(0);
+                    for(;i != e && isspace((unsigned char)*i); ++i)
+                    ;
+                    --i;
+                }
+                else
+                    current += *i;
+            }
+        }
+
+        // If we have trailing backslashes, add them
+        if (backslash_count)
+            current.append(backslash_count, '\\');
+
+        // If we have non-empty 'current' or we're still in quoted
+        // section (even if 'current' is empty), add the last token.
+        if (!current.empty() || inside_quoted)
+            result.push_back(current);
+    }
+
+    return result;
 }

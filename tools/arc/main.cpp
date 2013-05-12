@@ -16,7 +16,7 @@
  *  4. Neither the name of the Ares Programming Language Project nor the names
  *     of its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE ARES PROGRAMMING LANGUAGE PROJECT AND
  * CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
  * NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -49,7 +49,7 @@ using namespace std;
 using namespace LANG_NAMESPACE;
 using namespace LANG_NAMESPACE::Enum;
 using namespace LANG_NAMESPACE::Util;
-namespace programOptions = boost::program_options;
+namespace po = boost::program_options;
 
 #ifndef STATS
 #define STATS(print_exec_time) \
@@ -68,34 +68,34 @@ if (driver.verboseMode >= VerboseMode::Low) { \
 int
 main(int argc, char ** argv)
 {
-    unsigned maxErrors = 3, filesProcessed = 0;
+    unsigned filesProcessed = 0;
     InteractionMode::Mode mode = InteractionMode::None;
     vector<string> files, messages;
     string outputFilename(LANG_SHELL_NAME ".out"), line;
     std::ostream & output = std::cout;
     bool echo = true, colorized = LANG_COLORIZED;
 
-    programOptions::options_description desc("Usage: " LANG_SHELL_NAME " [Options] files\n\nOptions");
+    po::options_description desc("Usage: " LANG_SHELL_NAME " [Options] files\n\nOptions");
     desc.add_options()
         ("check-only,c", "Enable check only")
-        ("colorized,l", programOptions::value<bool>()->default_value(true), "Set colorized output to console")
-        ("echo,z", programOptions::value<bool>()->default_value(true), "Set echo for console")
-        ("eval,e", programOptions::value<string>(), "Read-eval-print <arg>")
+        ("colorized,l", po::value<bool>()->default_value(true), "Set colorized output to console")
+        ("echo,z", po::value<bool>()->default_value(true), "Set echo for console")
+        ("eval,e", po::value<string>(), "Read-eval-print <arg>")
         ("help,h", "Print this message")
-        ("input-file,i", programOptions::value<vector<string> >(), "[Optional] Use <arg> as input file(s).")
-        // ("output-file,o", programOptions::value<vector<string> >(), "[Optional] Set <arg> as output file(s).")
-        ("verbose,x", programOptions::value<int>()->default_value(0), "Set the verbose mode [0..3]")
+        ("input-file,i", po::value<vector<string> >(), "[Optional] Use <arg> as input file(s).")
+        // ("output-file,o", po::value<vector<string> >(), "[Optional] Set <arg> as output file(s).")
+        ("verbose,x", po::value<int>()->default_value(0), "Set the verbose mode [0..3]")
         ("version,v", "Print version information")
         ;
-    programOptions::positional_options_description positional_input;
+    po::positional_options_description positional_input;
     positional_input.add("input-file", -1);
 
-    programOptions::variables_map options;
+    po::variables_map options;
     try {
-        programOptions::store(programOptions::command_line_parser(argc, argv)
+        po::store(po::command_line_parser(argc, argv)
             .options(desc).positional(positional_input).run(), options);
-        notify(options);
-    } catch(programOptions::unknown_option & e) {
+        po::notify(options);
+    } catch(po::unknown_option & e) {
         output << "Unknown option: " << e.get_option_name() << endl;
         output << desc << endl;
         return 1;
@@ -116,7 +116,7 @@ main(int argc, char ** argv)
         if (!line.empty()) {
             bool parse_result = driver.parseString(line, "line eval");
             if (parse_result) {
-                if (driver.errors > maxErrors) return 1;
+                // if (driver.errors) return 1;
                 driver.produce((driver.checkOnly ? FinallyAction::None : FinallyAction::PrintOnConsole), output);
             }
             STATS(false)
@@ -130,7 +130,7 @@ main(int argc, char ** argv)
 
     if (options.count("input-file")) {
         vector<string> input_files = options ["input-file"].as<vector<string> >();
-        for (vector<string>::iterator file = input_files.begin(); file < input_files.end(); file++) {
+        for (auto file = input_files.begin(); file < input_files.end(); file++) {
             files.push_back(*file);
         }
     }
@@ -150,18 +150,18 @@ main(int argc, char ** argv)
     if (driver.verboseMode >= VerboseMode::High) {
         output << langVersionInfo() << endl;
         if (!messages.empty())
-            for (vector<string>::iterator message = messages.begin(); message < messages.end(); message++)
+            for (auto message = messages.begin(); message < messages.end(); message++)
                 output << *message << endl;
     }
 
     // TODO Transpor código para Driver
     if (!files.empty()) {
         mode = InteractionMode::FileParse;
-        for (vector<string>::iterator file = files.begin(); file < files.end(); file++) {
+        for (auto file = files.begin(); file < files.end(); file++) {
             bool parse_ok = driver.parseFile(*file);
             if (parse_ok) {
                 filesProcessed++;
-                if (driver.errors > maxErrors) return 1;
+                // if (driver.errors) return -1;
                 driver.produce((driver.checkOnly ? FinallyAction::None : FinallyAction::PrintOnConsole), output);
             } else
                 break;
@@ -170,23 +170,78 @@ main(int argc, char ** argv)
     } else if (mode == InteractionMode::None) mode = InteractionMode::Shell;
 
     if (mode == InteractionMode::Shell) {
-        string guide(">>> ");
-        int blanks = 0;
-        string echo_shell = "";
+
+        vector<string> args;
+
+        po::options_description shell("Interactive shell");
+        shell.add_options()
+            ("\\q", "Quit")
+            ("\\h", "Print this help message")
+            ("\\c", "Clear the buffer")
+            ("\\l", "List the buffer")
+            ("\\i", po::value<string>(), "Process file")
+            ("/", "Execute the command buffer")
+            ;
+        po::positional_options_description shell_input;
+        shell_input.add("\\i", -1);
+        po::variables_map commands;
+
+        string guide(">>> "), prompt = "", buffer = "";
         if (echo)
             if (colorized)
-                echo_shell = COLOR_BGREEN LANG_SHELL_NAME COLOR_RESET + guide;
+                prompt = COLOR_BGREEN LANG_SHELL_NAME COLOR_RESET + guide;
             else
-                echo_shell = LANG_SHELL_NAME + guide;
-        while(output << echo_shell && getline(cin, line))
+                prompt = LANG_SHELL_NAME + guide;
+        while(output << prompt && getline(cin, line))
             if (!line.empty()) {
-                bool parse_ok = driver.parseString(line, LANG_SHELL_NAME);
-                if (parse_ok) {
-                    if (driver.errors > maxErrors) break;
-                    driver.produce((driver.checkOnly ? FinallyAction::None : FinallyAction::PrintOnConsole), output);
+
+                try
+                {
+                    args = Util::splitString(string("--") + line);
+                    po::store(po::command_line_parser(args).options(shell)
+                        .positional(shell_input).run(), commands);
+                    po::notify(commands);
+
+                    if (commands.count("\\q"))
+                        break;
+
+                    if (commands.count("\\h"))
+                        output << shell << endl;
+
+                    if (commands.count("\\l"))
+                        output << buffer << endl;
+
+                    if (commands.count("\\c"))
+                        buffer.clear();
+
+                    if (commands.count("\\i"))
+                    {
+                        string file = commands["\\i"].as<string>();
+                        bool parse_ok = driver.parseFile(file);
+                        // if (driver.errors) return 1;
+                        driver.produce((driver.checkOnly ? FinallyAction::None : FinallyAction::PrintOnConsole), output);
+                    }
+
+                    if (commands.count("/"))
+                    {
+                        bool parse_ok = driver.parseString(buffer, LANG_SHELL_NAME);
+                        if (parse_ok) {
+                            // if (driver.errors) break;
+                            driver.produce((driver.checkOnly ? FinallyAction::None : FinallyAction::PrintOnConsole), output);
+                        }
+                    }
+
                 }
-                blanks = 0; line.clear();
-            } else if (++blanks && blanks >= 3) break;
+                catch (po::ambiguous_option & e1)
+                {
+                    output << "Ambiguous option" << endl;
+                }
+                catch (po::unknown_option & e2)
+                {
+                    buffer.append(line + "\n");
+                    line.clear();
+                }
+            }
         STATS(false)
     }
 

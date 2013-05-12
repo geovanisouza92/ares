@@ -1,5 +1,5 @@
 
-int fib (int num)
+int fib (int num = 0)
 {
   var Result = 0;
   if (0 == num)

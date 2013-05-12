@@ -30,59 +30,54 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *****************************************************************************
- * codegen.h - LLVM-IR code generation
+ * func.h - Statements
  *
- * Defines objects used to generate LLVM-IR code
+ * Defines objects used to represent functions
  *
  */
 
-#ifndef LANG_CODEGEN_H
-#define LANG_CODEGEN_H
+#ifndef LANG_FUNC_H
+#define LANG_FUNC_H
 
-#include <stack>
-#include <llvm/Module.h>
-#include <llvm/Function.h>
-#include <llvm/LLVMContext.h>
-#include <llvm/ExecutionEngine/GenericValue.h>
-#include "ast.h"
-
-using namespace std;
-using namespace llvm;
-using namespace LANG_NAMESPACE::SyntaxTree;
+#include "stmt.h"
 
 namespace LANG_NAMESPACE
 {
-    namespace CodeGen
+    namespace SyntaxTree
     {
-    	/**
-    	 * Represents a block of expression-content pairs
-    	 */
-        class CodeGenBlock
+        /**
+         * Represents a parameter for lambda and functions
+         */
+        class ParameterNode : public SyntaxNode
         {
+        protected:
+            bool paramArray = false;
+            SyntaxNode * paramType;
+            SyntaxNode * paramName;
+            SyntaxNode * paramDefault;
         public:
-            BasicBlock * block;
-            map<string, Value *> locals;
+            ParameterNode(SyntaxNode *, SyntaxNode *, SyntaxNode * d = NULL);
+            virtual void setParamArray() { paramArray = true; }
+            virtual void print(ostream &, unsigned);
         };
 
         /**
-         * Represents a code generation context
+         * Represents a function
          */
-        class CodeGenContext
+        class FunctionNode : public SyntaxNode
         {
-        private:
-            stack<CodeGenBlock *> * blocks;
-            Function * mainFunction;
+        protected:
+            SyntaxNode * functionName;
+            VectorNode * functionParams;
+            SyntaxNode * functionReturnType;
+            SyntaxNode * functionBlock;
         public:
-            Module * module;
-            CodeGenContext();
-            void generateCode(SyntaxNode *);
-            GenericValue runCode();
-            map<string, Value *> & getCurrentLocals();
-            BasicBlock * getCurrentBlock();
-            void pushBlock(BasicBlock *);
-            void popBlock();
+            FunctionNode(SyntaxNode *, VectorNode *);
+            virtual FunctionNode * setFunctionReturn(SyntaxNode *);
+            virtual FunctionNode * setBlock(SyntaxNode *);
+            virtual void print(ostream &, unsigned);
         };
-    } // CodeGen
+    } // SyntaxTree
 } // LANG_NAMESPACE
 
 #endif
