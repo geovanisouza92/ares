@@ -21,7 +21,7 @@ docs::
 test:: all-local
 	@ $(LEVEL)/Release/bin/arc -x 3 `ls $(LEVEL)/tests/*.ar` 2> $@.results
 
-shell: all
+use: all
 	@ $(LEVEL)/Release/bin/arc -x 2
 
 clean-local::
